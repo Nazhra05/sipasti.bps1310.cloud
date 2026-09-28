@@ -24,20 +24,21 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-[#032454] bg-[#043277]">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo + name */}
-        <Link href="/" className="flex shrink-0 items-center gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Image
             src={navbarLogo}
             alt="BPS Solok Selatan"
             width={300}
             height={120}
-            className="h-10 w-auto object-contain"
+            className="h-8 sm:h-10 w-auto object-contain"
+            priority
           />
           <div
-            className="hidden flex-col font-bold italic leading-tight text-white sm:flex"
+            className="flex flex-col font-bold italic leading-tight text-white"
             style={{ fontFamily: "Arial, sans-serif" }}
           >
-            <span className="text-sm md:text-base">BADAN PUSAT STATISTIK</span>
-            <span className="text-sm md:text-base">KABUPATEN SOLOK SELATAN</span>
+            <span className="text-[11px] sm:text-sm md:text-base whitespace-nowrap">BADAN PUSAT STATISTIK</span>
+            <span className="text-[11px] sm:text-sm md:text-base whitespace-nowrap">KABUPATEN SOLOK SELATAN</span>
           </div>
         </Link>
 

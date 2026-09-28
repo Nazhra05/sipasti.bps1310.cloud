@@ -39,18 +39,33 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
     const container = scrollRef.current;
     const card = cardRefs.current[activeIndex];
     if (!container || !card) return;
-    const offset = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2;
+
+    const containerRect = container.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Exact scroll position of card relative to container's scroll content
+    const cardLeftInScroll = cardRect.left - containerRect.left + container.scrollLeft;
+
+    // Available extra horizontal space in the container around the card
+    const extraSpace = container.clientWidth - card.offsetWidth;
+
+    // Center if card fits inside container; align cleanly to start if narrower
+    const offset = extraSpace > 0 
+      ? cardLeftInScroll - extraSpace / 2 
+      : cardLeftInScroll;
+
     container.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
     // Re-sync after animation settles
     setTimeout(syncArrowState, 450);
-  }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeCategory, activeIndex]);
 
   // Scroll exactly one card width + gap per arrow click
   function scrollByCard(dir: "left" | "right") {
     const container = scrollRef.current;
     const firstCard = cardRefs.current[0];
     if (!container || !firstCard) return;
-    const amount = firstCard.offsetWidth + 24; // card + gap-6
+    const gap = typeof window !== "undefined" && window.innerWidth >= 640 ? 24 : 16;
+    const amount = firstCard.offsetWidth + gap;
     container.scrollBy({ left: dir === "right" ? amount : -amount, behavior: "smooth" });
     setTimeout(syncArrowState, 450);
   }
@@ -105,7 +120,14 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
                 <button
                   key={category}
                   type="button"
-                  onClick={() => setActiveCategory(category)}
+                  onClick={(e) => {
+                    setActiveCategory(category);
+                    (e.currentTarget as HTMLElement).scrollIntoView({
+                      behavior: "smooth",
+                      inline: "nearest",
+                      block: "nearest",
+                    });
+                  }}
                   className={[
                     "relative whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
                     isActive ? "text-white" : "text-slate-500 hover:text-slate-900",
@@ -126,7 +148,7 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
         </div>
 
         {/* ══ CAROUSEL — 3 cards visible, arrows to scroll ══ */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
 
           {/* Left arrow */}
           <button
@@ -134,20 +156,21 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
             onClick={() => scrollByCard("left")}
             disabled={!canScrollLeft}
             aria-label="Sebelumnya"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
 
           {/*
             Scroll container.
-            Mobile  : each card fixed 260px — scroll freely
+            Mobile  : each card fixed 250px (responsive) — scroll freely
+            Tablet  : 270px
             Desktop : each card = 1/3 of container — exactly 3 in view
             Formula : (100% - 2×gap-6) / 3 = 33.333% - 16px
           */}
           <div
             ref={scrollRef}
-            className="no-scrollbar flex flex-1 gap-6 overflow-x-auto scroll-smooth py-4"
+            className="relative no-scrollbar flex flex-1 gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-4"
           >
             {cards.map((card, index) => {
               const isFeatured = card.category === activeCategory;
@@ -156,7 +179,7 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
                   key={card.title}
                   ref={(el) => { cardRefs.current[index] = el; }}
                   onClick={() => setActiveCategory(card.category)}
-                  className="w-[260px] min-h-[520px] shrink-0 cursor-pointer lg:w-[calc(33.333%_-_16px)]"
+                  className="w-[250px] sm:w-[270px] min-h-[520px] shrink-0 cursor-pointer lg:w-[calc(33.333%_-_16px)]"
                 >
                   <InfoCard
                     title={card.title}
@@ -177,9 +200,9 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
             onClick={() => scrollByCard("right")}
             disabled={!canScrollRight}
             aria-label="Berikutnya"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
 
