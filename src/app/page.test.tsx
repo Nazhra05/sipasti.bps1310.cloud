@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { http, HttpResponse } from "msw";
@@ -271,4 +271,107 @@ describe("Landing Page Data Fetching and UI (Home / App Router)", () => {
     await user.click(retryButton);
     expect(resetMock).toHaveBeenCalledTimes(1);
   });
+
+  // ─────────────────────────────────────────────
+  // 6. USER INTERACTIONS (CATEGORY SWITCHING & SEARCH)
+  // ─────────────────────────────────────────────
+  it("updates active category styling when user clicks a category filter tab", async () => {
+    const user = userEvent.setup();
+    const ui = await Home();
+    render(ui);
+
+    const websiteResmiTab = screen.getByRole("button", { name: "Website Resmi" });
+    await user.click(websiteResmiTab);
+
+    // After click, the tab has active text styling
+    expect(websiteResmiTab).toHaveClass("text-white");
+  });
+
+  it("filters and displays search results in the dropdown when user types in SearchBar", async () => {
+    const user = userEvent.setup();
+    const ui = await Home();
+    render(ui);
+
+    const searchInput = screen.getByPlaceholderText("Cari layanan, data, atau publikasi...");
+    await user.click(searchInput);
+    await user.type(searchInput, "Ekspor");
+
+    // Wait for debounce (250ms) to trigger search results
+    await waitFor(
+      () => {
+        expect(screen.getByText("Ekspor Impor Solsel")).toBeInTheDocument();
+      },
+      { timeout: 2000 }
+    );
+
+    // Displays the category badge
+    expect(screen.getByText("Distribusi")).toBeInTheDocument();
+  });
+
+  it("displays no results notice when user searches for non-existent term", async () => {
+    const user = userEvent.setup();
+    const ui = await Home();
+    render(ui);
+
+    const searchInput = screen.getByPlaceholderText("Cari layanan, data, atau publikasi...");
+    await user.click(searchInput);
+    await user.type(searchInput, "xyznonexistent");
+
+    await waitFor(
+      () => {
+        expect(screen.getByText("Tidak ada hasil ditemukan")).toBeInTheDocument();
+      },
+      { timeout: 2000 }
+    );
+  });
+
+  // ─────────────────────────────────────────────
+  // 7. PARTIAL API FAILURE & MALFORMED PAYLOAD RESILIENCE
+  // ─────────────────────────────────────────────
+  it("renders service cards gracefully even if website search index fails with 500", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    server.use(
+      http.get(`${API_BASE}/website.php`, () => {
+        return new HttpResponse(null, {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      })
+    );
+
+    const ui = await Home();
+    render(ui);
+
+    // Categories and cards still display properly
+    expect(screen.getByRole("button", { name: "Katalog Layanan" })).toBeInTheDocument();
+    expect(screen.getByText("Pelayanan Statistik Terpadu (PST)")).toBeInTheDocument();
+  });
+
+  it("handles malformed API response (status=false, null data) gracefully", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    server.use(
+      http.get(`${API_BASE}/kategori.php`, () => {
+        return HttpResponse.json({
+          status: false,
+          message: "Database connection failed",
+          data: null,
+        });
+      }),
+      http.get(`${API_BASE}/layanan.php`, () => {
+        return HttpResponse.json({
+          status: false,
+          message: "Database connection failed",
+          data: null,
+        });
+      })
+    );
+
+    const ui = await Home();
+    render(ui);
+
+    expect(screen.getByText("Data layanan belum tersedia saat ini.")).toBeInTheDocument();
+  });
 });
+
