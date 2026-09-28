@@ -2,55 +2,47 @@ import Image from "next/image";
 import Link from "next/link";
 import { navbarLogo } from "@/data";
 
-/**
- * Footer component — replicates the footer of
- * https://solokselatankab.bps.go.id/id (BPS Kabupaten Solok Selatan)
- *
- * Usage:
- *   import Footer from "@/components/Footer";
- *   ...
- *   <Footer />
- */
+const tentangKami = [
+  { label: "Profil BPS", href: "https://ppid.bps.go.id/app/konten/1310/Profil-BPS.html" },
+  { label: "PPID", href: "https://ppid.bps.go.id/?mfd=1310" },
+  {
+    label: "Kebijakan Diseminasi",
+    href: "https://ppid.bps.go.id/app/konten/0000/Layanan-BPS.html#pills-3",
+  },
+];
+
+const tautanLainnya = [
+  { label: "ASEAN Stats", href: "https://www.aseanstats.org/" },
+  { label: "Reformasi Birokrasi", href: "https://rb.bps.go.id/" },
+  { label: "Layanan Pengadaan Secara Elektronik", href: "https://lpse.bps.go.id/" },
+  { label: "Politeknik Statistika STIS", href: "https://www.stis.ac.id/" },
+  { label: "Pusdiklat BPS", href: "https://pusdiklat.bps.go.id/" },
+  { label: "JDIH BPS", href: "https://jdih.bps.go.id/" },
+];
+
 export default function Footer() {
-  const tentangKami = [
-    { label: "Profil BPS", href: "https://ppid.bps.go.id/app/konten/1310/Profil-BPS.html" },
-    { label: "PPID", href: "https://ppid.bps.go.id/?mfd=1310" },
-    { label: "Kebijakan Diseminasi", href: "https://ppid.bps.go.id/app/konten/0000/Layanan-BPS.html?_gl=1*1h15u8m*_ga*NTQyOTkyMjE4LjE3ODkxOTc5NjY.*_ga_XXTTVXWHDB*czE3OTAyMjI0MzEkbzExJGcxJHQxNzkwMjIzMDc0JGo0MCRsMCRoMA..#pills-3" },
-  ];
-
-  const tautanLainnya = [
-    { label: "ASEAN Stats", href: "https://www.aseanstats.org/" },
-    { label: "Reformasi Birokrasi", href: "https://rb.bps.go.id/" },
-    { label: "Layanan Pengadaan Secara Elektronik", href: "https://lpse.bps.go.id/" },
-    { label: "Politeknik Statistika STIS", href: "https://www.stis.ac.id/" },
-    { label: "Pusdiklat BPS", href: "https://pusdiklat.bps.go.id/" },
-    { label: "JDIH BPS", href: "https://jdih.bps.go.id/" },
-  ];
-
   return (
-    <footer id="footer" className="bg-[#043277] border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <footer id="footer" className="border-t border-white/10 bg-[#043277]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Logo + address + contact */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-3 shrink-0">
-                      <Image
-                        src={navbarLogo}
-                        alt="BPS Logo"
-                        width={300}
-                        height={120}
-                        className="h-10 w-auto object-contain"
-                      />
-                      <div
-                        className="hidden flex-col leading-tight text-white italic font-bold sm:flex"
-                        style={{ fontFamily: "Arial, sans-serif" }}
-                      >
-                        <span className="text-sm md:text-base">BADAN PUSAT STATISTIK</span>
-                        <span className="text-sm md:text-base">
-                          KABUPATEN SOLOK SELATAN
-                        </span>
-                      </div>
-                    </Link>
+            <Link href="/" className="flex shrink-0 items-center gap-3">
+              <Image
+                src={navbarLogo}
+                alt="BPS Solok Selatan"
+                width={300}
+                height={120}
+                className="h-10 w-auto object-contain"
+              />
+              <div
+                className="hidden flex-col font-bold italic leading-tight text-white sm:flex"
+                style={{ fontFamily: "Arial, sans-serif" }}
+              >
+                <span className="text-sm md:text-base">BADAN PUSAT STATISTIK</span>
+                <span className="text-sm md:text-base">KABUPATEN SOLOK SELATAN</span>
+              </div>
+            </Link>
 
             <p className="mt-4 text-sm leading-relaxed text-blue-100">
               Badan Pusat Statistik Kabupaten Solok Selatan
@@ -80,11 +72,10 @@ export default function Footer() {
               </a>
             </p>
 
-            {/* Secondary footer logo/cover */}
             <div className="mt-6">
               <Image
                 src="/BerAKHLAK.png"
-                alt="Logo footer BPS"
+                alt="Logo BerAKHLAK"
                 width={220}
                 height={70}
               />
@@ -93,9 +84,7 @@ export default function Footer() {
 
           {/* Tentang Kami */}
           <div>
-            <h3 className="text-sm font-semibold text-white">
-              Tentang Kami
-            </h3>
+            <h3 className="text-sm font-semibold text-white">Tentang Kami</h3>
             <ul className="mt-4 space-y-2">
               {tentangKami.map((item) => (
                 <li key={item.label}>
@@ -114,9 +103,7 @@ export default function Footer() {
 
           {/* Tautan Lainnya */}
           <div>
-            <h3 className="text-sm font-semibold text-white">
-              Tautan Lainnya
-            </h3>
+            <h3 className="text-sm font-semibold text-white">Tautan Lainnya</h3>
             <ul className="mt-4 space-y-2">
               {tautanLainnya.map((item) => (
                 <li key={item.label}>
@@ -134,7 +121,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar: manual / terms / link list + copyright */}
+        {/* Bottom bar */}
         <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-blue-100">
             <a
@@ -162,9 +149,8 @@ export default function Footer() {
               Daftar Tautan
             </a>
           </div>
-
           <p className="text-sm text-blue-200">
-            Hak Cipta © 2026 Badan Pusat Statistik
+            Hak Cipta © {new Date().getFullYear()} Badan Pusat Statistik
           </p>
         </div>
       </div>

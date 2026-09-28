@@ -1,72 +1,104 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import InfoCard from "@/components/Infocard";
-import { websitesCardsTop, websitesCardsBottom } from "@/data";
+import type { CardData } from "@/data";
 
-/**
- * WebsitesSection
- * - bg-white. Brand colors: blue accent #4272FF, orange accent #FF7E42
- *   (used for the active toggle pill, arrow hover states, and active
- *   pagination dot).
- * - Heading + subheading, then a pill toggle with a sliding highlight
- *   (mb-6 below it so it sits close to the carousel).
- * - Carousel of all 7 category cards (h-[380px]); the active category
- *   sits centered and renders as the "featured" card.
- * - Scroll container has extra horizontal padding (px-6/sm:px-10) so
- *   edge cards' scale-up never gets clipped.
- * - Clicking any card, a toggle pill, an arrow, or a dot all set that
- *   category active, smoothly re-centering the carousel on it.
- * - Card content comes from `websitesCardsTop` / `websitesCardsBottom`
- *   in data.ts — edit that file to change categories or links.
- * - id="websites" lets the Navbar's "Layanan" link (#websites) scroll here.
- */
-export default function WebsitesSection() {
-  const cards = useMemo(
-    () => [...websitesCardsTop, ...websitesCardsBottom],
-    []
-  );
+export default function WebsitesSection({ cards }: { cards: CardData[] }) {
   const categories = useMemo(() => cards.map((c) => c.category), [cards]);
-
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const activeIndex = categories.indexOf(activeCategory);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const activeIndex = categories.indexOf(activeCategory);
+  // Arrow enabled state based on actual scroll position
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
-  function centerCard(index: number) {
-    const container = scrollRef.current;
-    const card = cardRefs.current[index];
-    if (!container || !card) return;
-    const offset =
-      card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
-    container.scrollTo({ left: offset, behavior: "smooth" });
+  function syncArrowState() {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }
 
+  // Attach scroll listener once
   useEffect(() => {
-    centerCard(activeIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory]);
+    const el = scrollRef.current;
+    if (!el) return;
+    syncArrowState();
+    el.addEventListener("scroll", syncArrowState, { passive: true });
+    return () => el.removeEventListener("scroll", syncArrowState);
+  }, []);
+
+  // Center the active card whenever category changes (from toggle OR arrow)
+  useEffect(() => {
+    const container = scrollRef.current;
+    const card = cardRefs.current[activeIndex];
+    if (!container || !card) return;
+    const offset = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2;
+    container.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
+    // Re-sync after animation settles
+    setTimeout(syncArrowState, 450);
+  }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Scroll exactly one card width + gap per arrow click
+  function scrollByCard(dir: "left" | "right") {
+    const container = scrollRef.current;
+    const firstCard = cardRefs.current[0];
+    if (!container || !firstCard) return;
+    const amount = firstCard.offsetWidth + 24; // card + gap-6
+    container.scrollBy({ left: dir === "right" ? amount : -amount, behavior: "smooth" });
+    setTimeout(syncArrowState, 450);
+  }
+
+  // ── Empty state ──
+  if (cards.length === 0) {
+    return (
+      <section id="websites" className="w-full scroll-mt-2 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+              Jelajahi Layanan BPS
+            </h2>
+            <p className="mt-3 text-sm text-slate-500">
+              Akses website, dashboard, dan layanan statistik BPS Kabupaten Solok Selatan.
+            </p>
+            <div className="mx-auto mt-10 flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 py-12 px-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+              </svg>
+              <p className="text-sm font-medium text-slate-500">Data layanan belum tersedia saat ini.</p>
+              <p className="text-xs text-slate-400">Silakan coba beberapa saat lagi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="websites" className="w-full scroll-mt-2 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 sm:py-24">
-        {/* Heading */}
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-800 sm:text-4xl">
-            Jelajahi Layanan BPS
-          </h2>
-          <p className="mt-4 text-base text-slate-500 sm:text-lg">
-            Temukan website, dashboard, dan layanan terkait BPS Solok Selatan.
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
 
-        {/* Category toggle: sliding pill highlight */}
-        <div className="mb-6 flex justify-center">
-          <div className="no-scrollbar inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-slate-100 p-1.5">
+        {/* ══ HEADING ROW — heading left, toggle right (reference layout) ══ */}
+        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+
+          {/* Left: title + subtitle */}
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+              Jelajahi Layanan BPS
+            </h2>
+            <p className="text-sm text-slate-500">
+              Akses website, dashboard, dan layanan statistik BPS Kabupaten Solok Selatan.
+            </p>
+          </div>
+
+          {/* Right: category filter toggle */}
+          <div className="no-scrollbar inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-slate-200 bg-slate-100 p-1 sm:shrink-0">
             {categories.map((category) => {
               const isActive = category === activeCategory;
               return (
@@ -75,17 +107,15 @@ export default function WebsitesSection() {
                   type="button"
                   onClick={() => setActiveCategory(category)}
                   className={[
-                    "relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                    isActive
-                      ? "text-white"
-                      : "text-slate-600 hover:text-[#FF7E42]",
+                    "relative whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
+                    isActive ? "text-white" : "text-slate-500 hover:text-slate-900",
                   ].join(" ")}
                 >
                   {isActive && (
                     <motion.span
-                      layoutId="category-toggle-pill"
-                      className="absolute inset-0 rounded-full bg-[#4272FF]"
-                      transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+                      layoutId="category-pill"
+                      className="absolute inset-0 rounded-full bg-[#043277] shadow-sm"
+                      transition={{ type: "spring", duration: 0.45, bounce: 0.2 }}
                     />
                   )}
                   <span className="relative z-10">{category}</span>
@@ -95,32 +125,38 @@ export default function WebsitesSection() {
           </div>
         </div>
 
-        {/* Carousel: active category centered + featured */}
+        {/* ══ CAROUSEL — 3 cards visible, arrows to scroll ══ */}
         <div className="flex items-center gap-3">
+
+          {/* Left arrow */}
           <button
             type="button"
-            onClick={() => setActiveCategory(categories[Math.max(activeIndex - 1, 0)])}
-            disabled={activeIndex === 0}
+            onClick={() => scrollByCard("left")}
+            disabled={!canScrollLeft}
             aria-label="Sebelumnya"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#4272FF] hover:text-[#4272FF] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
+          {/*
+            Scroll container.
+            Mobile  : each card fixed 260px — scroll freely
+            Desktop : each card = 1/3 of container — exactly 3 in view
+            Formula : (100% - 2×gap-6) / 3 = 33.333% - 16px
+          */}
           <div
             ref={scrollRef}
-            className="no-scrollbar flex flex-1 items-center gap-6 overflow-x-auto scroll-smooth px-6 py-6 sm:px-10"
+            className="no-scrollbar flex flex-1 gap-6 overflow-x-auto scroll-smooth py-4"
           >
             {cards.map((card, index) => {
               const isFeatured = card.category === activeCategory;
               return (
                 <div
                   key={card.title}
-                  ref={(el) => {
-                    cardRefs.current[index] = el;
-                  }}
+                  ref={(el) => { cardRefs.current[index] = el; }}
                   onClick={() => setActiveCategory(card.category)}
-                  className="h-[380px] w-[260px] shrink-0 cursor-pointer"
+                  className="w-[260px] min-h-[520px] shrink-0 cursor-pointer lg:w-[calc(33.333%_-_16px)]"
                 >
                   <InfoCard
                     title={card.title}
@@ -128,44 +164,43 @@ export default function WebsitesSection() {
                     links={card.links}
                     linkCount={3}
                     featured={isFeatured}
+                    paletteIndex={index}
                   />
                 </div>
               );
             })}
           </div>
 
+          {/* Right arrow */}
           <button
             type="button"
-            onClick={() =>
-              setActiveCategory(
-                categories[Math.min(activeIndex + 1, categories.length - 1)]
-              )
-            }
-            disabled={activeIndex === categories.length - 1}
+            onClick={() => scrollByCard("right")}
+            disabled={!canScrollRight}
             aria-label="Berikutnya"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#4272FF] hover:text-[#4272FF] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-[#043277] hover:text-[#043277] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:text-slate-500"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Dot pagination */}
+        {/* ══ DOT PAGINATION ══ */}
         <div className="mt-6 flex justify-center gap-2">
-          {categories.map((category, index) => (
+          {categories.map((category, i) => (
             <button
               key={category}
               type="button"
               onClick={() => setActiveCategory(category)}
               aria-label={`Ke kategori ${category}`}
               className={[
-                "h-2 rounded-full transition-all duration-300",
-                index === activeIndex
-                  ? "w-6 bg-[#4272FF]"
-                  : "w-2 bg-slate-300 hover:bg-slate-400",
+                "h-1.5 rounded-full transition-all duration-300",
+                i === activeIndex
+                  ? "w-6 bg-[#043277]"
+                  : "w-1.5 bg-slate-300 hover:bg-slate-400",
               ].join(" ")}
             />
           ))}
         </div>
+
       </div>
     </section>
   );

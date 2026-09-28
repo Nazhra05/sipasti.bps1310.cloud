@@ -3,18 +3,20 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
-// Inter — the closest open-source equivalent to Apple's SF Pro.
-// Apple actually uses ONE typeface (SF Pro) for everything, just at
-// different weights for headings vs body text, so we do the same here
-// with a single font instead of two separate families.
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "BPS",
-  description: "BPS website",
+  title: "SIPASTI — Sistem Portal Statistik Terintegrasi BPS Solok Selatan",
+  description:
+    "Portal terpadu untuk mengakses website, dashboard, dan layanan statistik BPS Kabupaten Solok Selatan.",
+  icons: {
+    icon: "/BPS Logo.png",
+    apple: "/BPS Logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="id" className={inter.variable}>
       <body>
         <Navbar />
         <main>{children}</main>
