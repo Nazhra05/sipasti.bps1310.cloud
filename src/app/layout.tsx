@@ -14,8 +14,11 @@ export const metadata: Metadata = {
   description:
     "Portal terpadu untuk mengakses website, dashboard, dan layanan statistik BPS Kabupaten Solok Selatan.",
   icons: {
-    icon: "/BPS Logo.png",
-    apple: "/BPS Logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/bps-logo.png", type: "image/png" },
+    ],
+    apple: "/bps-logo.png",
   },
 };
 
