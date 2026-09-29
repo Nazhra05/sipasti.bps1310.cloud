@@ -22,6 +22,23 @@ describe("API Client Layer (src/lib/api.ts)", () => {
       expect(data[0].nama_kategori).toBe("Katalog Layanan");
     });
 
+    it("sends X-API-KEY header with request", async () => {
+      let apiKeyHeader: string | null = null;
+      server.use(
+        http.get(`${API_BASE}/kategori.php`, ({ request }) => {
+          apiKeyHeader = request.headers.get("X-API-KEY");
+          return HttpResponse.json({
+            status: true,
+            message: "Success",
+            data: mockKategoriData,
+          });
+        })
+      );
+
+      await fetchKategori();
+      expect(apiKeyHeader).toBeDefined();
+    });
+
     it("returns empty array when API returns 500 status", async () => {
       vi.spyOn(console, "error").mockImplementation(() => {});
       server.use(

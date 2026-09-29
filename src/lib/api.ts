@@ -11,6 +11,11 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ??
   "https://administators.bps1310.cloud/api";
 
+const API_KEY =
+  process.env.BPS_API_KEY ??
+  process.env.NEXT_PUBLIC_API_KEY ??
+  "";
+
 // ─────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────
@@ -57,6 +62,10 @@ type ApiResponse<T> = {
 async function safeFetch<T>(endpoint: string, label: string): Promise<T[]> {
   try {
     const res = await fetch(`${API_BASE}/${endpoint}`, {
+      headers: {
+        "X-API-KEY": API_KEY,
+        "Content-Type": "application/json",
+      },
       next: { revalidate: 300 }, // cache 5 menit, ISR-friendly
     });
 
