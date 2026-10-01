@@ -26,6 +26,10 @@ body {
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.hero-gradient-bg {
+  background: radial-gradient(circle at 50% 15%, #ffffff 0%, #f8fafc 65%, #f1f5f9 100%);
+}
+
 h1,
 h2,
 h3,

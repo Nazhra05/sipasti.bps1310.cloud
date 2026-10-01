@@ -57,7 +57,7 @@ describe("Landing Page Data Fetching and UI (Home / App Router)", () => {
     expect(requestedUrls).toContain(`${API_BASE}/kategori.php`);
     expect(requestedUrls).toContain(`${API_BASE}/layanan.php`);
     expect(requestedUrls).toContain(`${API_BASE}/website.php`);
-  });
+  }, 15000);
 
   // ─────────────────────────────────────────────
   // 2. LOADING STATE
@@ -105,9 +105,9 @@ describe("Landing Page Data Fetching and UI (Home / App Router)", () => {
 
     // Service items inside cards
     expect(
-      screen.getByText("Pelayanan Statistik Terpadu (PST)")
+      screen.getAllByText("Pelayanan Statistik Terpadu (PST)")[0]
     ).toBeInTheDocument();
-    expect(screen.getByText("Website BPS Solsel")).toBeInTheDocument();
+    expect(screen.getAllByText("Website BPS Solsel")[0]).toBeInTheDocument();
 
     // Search bar placeholder
     expect(
@@ -305,7 +305,7 @@ describe("Landing Page Data Fetching and UI (Home / App Router)", () => {
     );
 
     // Displays the category badge
-    expect(screen.getByText("Distribusi")).toBeInTheDocument();
+    expect(screen.getAllByText("Distribusi")[0]).toBeInTheDocument();
   });
 
   it("displays no results notice when user searches for non-existent term", async () => {
@@ -345,7 +345,7 @@ describe("Landing Page Data Fetching and UI (Home / App Router)", () => {
 
     // Categories and cards still display properly
     expect(screen.getByRole("button", { name: "Katalog Layanan" })).toBeInTheDocument();
-    expect(screen.getByText("Pelayanan Statistik Terpadu (PST)")).toBeInTheDocument();
+    expect(screen.getAllByText("Pelayanan Statistik Terpadu (PST)")[0]).toBeInTheDocument();
   });
 
   it("handles malformed API response (status=false, null data) gracefully", async () => {

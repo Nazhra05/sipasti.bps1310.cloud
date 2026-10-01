@@ -1,10 +1,14 @@
 import Hero from "@/components/Hero";
 import QuickAccessSection from "@/components/QuickAccessSection";
 import WebsitesSection from "@/components/Websitessection";
+import DirectorySection from "@/components/DirectorySection";
+import PersonaGuidanceSection from "@/components/PersonaGuidanceSection";
+import PstContactSection from "@/components/PstContactSection";
 import Footer from "@/components/footer";
 import { fetchKategori, fetchLayanan, fetchWebsite } from "@/lib/api";
 import type { CardData } from "@/data";
 import type { FlatResult } from "@/components/SearchBar";
+import type { LayananItem } from "@/lib/api";
 
 // ─────────────────────────────────────────────
 // BUILD CARDS (kategori + layanan → CardData[])
@@ -70,15 +74,17 @@ async function buildSearchIndex(): Promise<FlatResult[]> {
 export default async function Home() {
   let cards: CardData[] = [];
   let searchIndex: FlatResult[] = [];
+  let layanans: LayananItem[] = [];
 
   try {
-    [cards, searchIndex] = await Promise.all([
+    [cards, searchIndex, layanans] = await Promise.all([
       buildCards(),
       buildSearchIndex(),
+      fetchLayanan(),
     ]);
   } catch (err) {
     console.error("[Page] Failed to load data:", err instanceof Error ? err.message : err);
-    // cards and searchIndex remain [] — components handle empty state
+    // cards, searchIndex, layanans remain [] — components handle empty state
   }
 
   return (
@@ -86,6 +92,9 @@ export default async function Home() {
       <Hero searchIndex={searchIndex} />
       <QuickAccessSection />
       <WebsitesSection cards={cards} />
+      <DirectorySection layanans={layanans} />
+      <PersonaGuidanceSection />
+      <PstContactSection />
       <Footer />
     </div>
   );

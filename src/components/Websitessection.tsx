@@ -59,6 +59,47 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
     setTimeout(syncArrowState, 450);
   }, [activeCategory, activeIndex]);
 
+  // Listen for category selection events (e.g. from Navbar)
+  useEffect(() => {
+    const handleSelectCategory = (e: Event) => {
+      const customEvent = e as CustomEvent<{ category: string }>;
+      const targetCategory = customEvent.detail?.category;
+      if (!targetCategory) return;
+
+      if (targetCategory === "Semua Kategori") {
+        if (categories.length > 0) {
+          setActiveCategory(categories[0]);
+        }
+      } else {
+        const found = categories.find(
+          (c) =>
+            c.toLowerCase() === targetCategory.toLowerCase() ||
+            c.toLowerCase().includes(targetCategory.toLowerCase()) ||
+            targetCategory.toLowerCase().includes(c.toLowerCase())
+        );
+        if (found) {
+          setActiveCategory(found);
+        }
+      }
+    };
+
+    window.addEventListener("select-category", handleSelectCategory);
+    return () => {
+      window.removeEventListener("select-category", handleSelectCategory);
+    };
+  }, [categories]);
+
+  // Sync active category change back to Navbar
+  useEffect(() => {
+    if (activeCategory) {
+      window.dispatchEvent(
+        new CustomEvent("category-changed", {
+          detail: { category: activeCategory },
+        })
+      );
+    }
+  }, [activeCategory]);
+
   // Scroll exactly one card width + gap per arrow click
   function scrollByCard(dir: "left" | "right") {
     const container = scrollRef.current;
@@ -179,7 +220,7 @@ export default function WebsitesSection({ cards }: { cards: CardData[] }) {
                   key={card.title}
                   ref={(el) => { cardRefs.current[index] = el; }}
                   onClick={() => setActiveCategory(card.category)}
-                  className="w-[250px] sm:w-[270px] min-h-[520px] shrink-0 cursor-pointer lg:w-[calc(33.333%_-_16px)]"
+                  className="w-[280px] sm:w-[320px] shrink-0 cursor-pointer lg:w-[calc(33.333%_-_16px)] flex flex-col items-stretch"
                 >
                   <InfoCard
                     title={card.title}
