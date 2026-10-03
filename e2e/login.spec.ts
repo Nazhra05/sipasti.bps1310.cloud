@@ -46,4 +46,32 @@ test.describe('Login Flow E2E Test (App B Client Portal)', () => {
     // 5. Verify user session becomes authenticated and displays verified status badge
     await expect(page.getByText('Status: Terverifikasi')).toBeVisible();
   });
+
+  test('should display error message on invalid credentials', async ({ page }) => {
+    // 1. Setup route interception returning 401 error
+    await page.route('**/api/login', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: false,
+          message: 'Username atau kata sandi tidak ditemukan.',
+        }),
+      });
+    });
+
+    // 2. Navigate to login page
+    await page.goto('/login');
+
+    // 3. Fill invalid credentials
+    await page.getByPlaceholder(/Masukkan Username atau Email/i).fill('wrong.user');
+    await page.getByPlaceholder(/Masukkan kata sandi.../i).fill('wrongpass');
+
+    // 4. Click submit
+    await page.getByRole('button', { name: /Masuk & Verifikasi Akses/i }).click();
+
+    // 5. Verify error banner is visible
+    await expect(page.getByText(/Username atau kata sandi tidak ditemukan/i)).toBeVisible();
+  });
 });
+

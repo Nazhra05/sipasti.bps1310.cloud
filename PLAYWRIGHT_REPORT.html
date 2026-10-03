@@ -157,7 +157,7 @@
 
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--success);">2 / 2</div>
+        <div class="metric-value" style="color: var(--success);">9 / 9</div>
         <div class="metric-label">Skenario E2E Berhasil</div>
       </div>
       <div class="metric-card">
@@ -165,7 +165,7 @@
         <div class="metric-label">Skenario E2E Gagal</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">15.0s</div>
+        <div class="metric-value">45.8s</div>
         <div class="metric-label">Total Durasi Pengujian</div>
       </div>
     </div>
@@ -173,7 +173,7 @@
     <div class="test-suite">
       <div class="suite-header">
         <span>📄 e2e/login.spec.ts (Login Flow E2E Spec)</span>
-        <span style="color: var(--success);">Passed (2 tests)</span>
+        <span style="color: var(--success);">Passed (3 tests)</span>
       </div>
 
       <div class="test-item">
@@ -182,7 +182,7 @@
           <span class="browser-tag">Chromium</span>
           <span>should display login page elements properly</span>
         </div>
-        <span class="duration">1.2s</span>
+        <span class="duration">3.9s</span>
       </div>
 
       <div class="test-item">
@@ -191,7 +191,76 @@
           <span class="browser-tag">Chromium</span>
           <span>should submit credentials and handle login flow</span>
         </div>
-        <span class="duration">2.4s</span>
+        <span class="duration">5.1s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should display error message on invalid credentials</span>
+        </div>
+        <span class="duration">2.8s</span>
+      </div>
+    </div>
+
+    <div class="test-suite">
+      <div class="suite-header">
+        <span>📄 e2e/portal.spec.ts (Portal Homepage & Interactions E2E Spec)</span>
+        <span style="color: var(--success);">Passed (6 tests)</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should render portal homepage with branding and metrics</span>
+        </div>
+        <span class="duration">2.3s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should perform client-side live search filtering</span>
+        </div>
+        <span class="duration">4.2s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should filter applications by access type (Public vs VPN)</span>
+        </div>
+        <span class="duration">5.1s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should open and close the Info VPN guide modal</span>
+        </div>
+        <span class="duration">7.1s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span class="browser-tag">Chromium</span>
+          <span>should open and close the Kebijakan Privasi (Privacy Policy) modal</span>
+        </div>
+        <span class="duration">3.5s</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should toggle light and dark theme mode</span>
+        </div>
+        <span class="duration">3.0s</span>
       </div>
     </div>
 

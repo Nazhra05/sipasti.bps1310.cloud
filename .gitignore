@@ -19,6 +19,8 @@
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+vitest-results.json
+.vitest/
 
 # Debug & Logs
 npm-debug.log*

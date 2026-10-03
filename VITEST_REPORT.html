@@ -149,7 +149,7 @@
 
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--success);">3 / 3</div>
+        <div class="metric-value" style="color: var(--success);">5 / 5</div>
         <div class="metric-label">Pengujian Berhasil</div>
       </div>
       <div class="metric-card">
@@ -157,7 +157,7 @@
         <div class="metric-label">Pengujian Gagal</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">3.62s</div>
+        <div class="metric-value">2.8s</div>
         <div class="metric-label">Total Durasi Exec</div>
       </div>
     </div>
@@ -173,7 +173,7 @@
           <div class="dot-pass"></div>
           <span>should return 400 Bad Request when request body is empty or invalid JSON</span>
         </div>
-        <span class="duration">18.51 ms</span>
+        <span class="duration">18.5 ms</span>
       </div>
 
       <div class="test-item">
@@ -181,7 +181,7 @@
           <div class="dot-pass"></div>
           <span>should securely inject X-API-KEY and forward payload to backend App A</span>
         </div>
-        <span class="duration">13.95 ms</span>
+        <span class="duration">13.9 ms</span>
       </div>
 
       <div class="test-item">
@@ -189,7 +189,30 @@
           <div class="dot-pass"></div>
           <span>should handle backend 502 error gracefully when response is unparseable</span>
         </div>
-        <span class="duration">28.35 ms</span>
+        <span class="duration">28.3 ms</span>
+      </div>
+    </div>
+
+    <div class="test-suite">
+      <div class="suite-header">
+        <span>📄 src/lib/accessibilityMapper.test.ts (Accessibility & Presentation Layer)</span>
+        <span style="color: var(--success);">Passed (2 tests)</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should enrich public application correctly</span>
+        </div>
+        <span class="duration">4.2 ms</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should detect VPN requirement and internal access from keyword or explicit fields</span>
+        </div>
+        <span class="duration">3.1 ms</span>
       </div>
     </div>
 
