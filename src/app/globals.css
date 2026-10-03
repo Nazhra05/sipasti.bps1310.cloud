@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bps-navy: #003366;
+  --color-bps-navy-dark: #002244;
+  --color-bps-blue: #0284c7;
+  --color-bps-orange: #ea580c;
+  --color-bps-amber: #d97706;
+  --color-bps-emerald: #059669;
+}
+
+/* Base surface tokens for Comfort UI with clear contrast */
+:root {
+  --bg-app: #f1f5f9;       /* Slate 100 for clear backdrop contrast against white cards */
+  --bg-card: #ffffff;      /* Pure white cards */
+  --border-subtle: #cbd5e1; /* Slate 300 for visible borders */
+  --text-main: #0f172a;
+  --text-muted: #475569;
+}
+
+.dark {
+  --bg-app: #0b1120;
+  --bg-card: #151f32;
+  --border-subtle: #22324d;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle clean scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
