@@ -172,8 +172,8 @@ landingpageintra/
 #### 📄 `.env.local`
 - **Fungsi:** Menyimpan kredensial dan URL backend VPS secara rahasia di sisi server.
 - **Isi Utama:** 
-  - `NEXT_PUBLIC_API_BASE_URL`: Alamat URL dasar backend VPS App A (`https://administators.bps1310.cloud/api`).
-  - `BPS_API_KEY`: Kunci API rahasia server (`BPS_SOLSEL_API_2026_...`).
+  - `NEXT_PUBLIC_API_BASE_URL`: Alamat URL dasar backend VPS App A (`https://your-app-a-vps-domain.com/api`).
+  - `BPS_API_KEY`: Kunci API rahasia server (`YOUR_SERVER_API_KEY`).
 - **Input / Output:** Input variabel lingkungan ➔ Output nilai string rahasia bagi Node.js.
 - **Interkoneksi:** Dibaca secara khusus oleh `src/lib/serverApiConfig.ts`.
 - **Dampak jika Hilang:** Proxy Next.js gagal menemukan alamat VPS dan tidak dapat menyuntikkan `X-API-KEY`, menyebabkan seluruh API return `500 Server Error`.

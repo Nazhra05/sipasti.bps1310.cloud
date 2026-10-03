@@ -36,7 +36,7 @@ User Browser  --->  Next.js App B (/api/* Proxy)  --->  PHP App A VPS  --->  MyS
 Create a `.env.local` file in the root directory:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://administators.bps1310.cloud/api
+NEXT_PUBLIC_API_BASE_URL=https://your-app-a-vps-domain.com/api
 BPS_API_KEY=YOUR_SERVER_API_KEY
 ```
 
