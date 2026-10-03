@@ -66,13 +66,13 @@ npm run test:e2e
 
 ## Nginx Reverse Proxy Setup (VPS)
 
-When deploying behind Nginx on Hostinger / CloudPanel VPS, update your site config (`/etc/nginx/sites-enabled/sipasti.bps1310.cloud.conf`):
+When deploying behind Nginx on a Linux VPS, update your site configuration (`/etc/nginx/sites-enabled/your-domain.conf`):
 
 ```nginx
 server {
   listen 80;
   listen 443 ssl http2;
-  server_name sipasti.bps1310.cloud;
+  server_name your-domain.com;
 
   server_tokens off;
 
