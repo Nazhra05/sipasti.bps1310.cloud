@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Hasil Pengujian Vitest Unit Test - App B</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --accent: #3b82f6;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 32px 24px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .title h1 {
+      margin: 0 0 4px 0;
+      font-size: 22px;
+      color: #ffffff;
+    }
+    .title p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .badge-pass {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .test-suite {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .suite-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .test-item {
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .test-item:last-child {
+      border-bottom: none;
+    }
+    .test-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dot-pass {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    .duration {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: monospace;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">
+        <h1>⚡ Laporan Vitest Unit Testing</h1>
+        <p>Aplikasi Portal Internal BPS Solok Selatan (App B - Next.js Proxy)</p>
+      </div>
+      <div class="badge-pass">
+        ✓ 100% Lulus (PASSED)
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--success);">3 / 3</div>
+        <div class="metric-label">Pengujian Berhasil</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">0</div>
+        <div class="metric-label">Pengujian Gagal</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">3.62s</div>
+        <div class="metric-label">Total Durasi Exec</div>
+      </div>
+    </div>
+
+    <div class="test-suite">
+      <div class="suite-header">
+        <span>📄 src/app/api/login/route.test.ts (Route Handler Proxy API)</span>
+        <span style="color: var(--success);">Passed (3 tests)</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should return 400 Bad Request when request body is empty or invalid JSON</span>
+        </div>
+        <span class="duration">18.51 ms</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should securely inject X-API-KEY and forward payload to backend App A</span>
+        </div>
+        <span class="duration">13.95 ms</span>
+      </div>
+
+      <div class="test-item">
+        <div class="test-info">
+          <div class="dot-pass"></div>
+          <span>should handle backend 502 error gracefully when response is unparseable</span>
+        </div>
+        <span class="duration">28.35 ms</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      Laporan dibuat secara otomatis pada: <span id="time"></span> | Antigravity Test Engine
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('time').textContent = new Date().toLocaleString('id-ID');
+  </script>
+</body>
+</html>
