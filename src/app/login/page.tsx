@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VpnGuideModal from "@/components/VpnGuideModal";
+import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import { useAuth } from "@/context/AuthContext";
 
 function LoginContent() {
@@ -39,6 +40,7 @@ function LoginContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isVpnModalOpen, setIsVpnModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   // Synchronous submit lock reference to prevent rapid double-click race conditions
   const isProcessingRef = useRef(false);
@@ -344,13 +346,20 @@ function LoginContent() {
 
       {/* Footer */}
       <footer className="w-full border-t border-slate-300 dark:border-slate-800 bg-white dark:bg-[#111c2e] py-4 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400">
-          © {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+          <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
+          <button
+            onClick={() => setIsPrivacyModalOpen(true)}
+            className="hover:text-slate-900 dark:hover:text-slate-200 underline cursor-pointer"
+          >
+            Kebijakan Privasi
+          </button>
         </div>
       </footer>
 
       {/* Modals */}
       <VpnGuideModal isOpen={isVpnModalOpen} onClose={() => setIsVpnModalOpen(false)} />
+      <PrivacyPolicyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
     </div>
   );
 }

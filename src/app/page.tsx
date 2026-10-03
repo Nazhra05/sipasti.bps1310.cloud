@@ -7,6 +7,7 @@ import HeroSection from "@/components/HeroSection";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import LinkGrid from "@/components/LinkGrid";
 import VpnGuideModal from "@/components/VpnGuideModal";
+import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import Toast from "@/components/Toast";
 import { fetchKategori, fetchLayanan, KategoriItem } from "@/lib/api";
 import { enrichLayanan, EnrichedLayanan, AccessType } from "@/lib/accessibilityMapper";
@@ -25,6 +26,7 @@ export default function Home() {
 
   // Modal & Toast States
   const [isVpnModalOpen, setIsVpnModalOpen] = useState<boolean>(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Load Data 1x dari API saat refresh / mount
@@ -210,7 +212,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
           <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
           <div className="flex items-center gap-4">
-            <span>Satu Pintu Akses Kerja</span>
+            <button
+              onClick={() => setIsPrivacyModalOpen(true)}
+              className="hover:text-slate-900 dark:hover:text-slate-200 underline cursor-pointer"
+            >
+              Kebijakan Privasi
+            </button>
             <span>•</span>
             <button
               onClick={() => setIsVpnModalOpen(true)}
@@ -226,6 +233,10 @@ export default function Home() {
       <VpnGuideModal
         isOpen={isVpnModalOpen}
         onClose={() => setIsVpnModalOpen(false)}
+      />
+      <PrivacyPolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
       />
       <Toast message={toastMessage} />
     </div>
