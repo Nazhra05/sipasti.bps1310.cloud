@@ -31,6 +31,7 @@ export type LayananItem = {
   requires_vpn?: string | number | boolean;
   akses_vpn?: string | number | boolean;
   catatan?: string;
+  is_active?: number | string | boolean;
 };
 
 export type WebsiteLink = {

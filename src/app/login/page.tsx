@@ -22,12 +22,15 @@ import Navbar from "@/components/Navbar";
 import VpnGuideModal from "@/components/VpnGuideModal";
 import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import { useAuth } from "@/context/AuthContext";
+import { toSafeExternalUrl } from "@/lib/safeUrl";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const redirectUrl = searchParams.get("redirect") || "";
+  // searchParams.get() already returns a decoded value; validate before use
+  // to block javascript:/data: URLs (XSS) and malformed input.
+  const redirectUrl = toSafeExternalUrl(searchParams.get("redirect")) ?? "";
   const redirectName = searchParams.get("name") || "";
 
   const { isAuthenticated, user, login, logout, isLoading: isAuthLoading } = useAuth();
@@ -70,7 +73,7 @@ function LoginContent() {
         setSuccessMessage("Verifikasi berhasil! Mengalihkan...");
         setTimeout(() => {
           if (redirectUrl) {
-            window.open(decodeURIComponent(redirectUrl), "_blank");
+            window.open(redirectUrl, "_blank", "noopener,noreferrer");
             router.push("/");
           } else {
             router.push("/");
@@ -126,7 +129,7 @@ function LoginContent() {
                 <p className="mt-0.5 text-amber-800/90 dark:text-amber-300/90">
                   Untuk membuka tautan aplikasi{" "}
                   <strong className="underline decoration-amber-400 font-semibold text-amber-950 dark:text-amber-200">
-                    {decodeURIComponent(redirectName)}
+                    {redirectName}
                   </strong>
                   , silakan lakukan otentikasi login portal terlebih dahulu.
                 </p>
@@ -172,12 +175,12 @@ function LoginContent() {
 
                 {redirectUrl && (
                   <a
-                    href={decodeURIComponent(redirectUrl)}
+                    href={redirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#003366] hover:bg-[#002244] dark:bg-blue-600 dark:hover:bg-blue-500 transition shadow-md active:scale-[0.98]"
                   >
-                    <span>Lanjutkan ke {decodeURIComponent(redirectName || "Aplikasi Target")}</span>
+                    <span>Lanjutkan ke {redirectName || "Aplikasi Target"}</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 )}

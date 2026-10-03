@@ -14,7 +14,6 @@ describe("enrichLayanan Utility Function", () => {
       nama_layanan: "Portal Web Publik BPS",
       url: "https://solselkab.bps.go.id",
       id_kategori: 1,
-      is_active: 1,
       deskripsi_layanan: "Website informasi publik",
     };
 
@@ -32,7 +31,6 @@ describe("enrichLayanan Utility Function", () => {
       nama_layanan: "Aplikasi SIMDASI Kedinasan",
       url: "http://10.13.10.20/simdasi",
       id_kategori: 2,
-      is_active: 1,
       vpn: "yes",
       deskripsi_layanan: "Aplikasi khusus via VPN",
     };

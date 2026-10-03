@@ -28,9 +28,9 @@ test.describe("Portal Homepage E2E Test Suite (App B)", () => {
           data: [
             {
               id_layanan: 1,
-              nama_layanan: "Sistem Informasi Desa Solok Selatan",
+              nama_layanan: "Sistem Informasi Desa Terpadu",
               deskripsi_layanan: "Layanan statistik desa terpadu",
-              url: "https://simdasi.bps1310.cloud",
+              url: "https://simdasi.example.go.id",
               id_kategori: 1,
               is_active: 1,
               keyword: "simdasi desa",
