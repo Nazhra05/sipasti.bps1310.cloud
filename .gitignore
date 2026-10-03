@@ -53,3 +53,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# AI Agent Workspace Skills & Internal Configuration
+.agents/
+

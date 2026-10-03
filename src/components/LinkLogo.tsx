@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Globe } from "lucide-react";
 
-export const LOGO_BASE = "https://administators.bps1310.cloud/uploads";
+export const LOGO_BASE =
+  process.env.NEXT_PUBLIC_UPLOADS_BASE_URL ||
+  (process.env.NEXT_PUBLIC_API_BASE_URL
+    ? `${process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/api\/?$/, "")}/uploads`
+    : "");
 
 interface LinkLogoProps {
   logo?: string;
