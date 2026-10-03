@@ -56,6 +56,16 @@ Thumbs.db
 *.sln
 *.sw?
 
+# Local Documentation & Generated HTML Reports
+/MODUL_PEMBELAJARAN.md
+/MODUL_PEMBELAJARAN.html
+/LAPORAN_TEKNIS_PROYEK.md
+/LAPORAN_TEKNIS_PROYEK.html
+/FINAL_PROJECT_REPORT.md
+/VITEST_REPORT.html
+/PLAYWRIGHT_REPORT.html
+
 # AI Agent Workspace Skills & Internal Configuration
 .agents/
+
 

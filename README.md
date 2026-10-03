@@ -1,28 +1,24 @@
-# Portal Tautan Internal BPS Kabupaten Solok Selatan
+# BPS Solok Selatan Internal Application Portal
 
-Frontend client application and API proxy buffer for BPS Solok Selatan internal applications portal. Built with Next.js 16 (App Router), TypeScript, and Tailwind CSS.
+Next.js 16 client portal and API proxy for BPS Kabupaten Solok Selatan internal applications. Acts as a secure frontend and server-side proxy buffer communicating with the PHP legacy backend (App A) on a remote VPS.
 
-App B serves as the user-facing web portal and acts as a server-side proxy layer communicating with the legacy PHP backend (App A) hosted on a remote VPS.
+## Key Features
 
----
+- **Server API Proxy**: Proxies client requests to the remote PHP backend and injects secret API keys server-side (`.env.local`), keeping API credentials out of the browser bundle.
+- **Client Live Search & Filtering**: In-memory search across application titles, keywords, descriptions, and category tags without per-keystroke API calls.
+- **Access Segmentation**: Classifies links into Public Access vs. Internal VPN Access with visual badges and technical notes.
+- **Session Security**: Uses HTTP-Only cookies (`bps_solsel_auth_verified`) for session verification with XSS defense.
+- **Security Headers**: Includes Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options, X-Content-Type-Options, and AI bot blocking rules via `robots.txt`.
+- **Theme Persistence**: Light and Dark mode toggling with local storage memory.
 
-## Overview
+## Tech Stack
 
-- **Server-Side API Proxy**: Proxies requests to the remote PHP backend and injects the `X-API-KEY` server-side (`.env.local`), keeping API secrets isolated from the client bundle.
-- **Session Management**: Manages user sessions using HTTP-Only cookies (`bps_solsel_auth_verified`) valid for 30 days.
-- **Password Hash Fallback**: Server proxy handles legacy password hash variations (SHA-256, MD5, SHA-1, BCRYPT) to support all database accounts in the `admin` table.
-- **Client Features**: In-memory live search across application cards, category filters, and VPN access type mapping (Public vs Kedinasan VPN).
-- **Resilience**: Safe JSON parsing (`safeParseJsonResponse`) for non-JSON/500 error responses from the backend, synchronous ref locks (`isProcessingRef`) to prevent rapid double-submit form submissions, and loading skeleton UI states.
-
----
-
-## Architecture
-
-```
-User Browser  --->  Next.js App B (/api/* Proxy)  --->  PHP App A VPS  --->  MySQL DB
-```
-
----
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Icons**: Lucide React
+- **Unit Testing**: Vitest
+- **E2E Testing**: Playwright
 
 ## Getting Started
 
@@ -58,53 +54,41 @@ npm run start
 
 Open [http://localhost:3000](http://localhost:3000) to view the portal.
 
----
-
 ## Testing
 
 ```bash
-# Run unit and API proxy tests (Vitest)
+# Run Vitest unit tests
 npm run test:unit
 
-# Run end-to-end tests (Playwright Headless)
+# Run Playwright E2E tests
 npm run test:e2e
-
-# Run Playwright tests with UI mode
-npm run test:e2e:ui
 ```
 
----
+## Nginx Reverse Proxy Setup (VPS)
 
-## Project Structure
+When deploying behind Nginx on Hostinger / CloudPanel VPS, update your site config (`/etc/nginx/sites-enabled/sipasti.bps1310.cloud.conf`):
 
+```nginx
+server {
+  listen 80;
+  listen 443 ssl http2;
+  server_name sipasti.bps1310.cloud;
+
+  server_tokens off;
+
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
 ```
-.
-├── src/
-│   ├── app/
-│   │   ├── api/            # Server API proxy route handlers (/api/login, /api/layanan, /api/kategori)
-│   │   ├── login/          # Login page UI & form handling
-│   │   ├── error.tsx       # Global application error boundary
-│   │   └── page.tsx        # Main landing page & search
-│   ├── components/         # UI components (Navbar, HeroSection, LinkGrid, LinkCard, Modals)
-│   ├── context/            # AuthContext provider & session management
-│   ├── lib/                # Safe API fetchers, server API config, & access mappers
-│   └── proxy.ts            # Edge middleware route guard
-├── e2e/                    # Playwright E2E test specs
-├── public/                 # Static assets (BPS Logo)
-├── vitest.config.mts       # Vitest unit test runner config
-└── playwright.config.ts    # Playwright E2E test runner config
-```
-
----
-
-## Documentation
-
-Full project documentation and learning guides are available in the repository root:
-
-- **Developer Learning Guide**: [`MODUL_PEMBELAJARAN.md`](MODUL_PEMBELAJARAN.md) ([HTML Version](MODUL_PEMBELAJARAN.html))
-- **Formal Engineering Report**: [`LAPORAN_TEKNIS_PROYEK.md`](LAPORAN_TEKNIS_PROYEK.md) ([HTML Version](LAPORAN_TEKNIS_PROYEK.html))
-
----
 
 ## License
 
