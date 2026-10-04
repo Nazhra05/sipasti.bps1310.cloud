@@ -7,10 +7,15 @@ export function proxy(request: NextRequest) {
   // Generate a cryptographically secure random nonce (base64)
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
-  // Modern CSP Level 3: 'strict-dynamic' with nonce (eliminates 'unsafe-inline' and 'unsafe-eval')
+  const isDev = process.env.NODE_ENV !== "production";
+  const scriptDirectives = isDev
+    ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`
+    : `'self' 'nonce-${nonce}' 'strict-dynamic'`;
+
+  // Modern CSP Level 3: 'strict-dynamic' with nonce (unsafe-eval only in dev for React debug features)
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+    script-src ${scriptDirectives};
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' data: blob: https: http:;
     font-src 'self' https://fonts.gstatic.com data:;
