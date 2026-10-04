@@ -101,10 +101,18 @@ test.describe("Portal Homepage E2E Test Suite (App B)", () => {
   });
 
   test("should toggle light and dark theme mode", async ({ page }) => {
+    const htmlElement = page.locator("html");
+    const initialClass = (await htmlElement.getAttribute("class")) || "";
+    const wasDarkInitially = initialClass.includes("dark");
+
     const themeBtn = page.getByTitle(/Beralih ke Mode/i);
     await expect(themeBtn).toBeVisible();
     await themeBtn.click();
-    const htmlElement = page.locator("html");
-    await expect(htmlElement).toHaveClass(/dark/);
+
+    if (wasDarkInitially) {
+      await expect(htmlElement).not.toHaveClass(/dark/);
+    } else {
+      await expect(htmlElement).toHaveClass(/dark/);
+    }
   });
 });
