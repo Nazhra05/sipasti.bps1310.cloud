@@ -3,12 +3,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-bps-navy: #003366;
-  --color-bps-navy-dark: #002244;
-  --color-bps-blue: #0284c7;
-  --color-bps-orange: #ea580c;
-  --color-bps-amber: #d97706;
-  --color-bps-emerald: #059669;
+  --color-bps-navy: #005AA9;
+  --color-bps-navy-dark: #004280;
+  --color-bps-teal: #00A6B4;
+  --color-bps-green: #6DBE45;
+  --color-bps-orange: #FFA500;
 }
 
 /* Base surface tokens for Comfort UI with clear contrast */
@@ -18,6 +17,11 @@
   --border-subtle: #cbd5e1; /* Slate 300 for visible borders */
   --text-main: #0f172a;
   --text-muted: #475569;
+  --bps-navy: #005AA9;
+  --bps-navy-dark: #004280;
+  --bps-teal: #00A6B4;
+  --bps-green: #6DBE45;
+  --bps-orange: #FFA500;
 }
 
 .dark {

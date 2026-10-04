@@ -69,14 +69,14 @@ export default function LinkGrid({
           {searchQuery && (
             <button
               onClick={onResetSearch}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#005AA9] hover:bg-[#004280] text-white transition-all duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-xs"
             >
               Reset Pencarian
             </button>
           )}
           <button
             onClick={onRefresh}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all duration-150 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Muat Ulang API</span>

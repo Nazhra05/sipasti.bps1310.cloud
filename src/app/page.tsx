@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SearchAndFilter from "@/components/SearchAndFilter";
@@ -28,6 +28,20 @@ export default function Home() {
   const [isVpnModalOpen, setIsVpnModalOpen] = useState<boolean>(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
+
+  // Smooth Scroll Listener for Back-to-Top Button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 350);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Load Data 1x dari API saat refresh / mount
   const loadData = useCallback(async () => {
@@ -124,13 +138,8 @@ export default function Home() {
       {/* Navbar Header */}
       <Navbar onOpenVpnGuide={() => setIsVpnModalOpen(true)} />
 
-      {/* Hero & Metrics */}
-      <HeroSection
-        totalLinks={layananList.length}
-        publicCount={publicCount}
-        internalCount={internalCount}
-        categoryCount={categories.length || 7}
-      />
+      {/* Hero Section */}
+      <HeroSection />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -161,6 +170,8 @@ export default function Home() {
           onSelectAccess={setSelectedAccess}
           categoryCounts={categoryCounts}
           totalCount={layananList.length}
+          publicCount={publicCount}
+          internalCount={internalCount}
         />
 
         {/* Results Counter / Filter Bar Status */}
@@ -208,20 +219,20 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-300 dark:border-slate-800 bg-white dark:bg-[#111c2e] py-6 mt-12 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
+      <footer className="w-full border-t border-[#004380] dark:border-[#002b59] bg-[#005AA9] dark:bg-[#003870] py-6 mt-12 transition-colors text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-100/90">
           <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsPrivacyModalOpen(true)}
-              className="hover:text-slate-900 dark:hover:text-slate-200 underline cursor-pointer"
+              className="hover:text-white underline cursor-pointer transition-colors"
             >
               Kebijakan Privasi
             </button>
-            <span>•</span>
+            <span className="text-white/30">•</span>
             <button
               onClick={() => setIsVpnModalOpen(true)}
-              className="hover:text-slate-900 dark:hover:text-slate-200 transition cursor-pointer"
+              className="hover:text-white transition-colors cursor-pointer"
             >
               Panduan VPN
             </button>
@@ -239,6 +250,18 @@ export default function Home() {
         onClose={() => setIsPrivacyModalOpen(false)}
       />
       <Toast message={toastMessage} />
+
+      {/* Floating Smooth Back to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          aria-label="Kembali ke atas"
+          title="Kembali ke atas halaman"
+          className="fixed bottom-6 right-6 z-30 p-3 rounded-full bg-[#005AA9] hover:bg-[#004280] text-white shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-90 transition-all duration-200 cursor-pointer animate-in fade-in zoom-in-75"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }

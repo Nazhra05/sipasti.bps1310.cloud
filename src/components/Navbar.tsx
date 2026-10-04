@@ -95,66 +95,64 @@ export default function Navbar({ onOpenVpnGuide }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#003366] dark:bg-[#002244] border-b border-[#002244] dark:border-slate-800 shadow-sm transition-colors text-white">
+    <header className="sticky top-0 z-40 w-full bg-[#005AA9] dark:bg-[#003870] border-b border-[#004380] dark:border-[#002b59] shadow-sm transition-colors text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Identity */}
-          <Link href="/" className="flex items-center gap-3 group focus:outline-none">
-            <div className="relative flex items-center justify-center h-10 w-auto shrink-0 select-none">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none shrink-0 min-w-0">
+            <div className="relative flex items-center justify-center h-9 sm:h-10 w-auto shrink-0 select-none">
               <Image
                 src="/BPS Logo.png"
                 alt="Logo BPS"
                 width={48}
                 height={37}
-                className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
                 priority
               />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold tracking-tight text-white text-sm sm:text-base group-hover:text-blue-200 transition-colors">
-                  BPS Solok Selatan
-                </span>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-white/15 text-white border border-white/20">
-                  Portal Internal
-                </span>
-              </div>
-              <p className="text-xs text-blue-100/80 hidden xs:block">
-                Repositori Tautan Aplikasi Kerja
-              </p>
+            <div
+              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+              className="flex flex-col justify-center italic font-bold tracking-tight select-none shrink-0"
+            >
+              <span className="text-[10px] sm:text-sm text-white leading-tight whitespace-nowrap">
+                BADAN PUSAT STATISTIK
+              </span>
+              <span className="text-[10px] sm:text-sm text-white leading-tight whitespace-nowrap">
+                KABUPATEN SOLOK SELATAN
+              </span>
             </div>
           </Link>
 
           {/* Right Actions: Clock, VPN Info, Theme Toggle, Auth/Profile Icon */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Live Clock Widget */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 dark:bg-slate-800/80 border border-white/15 dark:border-slate-700 text-xs">
-              <Clock className="w-3.5 h-3.5 text-amber-300" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 dark:bg-black/20 border border-white/15 dark:border-white/10 text-xs">
+              <Clock className="w-3.5 h-3.5 text-[#FFA500]" />
               <span className="font-semibold text-white tabular-nums">
                 {timeStr || "Memuat..."}
               </span>
-              <span className="text-white/30 dark:text-slate-600">|</span>
+              <span className="text-white/30 dark:text-slate-500">|</span>
               <span className="text-blue-100 dark:text-slate-300 font-medium">{dateStr}</span>
             </div>
 
             {/* Info Akses VPN Button */}
             <button
               onClick={onOpenVpnGuide}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold text-white bg-white/15 hover:bg-white/25 dark:bg-slate-800 dark:hover:bg-slate-700 border border-white/20 dark:border-slate-700 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold text-white bg-white/15 hover:bg-white/25 dark:bg-white/10 dark:hover:bg-white/20 border border-white/20 dark:border-white/15 hover:-translate-y-0.5 active:scale-95 transition-all duration-150 cursor-pointer shadow-2xs"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-amber-300" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#FFA500]" />
               <span>Info VPN</span>
             </button>
 
-            {/* Theme Toggle Button */}
+            {/* Theme Toggle Button with Rotation Motion */}
             <button
               onClick={toggleTheme}
               aria-label={isDark ? "Beralih ke Mode Terang" : "Beralih ke Mode Gelap"}
               title={isDark ? "Beralih ke Mode Terang" : "Beralih ke Mode Gelap"}
-              className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg text-white bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 border border-white/15 dark:border-slate-700 transition cursor-pointer"
+              className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg text-white bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border border-white/15 dark:border-white/15 hover:rotate-12 active:scale-90 transition-all duration-200 cursor-pointer shadow-2xs"
             >
               {mounted && isDark ? (
-                <Sun className="w-4 h-4 text-amber-300" />
+                <Sun className="w-4 h-4 text-[#FFA500]" />
               ) : (
                 <Moon className="w-4 h-4 text-white" />
               )}
@@ -166,16 +164,16 @@ export default function Navbar({ onOpenVpnGuide }: NavbarProps) {
                 onClick={handleAuthIconClick}
                 aria-label={isAuthenticated ? "Menu Profil Terverifikasi" : "Halaman Login"}
                 title={isAuthenticated ? `Terverifikasi: ${user?.name || "Pegawai BPS"}` : "Masuk ke Portal Internal"}
-                className={`p-2 min-h-[36px] min-w-[36px] flex items-center justify-center gap-1.5 rounded-lg border transition cursor-pointer ${
+                className={`p-2 min-h-[36px] min-w-[36px] flex items-center justify-center gap-1.5 rounded-lg border hover:-translate-y-0.5 active:scale-95 transition-all duration-150 cursor-pointer shadow-2xs ${
                   isAuthenticated
-                    ? "bg-emerald-600/30 hover:bg-emerald-600/40 border-emerald-400/50 text-emerald-300"
-                    : "bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 border-white/15 dark:border-slate-700 text-white"
+                    ? "bg-[#6DBE45]/25 hover:bg-[#6DBE45]/35 border-[#6DBE45]/60 text-white"
+                    : "bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 border-white/15 dark:border-white/15 text-white"
                 }`}
               >
                 {isAuthenticated ? (
                   <>
-                    <UserCheck className="w-4 h-4 text-emerald-300" />
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse hidden sm:inline-block" />
+                    <UserCheck className="w-4 h-4 text-[#6DBE45]" />
+                    <span className="w-2 h-2 rounded-full bg-[#6DBE45] animate-pulse hidden sm:inline-block" />
                   </>
                 ) : (
                   <User className="w-4 h-4 text-white" />
@@ -186,7 +184,7 @@ export default function Navbar({ onOpenVpnGuide }: NavbarProps) {
               {showMenu && isAuthenticated && (
                 <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-[#151f32] text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 shadow-xl py-3 px-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center gap-3 pb-3 mb-3 border-b border-slate-200 dark:border-slate-700/80">
-                    <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60">
+                    <div className="p-2.5 rounded-xl bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border border-[#6DBE45]/30">
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -197,8 +195,8 @@ export default function Navbar({ onOpenVpnGuide }: NavbarProps) {
                     </div>
                   </div>
 
-                  <div className="mb-3 px-2 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 text-[11px] font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <div className="mb-3 px-2 py-1.5 rounded-lg bg-[#6DBE45]/10 dark:bg-[#6DBE45]/15 text-[#2f6318] dark:text-[#8ee064] border border-[#6DBE45]/25 text-[11px] font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#6DBE45] shrink-0" />
                     <span>Akses Internal Terverifikasi</span>
                   </div>
 

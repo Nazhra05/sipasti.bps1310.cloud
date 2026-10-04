@@ -30,8 +30,8 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
 
         {/* Modal Header */}
         <div className="flex items-center gap-3.5 mb-5">
-          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
-            <Shield className="w-5 h-5" />
+          <div className="p-2.5 rounded-xl bg-[#FFA500]/15 dark:bg-[#FFA500]/20 text-[#8c5200] dark:text-[#ffbe4d] border border-[#FFA500]/30">
+            <Shield className="w-5 h-5 text-[#FFA500]" />
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
@@ -45,10 +45,10 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
 
         {/* Modal Body */}
         <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-          <div className="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40">
+          <div className="p-3.5 rounded-xl bg-[#FFA500]/10 dark:bg-[#FFA500]/15 border border-[#FFA500]/30">
             <div className="flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <p className="leading-relaxed text-amber-900 dark:text-amber-300">
+              <AlertTriangle className="w-4 h-4 text-[#FFA500] shrink-0 mt-0.5" />
+              <p className="leading-relaxed text-[#804b00] dark:text-[#ffbe4d]">
                 Aplikasi internal seperti <strong>Backoffice Selindo (BOS)</strong> hanya dapat dibuka jika perangkat Anda terhubung ke <strong>VPN BPS</strong> atau jaringan kantor.
               </p>
             </div>
@@ -56,7 +56,7 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
 
           <div className="space-y-2">
             <h4 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[#6DBE45]" />
               Langkah Menghubungkan VPN:
             </h4>
             <ol className="list-decimal list-inside space-y-1.5 pl-1 leading-relaxed text-slate-600 dark:text-slate-300 text-xs">
@@ -92,7 +92,7 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 transition cursor-pointer"
+            className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] text-white transition cursor-pointer shadow-xs"
           >
             Saya Mengerti
           </button>

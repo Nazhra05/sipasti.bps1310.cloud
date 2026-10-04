@@ -109,7 +109,7 @@ function LoginContent() {
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#003366] dark:hover:text-blue-400 transition"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#005AA9] dark:hover:text-[#00A6B4] transition"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Kembali ke Beranda Repositori</span>
@@ -120,15 +120,15 @@ function LoginContent() {
             </span>
           </div>
 
-          {/* Context Notice Banner */}
+          {/* Context Notice Banner - Accent Orange #FFA500 */}
           {redirectName && !isAuthenticated && (
-            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800/60 text-amber-900 dark:text-amber-300 text-xs leading-relaxed flex items-start gap-3 shadow-xs animate-in fade-in duration-200">
-              <Lock className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+            <div className="p-4 rounded-2xl bg-[#FFA500]/10 dark:bg-[#FFA500]/15 border border-[#FFA500]/40 text-[#804b00] dark:text-[#ffbe4d] text-xs leading-relaxed flex items-start gap-3 shadow-xs animate-in fade-in duration-200">
+              <Lock className="w-4 h-4 shrink-0 text-[#FFA500] mt-0.5" />
               <div>
                 <p className="font-bold">Akses Aplikasi Internal Memerlukan Login</p>
-                <p className="mt-0.5 text-amber-800/90 dark:text-amber-300/90">
+                <p className="mt-0.5 text-[#804b00]/90 dark:text-[#ffbe4d]/90">
                   Untuk membuka tautan aplikasi{" "}
-                  <strong className="underline decoration-amber-400 font-semibold text-amber-950 dark:text-amber-200">
+                  <strong className="underline decoration-[#FFA500] font-semibold text-[#663c00] dark:text-white">
                     {redirectName}
                   </strong>
                   , silakan lakukan otentikasi login portal terlebih dahulu.
@@ -137,22 +137,18 @@ function LoginContent() {
             </div>
           )}
 
-          {/* Login Card Container */}
+          {/* Login Card Container (Clean Solid Surface - No Gradients) */}
           <div className="rounded-3xl bg-white dark:bg-[#151f32] border border-slate-300 dark:border-slate-700/80 p-6 sm:p-8 shadow-xl relative overflow-hidden">
-            {/* Subtle Gradient Decorative Accent */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#003366]/10 dark:bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-
             {isAuthenticated ? (
               /* ALREADY AUTHENTICATED VIEW */
               <div className="space-y-6 text-center py-2">
-                <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-800/60 shadow-xs">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] flex items-center justify-center border border-[#6DBE45]/40 shadow-xs">
                   <ShieldCheck className="w-8 h-8" />
                 </div>
 
                 <div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border border-[#6DBE45]/40">
+                    <span className="w-2 h-2 rounded-full bg-[#6DBE45] animate-pulse" />
                     Status: Terverifikasi
                   </span>
                   <h2 className="mt-3 text-xl font-extrabold text-slate-900 dark:text-white">
@@ -165,7 +161,7 @@ function LoginContent() {
 
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 text-left space-y-2">
                   <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-[#6DBE45] shrink-0" />
                     <span>Seluruh Tautan Internal Terbuka</span>
                   </div>
                   <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -178,7 +174,7 @@ function LoginContent() {
                     href={redirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#003366] hover:bg-[#002244] dark:bg-blue-600 dark:hover:bg-blue-500 transition shadow-md active:scale-[0.98]"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] transition shadow-md active:scale-[0.98]"
                   >
                     <span>Lanjutkan ke {redirectName || "Aplikasi Target"}</span>
                     <ExternalLink className="w-4 h-4" />
@@ -206,18 +202,18 @@ function LoginContent() {
               <div className="space-y-6">
                 {/* Header Logo & Title */}
                 <div className="text-center space-y-2">
-                  <div className="inline-flex items-center justify-center p-2.5 rounded-2xl bg-[#003366]/10 dark:bg-blue-950/50 border border-[#003366]/20 dark:border-blue-800/40 mb-1">
+                  <div className="inline-flex items-center justify-center mb-1">
                     <Image
                       src="/BPS Logo.png"
                       alt="Logo BPS"
-                      width={44}
-                      height={34}
-                      className="h-9 w-auto object-contain"
+                      width={48}
+                      height={37}
+                      className="h-10 w-auto object-contain"
                     />
                   </div>
 
                   <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Login Portal Internal
+                    Login Sipasti
                   </h1>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                     Verifikasi identitas akun pegawai untuk membuka akses tautan internal BPS Solok Selatan.
@@ -233,8 +229,8 @@ function LoginContent() {
                 )}
 
                 {successMessage && (
-                  <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in duration-150">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                  <div className="p-3.5 rounded-xl bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 border border-[#6DBE45]/40 text-[#2f6318] dark:text-[#8ee064] text-xs flex items-center gap-2 animate-in fade-in duration-150">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-[#6DBE45]" />
                     <span>{successMessage}</span>
                   </div>
                 )}
@@ -257,7 +253,7 @@ function LoginContent() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Masukkan Username atau Email"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#003366]/20 dark:focus:ring-blue-500/30 focus:border-[#003366] dark:focus:border-blue-500 transition-all shadow-2xs disabled:opacity-60"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A6B4]/25 focus:border-[#00A6B4] transition-all shadow-2xs disabled:opacity-60"
                       />
                     </div>
                   </div>
@@ -280,7 +276,7 @@ function LoginContent() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Masukkan kata sandi..."
-                        className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#003366]/20 dark:focus:ring-blue-500/30 focus:border-[#003366] dark:focus:border-blue-500 transition-all shadow-2xs disabled:opacity-60"
+                        className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A6B4]/25 focus:border-[#00A6B4] transition-all shadow-2xs disabled:opacity-60"
                       />
                       <button
                         type="button"
@@ -300,7 +296,7 @@ function LoginContent() {
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="rounded border-slate-300 text-[#003366] focus:ring-[#003366] dark:bg-slate-800 dark:border-slate-700"
+                        className="rounded border-slate-300 text-[#005AA9] focus:ring-[#005AA9] dark:bg-slate-800 dark:border-slate-700"
                       />
                       <span>Ingat saya di perangkat ini</span>
                     </label>
@@ -311,7 +307,7 @@ function LoginContent() {
                     type="submit"
                     disabled={isSubmitting}
                     aria-disabled={isSubmitting}
-                    className={`w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#003366] hover:bg-[#002244] dark:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-md active:scale-[0.98] ${
+                    className={`w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] transition-all shadow-md active:scale-[0.98] ${
                       isSubmitting
                         ? "opacity-60 pointer-events-none cursor-not-allowed"
                         : "cursor-pointer"
@@ -324,7 +320,7 @@ function LoginContent() {
                       </>
                     ) : (
                       <>
-                        <Lock className="w-4 h-4 text-amber-300" />
+                        <Lock className="w-4 h-4 text-[#FFA500]" />
                         <span>Masuk & Verifikasi Akses</span>
                       </>
                     )}
@@ -335,10 +331,10 @@ function LoginContent() {
           </div>
 
           {/* Footer Security Badge */}
-          <div className="p-4 rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 backdrop-blur-xs">
+          <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 shadow-2xs">
             <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span>Satu Pintu Akses Kerja BPS Solok Selatan</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#00A6B4] shrink-0" />
+              <span>Sistem Informasi Portal Aplikasi Statistik Terintegrasi</span>
             </div>
             <p className="leading-relaxed">
               Verifikasi login hanya dilakukan 1x. Setelah berhasil terverifikasi, seluruh tautan aplikasi internal kedinasan dapat diakses secara langsung dari landing page portal.
@@ -347,13 +343,13 @@ function LoginContent() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-slate-300 dark:border-slate-800 bg-white dark:bg-[#111c2e] py-4 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      {/* Footer - Solid Navy #005AA9 */}
+      <footer className="w-full border-t border-[#004380] dark:border-[#002b59] bg-[#005AA9] dark:bg-[#003870] py-4 transition-colors text-white">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs text-blue-100/90">
           <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
           <button
             onClick={() => setIsPrivacyModalOpen(true)}
-            className="hover:text-slate-900 dark:hover:text-slate-200 underline cursor-pointer"
+            className="hover:text-white underline cursor-pointer transition-colors"
           >
             Kebijakan Privasi
           </button>
@@ -372,7 +368,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0b1120]">
-          <div className="w-8 h-8 border-4 border-[#003366] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-[#005AA9] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

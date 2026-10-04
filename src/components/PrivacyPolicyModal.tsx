@@ -16,8 +16,8 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-[#00A6B4]/15 dark:bg-[#00A6B4]/20 text-[#006069] dark:text-[#38d4e2] border border-[#00A6B4]/30">
+              <ShieldCheck className="w-5 h-5 text-[#00A6B4]" />
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -41,7 +41,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
         <div className="p-6 overflow-y-auto space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           <section className="space-y-2">
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-sm">
-              <Lock className="w-4 h-4 text-blue-500" />
+              <Lock className="w-4 h-4 text-[#00A6B4]" />
               <h3>1. Pengumpulan & Penggunaan Data</h3>
             </div>
             <p>
@@ -51,7 +51,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
 
           <section className="space-y-2">
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-sm">
-              <Eye className="w-4 h-4 text-blue-500" />
+              <Eye className="w-4 h-4 text-[#00A6B4]" />
               <h3>2. Perlindungan Cookie & HTTP-Only</h3>
             </div>
             <p>
@@ -61,7 +61,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
 
           <section className="space-y-2">
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-sm">
-              <FileText className="w-4 h-4 text-blue-500" />
+              <FileText className="w-4 h-4 text-[#00A6B4]" />
               <h3>3. Kerahasiaan & Hak Akses</h3>
             </div>
             <p>
@@ -74,7 +74,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
         <div className="flex items-center justify-end px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] transition shadow-xs cursor-pointer"
           >
             Saya Mengerti
           </button>

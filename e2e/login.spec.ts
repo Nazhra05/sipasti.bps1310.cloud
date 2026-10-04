@@ -6,7 +6,7 @@ test.describe('Login Flow E2E Test (App B Client Portal)', () => {
     await page.goto('/login');
 
     // 2. Verify page heading and branding
-    await expect(page.getByRole('heading', { name: /Login Portal Internal/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Login Sipasti/i })).toBeVisible();
     await expect(page.getByPlaceholder(/Masukkan Username atau Email/i)).toBeVisible();
     await expect(page.getByPlaceholder(/Masukkan kata sandi.../i)).toBeVisible();
   });

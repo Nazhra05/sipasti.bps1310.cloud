@@ -58,15 +58,15 @@ test.describe("Portal Homepage E2E Test Suite (App B)", () => {
   });
 
   test("should render portal homepage with branding and metrics", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /Logo BPS BPS Solok Selatan/i }).first()).toBeVisible();
-    await expect(page.getByText("Portal Internal").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /BADAN PUSAT STATISTIK/i }).first()).toBeVisible();
+    await expect(page.getByText("KABUPATEN SOLOK SELATAN").first()).toBeVisible();
   });
 
   test("should perform client-side live search filtering", async ({ page }) => {
     const searchInput = page.getByPlaceholder(/Cari aplikasi, akronim, kata kunci, atau nama fungsi.../i);
     await searchInput.fill("Simdasi");
 
-    await expect(page.getByText("Sistem Informasi Desa Solok Selatan")).toBeVisible();
+    await expect(page.getByText("Sistem Informasi Desa Terpadu")).toBeVisible();
     await expect(page.getByText("Aplikasi Internal Kedinasan Solok Selatan")).not.toBeVisible();
 
     // Clear search
