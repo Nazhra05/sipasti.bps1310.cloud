@@ -22,12 +22,16 @@ export const metadata: Metadata = {
 };
 
 import ClientProviders from "@/components/ClientProviders";
+import { headers } from "next/headers";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="id"
@@ -39,6 +43,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/BPS Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/BPS Logo.png" />
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               try {
