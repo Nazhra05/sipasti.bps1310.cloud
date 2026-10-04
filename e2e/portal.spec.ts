@@ -77,7 +77,7 @@ test.describe("Portal Homepage E2E Test Suite (App B)", () => {
   test("should filter applications by access type (Public vs VPN)", async ({ page }) => {
     // Filter Public Access
     await page.getByRole("button", { name: /Publik/i }).first().click();
-    await expect(page.getByText("Sistem Informasi Desa Solok Selatan")).toBeVisible();
+    await expect(page.getByText("Sistem Informasi Desa Terpadu")).toBeVisible();
 
     // Filter Internal VPN Access
     await page.getByRole("button", { name: /Internal/i }).first().click();
