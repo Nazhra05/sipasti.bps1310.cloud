@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Shield, CheckCircle2, AlertTriangle, Wifi } from "lucide-react";
+import { X, Shield, CheckCircle2, AlertTriangle } from "lucide-react";
 
 interface VpnGuideModalProps {
   isOpen: boolean;
@@ -75,13 +75,13 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
             </ol>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80">
+          <div className="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40">
             <div className="flex items-start gap-2.5">
-              <Wifi className="w-4 h-4 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <strong>Saat Berada di Kantor BPS Solok Selatan:</strong>
-                <p className="mt-0.5 text-slate-500 dark:text-slate-400">
-                  Jika terhubung langsung ke Wi-Fi atau kabel LAN resmi kantor BPS Solok Selatan, aplikasi intranet dapat dibuka tanpa VPN.
+                <strong className="text-amber-900 dark:text-amber-300">Catatan Penting Akses Intranet:</strong>
+                <p className="mt-0.5 text-slate-600 dark:text-slate-400">
+                  Seluruh aplikasi berlabel <em>Akses Intranet (Wajib VPN)</em> tetap memerlukan koneksi VPN BPS yang aktif, baik saat berada di kantor BPS Solok Selatan maupun dari luar kantor/rumah.
                 </p>
               </div>
             </div>
