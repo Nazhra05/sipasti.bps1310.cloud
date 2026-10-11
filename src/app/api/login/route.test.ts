@@ -64,13 +64,19 @@ describe("POST /api/login (App B Proxy Route Handler)", () => {
     const parsedBody = JSON.parse(options.body || "{}");
     expect(parsedBody.identity).toBe("bps_test_user");
     expect(parsedBody.password).toBe("secure_password_123");
-    expect(parsedBody.password_sha256).toBeDefined();
-    expect(parsedBody.password_md5).toBeDefined();
+    // Ensure no client-side hashing occurs in Next.js
+    expect(parsedBody.password_sha256).toBeUndefined();
+    expect(parsedBody.password_md5).toBeUndefined();
 
     // Verify response status and payload
     expect(res.status).toBe(200);
     expect(data.status).toBe(true);
     expect(data.data.nama).toBe("Test User");
+
+    // Verify session cookie is set with an unguessable signed token, not fixed 'true'
+    const setCookie = res.headers.get("set-cookie") || "";
+    expect(setCookie).toContain("bps_solsel_session=");
+    expect(setCookie).not.toContain("bps_solsel_session=true");
   });
 
   it("should handle backend 502 error gracefully when response is unparseable", async () => {

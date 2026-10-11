@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifySessionToken, SESSION_COOKIE_NAME } from "@/lib/session";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -27,10 +28,18 @@ export function proxy(request: NextRequest) {
     upgrade-insecure-requests;
   `.replace(/\s{2,}/g, " ").trim();
 
-  // Check HTTP-Only authentication cookie
-  const isAuthVerified = request.cookies.get("bps_solsel_auth_verified")?.value === "true";
+  // ─────────────────────────────────────────────────────────────────────────────
+  // OPTIMISTIC UX REDIRECT ONLY (NOT A SECURITY BOUNDARY)
+  // Warning: Next.js middleware/proxy is NOT an authoritative authorization boundary
+  // and must never be trusted as the sole access control layer.
+  // Authoritative permission and token validation MUST occur inside Route Handlers
+  // and in the upstream PHP backend.
+  // ─────────────────────────────────────────────────────────────────────────────
+  const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const sessionPayload = sessionToken ? verifySessionToken(sessionToken) : null;
+  const isAuthVerified = sessionPayload !== null;
 
-  // If user is already authenticated and visits /login, redirect to homepage
+  // If user is legitimately authenticated and visits /login, redirect to homepage (UX convenience)
   if (pathname === "/login" && isAuthVerified) {
     return NextResponse.redirect(new URL("/", request.url));
   }

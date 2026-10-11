@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getApiConfig } from "@/lib/serverApiConfig";
-import { safeParseJsonResponse } from "@/lib/api";
+import { safeParseJsonResponse, LayananItem } from "@/lib/api";
+import { authenticateRouteHandler } from "@/lib/session";
+import { isInternalLayanan } from "@/lib/accessibilityMapper";
 
-export async function GET() {
+export async function GET(request: Request) {
   const { API_BASE, headers } = getApiConfig();
 
   try {
@@ -19,7 +21,7 @@ export async function GET() {
       );
     }
 
-    const data = await safeParseJsonResponse(res);
+    const data = await safeParseJsonResponse<{ status: boolean; message?: string; data: LayananItem[] }>(res);
 
     if (!data) {
       return NextResponse.json(
@@ -28,9 +30,30 @@ export async function GET() {
       );
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // AUTHORITATIVE SERVER-SIDE ACCESS CONTROL
+    // "Hiding is not a protection": The endpoint itself enforces authorization.
+    // Unauthenticated clients MUST NEVER receive internal application URLs.
+    // ─────────────────────────────────────────────────────────────────────────
+    const session = await authenticateRouteHandler(request);
+    const isAuthenticated = session !== null;
+
+    if (!isAuthenticated && Array.isArray(data.data)) {
+      data.data = data.data.map((item) => {
+        if (isInternalLayanan(item)) {
+          return {
+            ...item,
+            url: "", // Redact internal application URL for unauthenticated callers
+          };
+        }
+        return item;
+      });
+    }
+
     return NextResponse.json(data);
   } catch (err) {
     console.error("[Proxy layanan] Error:", err);
     return NextResponse.json({ status: false, message: "Kesalahan jaringan server proxy", data: [] }, { status: 500 });
   }
 }
+

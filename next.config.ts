@@ -4,7 +4,7 @@ import path from "path";
 const securityHeaders = [
   {
     key: "Strict-Transport-Security",
-    value: "max-age=31536000; includeSubDomains; preload",
+    value: "max-age=31536000; includeSubDomains",
   },
   {
     key: "X-Frame-Options",

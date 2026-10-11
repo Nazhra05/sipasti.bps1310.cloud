@@ -23,15 +23,16 @@ import VpnGuideModal from "@/components/VpnGuideModal";
 import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import { useAuth } from "@/context/AuthContext";
 import { toSafeExternalUrl } from "@/lib/safeUrl";
+import { fetchLayanan } from "@/lib/api";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // searchParams.get() already returns a decoded value; validate before use
-  // to block javascript:/data: URLs (XSS) and malformed input.
-  const redirectUrl = toSafeExternalUrl(searchParams.get("redirect")) ?? "";
-  const redirectName = searchParams.get("name") || "";
+  const redirectParamName = searchParams.get("name") || "";
+  const redirectParamId = searchParams.get("id") ? Number(searchParams.get("id")) : null;
+  const [pendingTarget, setPendingTarget] = useState<{ id?: number; name?: string; url?: string } | null>(null);
+  const [targetName, setTargetName] = useState<string>(redirectParamName);
 
   const { isAuthenticated, user, login, logout, isLoading: isAuthLoading } = useAuth();
 
@@ -48,12 +49,64 @@ function LoginContent() {
   // Synchronous submit lock reference to prevent rapid double-click race conditions
   const isProcessingRef = useRef(false);
 
-  // Focus username input on mount
+  // Security & Target Hydration:
+  // 1. Read pending internal app target (id, name) from sessionStorage (no URL leaked).
+  // 2. If legacy redirect query param is present, scrub it immediately.
   useEffect(() => {
-    if (redirectName) {
-      setErrorMessage(null);
+    if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem("bps_pending_app_target");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === "object") {
+            setPendingTarget(parsed);
+            if (parsed.name && !redirectParamName) {
+              setTargetName(parsed.name);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Gagal membaca target pending:", err);
+      }
     }
-  }, [redirectName]);
+
+    if (redirectParamId && !isNaN(redirectParamId)) {
+      setPendingTarget((prev) => ({
+        ...prev,
+        id: redirectParamId,
+        name: redirectParamName || prev?.name,
+      }));
+    }
+
+    const rawRedirect = searchParams.get("redirect");
+    if (rawRedirect) {
+      const safeUrl = toSafeExternalUrl(rawRedirect);
+      if (safeUrl) {
+        try {
+          const appData = {
+            name: redirectParamName || "Aplikasi Kedinasan Internal",
+            url: safeUrl,
+          };
+          sessionStorage.setItem("bps_pending_app_target", JSON.stringify(appData));
+          setPendingTarget(appData);
+        } catch {}
+      }
+
+      // Scrub the restricted URL parameter from the browser address bar immediately
+      const url = new URL(window.location.href);
+      url.searchParams.delete("redirect");
+      const cleanPath = url.pathname + (url.search ? url.search : "");
+      window.history.replaceState(null, "", cleanPath);
+    }
+  }, [searchParams, redirectParamName, redirectParamId]);
+
+  const safeDisplayName = (() => {
+    const candidate = targetName || redirectParamName || pendingTarget?.name || "";
+    if (!candidate || candidate.startsWith("http://") || candidate.startsWith("https://") || candidate.includes("/")) {
+      return "Aplikasi Kedinasan Internal";
+    }
+    return candidate;
+  })();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +124,41 @@ function LoginContent() {
 
       if (res.success) {
         setSuccessMessage("Verifikasi berhasil! Mengalihkan...");
+
+        // Authoritatively resolve target application URL now that session is valid
+        let targetUrl: string | null = null;
+        let targetId = pendingTarget?.id || redirectParamId;
+
+        if (typeof window !== "undefined") {
+          try {
+            const rawPending = sessionStorage.getItem("bps_pending_app_target");
+            if (rawPending) {
+              const parsed = JSON.parse(rawPending);
+              if (parsed?.id) targetId = Number(parsed.id);
+              if (parsed?.url) targetUrl = toSafeExternalUrl(parsed.url);
+              sessionStorage.removeItem("bps_pending_app_target");
+            }
+          } catch (storageErr) {
+            console.warn("Gagal membaca target pending:", storageErr);
+          }
+        }
+
+        // If target ID exists, fetch newly authenticated layanan list to get real URL
+        if (targetId && !targetUrl) {
+          try {
+            const freshLayanan = await fetchLayanan();
+            const targetApp = freshLayanan.find((item) => item.id_layanan === targetId);
+            if (targetApp?.url) {
+              targetUrl = toSafeExternalUrl(targetApp.url);
+            }
+          } catch (fetchErr) {
+            console.warn("Gagal mengambil tautan aplikasi setelah login:", fetchErr);
+          }
+        }
+
         setTimeout(() => {
-          if (redirectUrl) {
-            window.open(redirectUrl, "_blank", "noopener,noreferrer");
+          if (targetUrl) {
+            window.open(targetUrl, "_blank", "noopener,noreferrer");
             router.push("/");
           } else {
             router.push("/");
@@ -121,7 +206,7 @@ function LoginContent() {
           </div>
 
           {/* Context Notice Banner - Accent Orange #FFA500 */}
-          {redirectName && !isAuthenticated && (
+          {Boolean(redirectParamName || pendingTarget?.name) && !isAuthenticated && (
             <div className="p-4 rounded-2xl bg-[#FFA500]/10 dark:bg-[#FFA500]/15 border border-[#FFA500]/40 text-[#804b00] dark:text-[#ffbe4d] text-xs leading-relaxed flex items-start gap-3 shadow-xs animate-in fade-in duration-200">
               <Lock className="w-4 h-4 shrink-0 text-[#FFA500] mt-0.5" />
               <div>
@@ -129,7 +214,7 @@ function LoginContent() {
                 <p className="mt-0.5 text-[#804b00]/90 dark:text-[#ffbe4d]/90">
                   Untuk membuka tautan aplikasi{" "}
                   <strong className="underline decoration-[#FFA500] font-semibold text-[#663c00] dark:text-white">
-                    {redirectName}
+                    {safeDisplayName}
                   </strong>
                   , silakan lakukan otentikasi login portal terlebih dahulu.
                 </p>
@@ -169,16 +254,34 @@ function LoginContent() {
                   </p>
                 </div>
 
-                {redirectUrl && (
-                  <a
-                    href={redirectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] transition shadow-md active:scale-[0.98]"
+                {Boolean(pendingTarget?.id || pendingTarget?.url) && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        let finalUrl = pendingTarget?.url;
+                        if (!finalUrl && pendingTarget?.id) {
+                          const list = await fetchLayanan();
+                          const found = list.find((item) => item.id_layanan === pendingTarget.id);
+                          finalUrl = found?.url;
+                        }
+                        if (finalUrl) {
+                          const safeUrl = toSafeExternalUrl(finalUrl);
+                          if (safeUrl) {
+                            window.open(safeUrl, "_blank", "noopener,noreferrer");
+                          }
+                        }
+                        sessionStorage.removeItem("bps_pending_app_target");
+                        setPendingTarget(null);
+                      } catch (err) {
+                        console.warn("Gagal membuka tautan aplikasi:", err);
+                      }
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] transition shadow-md active:scale-[0.98] cursor-pointer"
                   >
-                    <span>Lanjutkan ke {redirectName || "Aplikasi Target"}</span>
+                    <span>Lanjutkan ke {safeDisplayName}</span>
                     <ExternalLink className="w-4 h-4" />
-                  </a>
+                  </button>
                 )}
 
                 <div className="flex items-center gap-3 pt-2">

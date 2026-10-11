@@ -12,6 +12,8 @@ interface LinkGridProps {
   onResetSearch: () => void;
   onCopyLink: (url: string, name: string) => void;
   onRefresh: () => void;
+  favoriteIds?: number[];
+  onToggleFavorite?: (id_layanan: number) => void;
 }
 
 export default function LinkGrid({
@@ -21,6 +23,8 @@ export default function LinkGrid({
   onResetSearch,
   onCopyLink,
   onRefresh,
+  favoriteIds = [],
+  onToggleFavorite,
 }: LinkGridProps) {
   if (isLoading) {
     return (
@@ -90,7 +94,12 @@ export default function LinkGrid({
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
       {layananList.map((item) => (
         <ErrorBoundary key={item.id_layanan} fallbackTitle="Gagal Memuat Kartu Aplikasi">
-          <LinkCard layanan={item} onCopyLink={onCopyLink} />
+          <LinkCard
+            layanan={item}
+            onCopyLink={onCopyLink}
+            isFavorite={favoriteIds.includes(item.id_layanan)}
+            onToggleFavorite={onToggleFavorite}
+          />
         </ErrorBoundary>
       ))}
     </div>

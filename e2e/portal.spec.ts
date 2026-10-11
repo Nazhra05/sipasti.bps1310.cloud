@@ -3,6 +3,14 @@ import { test, expect } from "@playwright/test";
 test.describe("Portal Homepage E2E Test Suite (App B)", () => {
   test.beforeEach(async ({ page }) => {
     // Intercept API calls with mock backend data wrapped in standard ApiResponse envelope
+    await page.route("**/api/auth/me", async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: "application/json",
+        body: JSON.stringify({ authenticated: false, message: "Sesi tidak ditemukan", user: null }),
+      });
+    });
+
     await page.route("**/api/kategori", async (route) => {
       await route.fulfill({
         status: 200,
@@ -114,5 +122,26 @@ test.describe("Portal Homepage E2E Test Suite (App B)", () => {
     } else {
       await expect(htmlElement).toHaveClass(/dark/);
     }
+  });
+
+  test("should redirect unauthenticated user clicking internal app to login without exposing internal URL in address bar", async ({ page }) => {
+    // 1. Locate internal application card
+    const internalCard = page.locator("div.group", { hasText: "Aplikasi Internal Kedinasan Solok Selatan" });
+    await expect(internalCard).toBeVisible();
+
+    // 2. Click "Buka Aplikasi" on the internal card
+    await internalCard.getByRole("button", { name: /Buka Aplikasi/i }).click();
+
+    // 3. Verify page redirected to /login
+    await expect(page).toHaveURL(/\/login\?name=/);
+
+    // 4. Verify restricted URL is NEVER exposed in the address bar
+    expect(page.url()).not.toContain("10.13.10.5");
+    expect(page.url()).not.toContain("redirect=");
+
+    // 5. Verify notice banner displays app name without leaking the URL
+    await expect(page.getByText(/Akses Aplikasi Internal Memerlukan Login/i)).toBeVisible();
+    await expect(page.getByText(/Aplikasi Internal Kedinasan Solok Selatan/i)).toBeVisible();
+    await expect(page.getByText("10.13.10.5")).not.toBeVisible();
   });
 });

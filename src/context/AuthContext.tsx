@@ -21,7 +21,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = "bps_solsel_auth_verified";
 const USER_STORAGE_KEY = "bps_solsel_auth_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -30,21 +29,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check client side stored login session (localStorage and cookies)
-    try {
-      const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
-      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-      const hasCookie = document.cookie.includes("bps_solsel_auth_verified=true");
+    let isMounted = true;
 
-      if ((storedAuth === "true" || hasCookie) && storedUser) {
-        setIsAuthenticated(true);
-        setUser(JSON.parse(storedUser));
+    // Verify session state against the server-side signed token (/api/auth/me)
+    const verifySessionWithServer = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.authenticated && data.user) {
+            setIsAuthenticated(true);
+            setUser({
+              id_admin: data.user.id_admin,
+              username: data.user.username,
+              name: data.user.name || data.user.username,
+              email: data.user.email,
+              role: data.user.role || "Pegawai",
+            });
+            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+            return;
+          }
+        }
+        // If server says not authenticated or token is invalid, ensure client is unauthenticated
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setUser(null);
+          localStorage.removeItem(USER_STORAGE_KEY);
+          localStorage.removeItem("bps_solsel_auth_verified");
+        }
+      } catch (err) {
+        // If network error, fall back to unauthenticated for safety
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-    } catch (err) {
-      console.error("Gagal membaca status otentikasi:", err);
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    verifySessionWithServer();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (identity: string, password: string): Promise<{ success: boolean; message?: string }> => {
@@ -56,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Call PHP Login API endpoint via proxy route
+      // Call PHP Login API endpoint via proxy route (which issues cryptographically signed HTTP-Only session cookie)
       const res = await loginApi(cleanIdentity, cleanPass);
 
       if (res.status && res.data) {
@@ -68,11 +98,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: res.data.role || "Pegawai",
         };
 
-        // Persist session via localStorage & 30-day cookie
-        localStorage.setItem(AUTH_STORAGE_KEY, "true");
+        // Cache user info for UI rendering
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(loggedUser));
-        document.cookie = `${AUTH_STORAGE_KEY}=true; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
-        document.cookie = `${USER_STORAGE_KEY}=${encodeURIComponent(JSON.stringify(loggedUser))}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+        localStorage.removeItem("bps_solsel_auth_verified");
 
         setIsAuthenticated(true);
         setUser(loggedUser);
@@ -92,9 +120,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await fetch("/api/logout", { method: "POST" }).catch(() => null);
-      localStorage.removeItem(AUTH_STORAGE_KEY);
       localStorage.removeItem(USER_STORAGE_KEY);
-      document.cookie = `${AUTH_STORAGE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      localStorage.removeItem("bps_solsel_auth_verified");
+      document.cookie = `bps_solsel_auth_verified=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `${USER_STORAGE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     } catch (err) {
       console.error("Gagal menghapus sesi login:", err);

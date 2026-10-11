@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Copy, Check, Globe, Shield, Info, ArrowUpRight, Lock } from "lucide-react";
+import { ExternalLink, Copy, Check, Globe, Shield, Info, ArrowUpRight, Lock, Star } from "lucide-react";
 import { EnrichedLayanan } from "@/lib/accessibilityMapper";
 import { useAuth } from "@/context/AuthContext";
 import LinkLogo from "./LinkLogo";
@@ -10,9 +10,16 @@ import LinkLogo from "./LinkLogo";
 interface LinkCardProps {
   layanan: EnrichedLayanan;
   onCopyLink: (url: string, name: string) => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id_layanan: number) => void;
 }
 
-export default function LinkCard({ layanan, onCopyLink }: LinkCardProps) {
+export default function LinkCard({
+  layanan,
+  onCopyLink,
+  isFavorite = false,
+  onToggleFavorite,
+}: LinkCardProps) {
   const [copied, setCopied] = useState(false);
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -48,9 +55,22 @@ export default function LinkCard({ layanan, onCopyLink }: LinkCardProps) {
     e.preventDefault();
     e.stopPropagation();
     try {
-      const targetUrl = encodeURIComponent(layanan.url);
+      // Do NOT expose or store restricted internal URLs for unauthenticated users
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem(
+            "bps_pending_app_target",
+            JSON.stringify({
+              id: layanan.id_layanan,
+              name: layanan.nama_layanan,
+            })
+          );
+        } catch (storageErr) {
+          console.warn("Gagal menyimpan target ke sessionStorage:", storageErr);
+        }
+      }
       const targetName = encodeURIComponent(layanan.nama_layanan);
-      router.push(`/login?redirect=${targetUrl}&name=${targetName}`);
+      router.push(`/login?name=${targetName}&id=${layanan.id_layanan}`);
     } catch (err) {
       console.error("Gagal pengalihan router:", err);
       window.location.href = "/login";
@@ -62,9 +82,31 @@ export default function LinkCard({ layanan, onCopyLink }: LinkCardProps) {
       <div>
         {/* Top Badges: Category & Accessibility Status + Wajib VPN Label */}
         <div className="flex items-center justify-between gap-2 mb-3.5">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
-            {layanan.category_name}
-          </span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors truncate">
+              {layanan.category_name}
+            </span>
+
+            {onToggleFavorite && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleFavorite(layanan.id_layanan);
+                }}
+                aria-label={isFavorite ? "Hapus dari favorit" : "Tambah ke favorit"}
+                title={isFavorite ? "Tersimpan di favorit pribadi" : "Simpan ke favorit pribadi"}
+                className={`p-1 rounded-md border transition-all cursor-pointer shrink-0 ${
+                  isFavorite
+                    ? "bg-amber-500/15 border-amber-500/40 text-amber-500 hover:bg-amber-500/25"
+                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500 hover:border-amber-400/40"
+                }`}
+              >
+                <Star className={`w-3 h-3 ${isFavorite ? "fill-amber-400 text-amber-500" : ""}`} />
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
             {/* Label Status VPN (Butuh VPN vs Tanpa VPN) - Accent Orange #FFA500 */}
@@ -117,6 +159,7 @@ export default function LinkCard({ layanan, onCopyLink }: LinkCardProps) {
             /* Button mode for unauthenticated internal link: NO href attribute to prevent browser URL move link preview */
             <button
               onClick={handleInternalRedirect}
+              aria-label={`Logo ${layanan.nama_layanan}`}
               title={`Buka ${layanan.nama_layanan} (Memerlukan Login Portal)`}
               className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-2 group-hover:scale-105 group-hover:border-[#005AA9] dark:group-hover:border-[#00A6B4] transition-all duration-200 shadow-2xs cursor-pointer"
             >

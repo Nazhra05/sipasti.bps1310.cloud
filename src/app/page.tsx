@@ -1,21 +1,35 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { AlertTriangle, ArrowUp } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertTriangle, ArrowUp, Grid, FolderHeart, User } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import LinkGrid from "@/components/LinkGrid";
+import PersonalRepository from "@/components/PersonalRepository";
 import VpnGuideModal from "@/components/VpnGuideModal";
 import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import Toast from "@/components/Toast";
+import OfflineNoticeBanner from "@/components/OfflineNoticeBanner";
 import { fetchKategori, fetchLayanan, KategoriItem } from "@/lib/api";
 import { enrichLayanan, EnrichedLayanan, AccessType } from "@/lib/accessibilityMapper";
+import { savePortalCache, getPortalCache } from "@/lib/offlineFallback";
+import { useAuth } from "@/context/AuthContext";
+import { fetchUserRepository, toggleFavoriteService } from "@/lib/userRepoApi";
+import { UserRepositoryData } from "@/types/userRepo";
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [categories, setCategories] = useState<KategoriItem[]>([]);
   const [layananList, setLayananList] = useState<EnrichedLayanan[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // View Switch: "portal" vs "repository"
+  const [activeMainView, setActiveMainView] = useState<"portal" | "repository">("portal");
+  const [repoData, setRepoData] = useState<UserRepositoryData | null>(null);
+  const [isRepoLoading, setIsRepoLoading] = useState<boolean>(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -23,6 +37,10 @@ export default function Home() {
   const [selectedAccess, setSelectedAccess] = useState<AccessType | "all">("all");
 
   const [apiError, setApiError] = useState<string | null>(null);
+
+  // Offline Data & Cache States
+  const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
+  const [lastUpdatedTime, setLastUpdatedTime] = useState<string | null>(null);
 
   // Modal & Toast States
   const [isVpnModalOpen, setIsVpnModalOpen] = useState<boolean>(false);
@@ -53,22 +71,42 @@ export default function Home() {
         fetchLayanan(),
       ]);
 
-      setCategories(catData);
+      if (catData.length > 0 || layData.length > 0) {
+        // Berhasil mengambil data segar dari backend!
+        const nowIso = new Date().toISOString();
+        setCategories(catData);
+        savePortalCache(catData, layData);
+        setIsOfflineMode(false);
+        setLastUpdatedTime(nowIso);
 
-      if (layData.length === 0 && catData.length === 0) {
-        setApiError("Gagal mengambil data dari server backend. Menggunakan fallback lokal.");
+        const catMap = new Map<number, string>();
+        catData.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
+        const enriched = layData.map((item) => enrichLayanan(item, catMap));
+        setLayananList(enriched);
+      } else {
+        // Backend offline / kosong: gunakan cache lokal dengan notice transparan
+        const cached = getPortalCache();
+        setCategories(cached.categories);
+        setIsOfflineMode(true);
+        setLastUpdatedTime(cached.cachedAt);
+
+        const catMap = new Map<number, string>();
+        cached.categories.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
+        const enriched = cached.layanan.map((item) => enrichLayanan(item, catMap));
+        setLayananList(enriched);
       }
-
-      // Buat map ID Kategori ke Nama Kategori
-      const catMap = new Map<number, string>();
-      catData.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
-
-      // Enrich data dengan layer presentasi UI aksesibilitas (Publik / VPN)
-      const enriched = layData.map((item) => enrichLayanan(item, catMap));
-      setLayananList(enriched);
     } catch (err) {
       console.error("Gagal memuat data dari API:", err);
-      setApiError("Terjadi kendala koneksi ke server backend API.");
+      // Fallback ke cache lokal dengan notice transparan
+      const cached = getPortalCache();
+      setCategories(cached.categories);
+      setIsOfflineMode(true);
+      setLastUpdatedTime(cached.cachedAt);
+
+      const catMap = new Map<number, string>();
+      cached.categories.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
+      const enriched = cached.layanan.map((item) => enrichLayanan(item, catMap));
+      setLayananList(enriched);
     } finally {
       setIsLoading(false);
     }
@@ -76,14 +114,80 @@ export default function Home() {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [loadData, isAuthenticated]);
+
+  // Load Repositori Pegawai (Private Space)
+  const loadRepoData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setRepoData(null);
+      return;
+    }
+    setIsRepoLoading(true);
+    try {
+      const res = await fetchUserRepository();
+      if (res.success && res.data) {
+        setRepoData(res.data);
+      }
+    } catch (err) {
+      console.error("Gagal memuat repositori pribadi:", err);
+    } finally {
+      setIsRepoLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadRepoData();
+    } else {
+      setRepoData(null);
+    }
+  }, [isAuthenticated, loadRepoData]);
+
+  // Toggle Favorite
+  const handleToggleFavorite = async (id_layanan: number) => {
+    if (!isAuthenticated) {
+      router.push(`/login?id=${id_layanan}`);
+      return;
+    }
+    try {
+      const res = await toggleFavoriteService(id_layanan);
+      if (res.success) {
+        setToastMessage(res.message || "Status favorit diperbarui.");
+        loadRepoData();
+        setTimeout(() => setToastMessage(null), 2500);
+      }
+    } catch {
+      setToastMessage("Gagal mengubah status favorit.");
+      setTimeout(() => setToastMessage(null), 2500);
+    }
+  };
+
+  const favoriteIds = useMemo(() => repoData?.favorite_ids || [], [repoData]);
+
+  const totalRepoItems = useMemo(() => {
+    if (!repoData?.counts) return 0;
+    const c = repoData.counts;
+    return (
+      (c.favorite || 0) +
+      (c.website || 0) +
+      (c.data || 0) +
+      (c.mobile_app || 0) +
+      (c.drive || 0) +
+      (c.photo || 0) +
+      (c.other || 0)
+    );
+  }, [repoData]);
 
   // Toast Helper
-  const showToast = (url: string, name: string) => {
-    setToastMessage(`Tautan "${name}" berhasil disalin!`);
+  const showToast = (message: string) => {
+    setToastMessage(message);
     setTimeout(() => {
       setToastMessage(null);
     }, 2500);
+  };
+
+  const handleCopyLink = (_url: string, name: string) => {
+    showToast(`Tautan "${name}" berhasil disalin!`);
   };
 
   // IN-MEMORY LIVE SEARCH & FILTERING (Zero API requests per keystroke)
@@ -143,79 +247,153 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Network / API Error Alert Banner */}
-        {apiError && (
-          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800/60 text-amber-900 dark:text-amber-300 text-xs flex items-center justify-between gap-3 shadow-xs">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>{apiError}</span>
-            </div>
-            <button
-              onClick={loadData}
-              className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-200 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 transition cursor-pointer"
-            >
-              Coba Lagi
-            </button>
-          </div>
+        {/* Prominent Offline Notice Banner with Last Updated Timestamp */}
+        {isOfflineMode && (
+          <OfflineNoticeBanner
+            lastUpdated={lastUpdatedTime}
+            onRefresh={loadData}
+            isRefreshing={isLoading}
+          />
         )}
 
-        {/* Search, Filter Akses, dan Tab 7 Kategori */}
-        <SearchAndFilter
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          categories={categories}
-          selectedCategoryId={selectedCategoryId}
-          onSelectCategory={setSelectedCategoryId}
-          selectedAccess={selectedAccess}
-          onSelectAccess={setSelectedAccess}
-          categoryCounts={categoryCounts}
-          totalCount={layananList.length}
-          publicCount={publicCount}
-          internalCount={internalCount}
-        />
+        {/* View Switcher: Katalog Layanan BPS vs Ruang Kerja / Repositori Saya */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div className="flex items-center gap-2 p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-2xl w-fit">
+            <button
+              type="button"
+              onClick={() => setActiveMainView("portal")}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${
+                activeMainView === "portal"
+                  ? "bg-white dark:bg-slate-900 text-[#005AA9] dark:text-sky-400 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <Grid className="w-4 h-4" />
+              <span>Katalog Layanan BPS</span>
+            </button>
 
-        {/* Results Counter / Filter Bar Status */}
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-          <div>
-            Menampilkan{" "}
-            <span className="font-semibold text-slate-900 dark:text-white">
-              {filteredList.length}
-            </span>{" "}
-            dari {layananList.length} aplikasi
-            {searchQuery && (
-              <span>
-                {" "}
-                untuk kata kunci &ldquo;
-                <strong className="text-slate-900 dark:text-white">
-                  {searchQuery}
-                </strong>
-                &rdquo;
-              </span>
+            <button
+              type="button"
+              onClick={() => setActiveMainView("repository")}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${
+                activeMainView === "repository"
+                  ? "bg-white dark:bg-slate-900 text-[#005AA9] dark:text-sky-400 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <FolderHeart className="w-4 h-4" />
+              <span>Repositori & Favorit Saya</span>
+              {totalRepoItems > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300 font-bold">
+                  {totalRepoItems}
+                </span>
+              )}
+            </button>
+          </div>
+
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            {activeMainView === "portal" ? (
+              <span>Pusat tautan dan sistem digital terpadu BPS Solok Selatan</span>
+            ) : (
+              <span>Ruang kerja mandiri, tautan favorit, dan repositori berkas Anda</span>
             )}
           </div>
-          {(searchQuery || selectedCategoryId !== null || selectedAccess !== "all") && (
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategoryId(null);
-                setSelectedAccess("all");
-              }}
-              className="text-slate-900 dark:text-slate-100 hover:underline font-semibold cursor-pointer"
-            >
-              Reset Semua Filter
-            </button>
-          )}
         </div>
 
-        {/* Grid Kartu Tautan */}
-        <LinkGrid
-          layananList={filteredList}
-          isLoading={isLoading}
-          searchQuery={searchQuery}
-          onResetSearch={() => setSearchQuery("")}
-          onCopyLink={showToast}
-          onRefresh={loadData}
-        />
+        {activeMainView === "portal" ? (
+          <>
+            {/* Search, Filter Akses, dan Tab 7 Kategori */}
+            <SearchAndFilter
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onSelectCategory={setSelectedCategoryId}
+              selectedAccess={selectedAccess}
+              onSelectAccess={setSelectedAccess}
+              categoryCounts={categoryCounts}
+              totalCount={layananList.length}
+              publicCount={publicCount}
+              internalCount={internalCount}
+            />
+
+            {/* Results Counter / Filter Bar Status */}
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
+              <div>
+                Menampilkan{" "}
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {filteredList.length}
+                </span>{" "}
+                dari {layananList.length} aplikasi
+                {searchQuery && (
+                  <span>
+                    {" "}
+                    untuk kata kunci &ldquo;
+                    <strong className="text-slate-900 dark:text-white">
+                      {searchQuery}
+                    </strong>
+                    &rdquo;
+                  </span>
+                )}
+              </div>
+              {(searchQuery || selectedCategoryId !== null || selectedAccess !== "all") && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategoryId(null);
+                    setSelectedAccess("all");
+                  }}
+                  className="text-slate-900 dark:text-slate-100 hover:underline font-semibold cursor-pointer"
+                >
+                  Reset Semua Filter
+                </button>
+              )}
+            </div>
+
+            {/* Grid Kartu Tautan */}
+            <LinkGrid
+              layananList={filteredList}
+              isLoading={isLoading}
+              searchQuery={searchQuery}
+              onResetSearch={() => setSearchQuery("")}
+              onCopyLink={handleCopyLink}
+              onRefresh={loadData}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </>
+        ) : (
+          /* Repositori & Favorit Saya */
+          !isAuthenticated ? (
+            <div className="rounded-3xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-4 shadow-sm my-6">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-sky-100 dark:bg-sky-900/40 text-[#005AA9] dark:text-sky-300 flex items-center justify-center">
+                <User className="w-7 h-7" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                Akses Repositori & Favorit Pegawai
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Masuk dengan akun BPS Anda untuk mengelola tautan cepat, bookmark dokumen, repositori berkas pribadi, dan layanan favorit langsung dari halaman ini tanpa berpindah aplikasi.
+              </p>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => router.push("/login")}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-[#005AA9] hover:bg-[#004280] text-white shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer"
+                >
+                  Masuk ke Akun Pegawai
+                </button>
+              </div>
+            </div>
+          ) : (
+            <PersonalRepository
+              repoData={repoData}
+              isLoading={isRepoLoading}
+              onRefresh={loadRepoData}
+              onShowToast={showToast}
+            />
+          )
+        )}
       </main>
 
       {/* Footer */}

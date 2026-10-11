@@ -10,6 +10,46 @@ export interface EnrichedLayanan extends LayananItem {
 }
 
 /**
+ * Canonical check whether a service is restricted/internal.
+ * Used both in server-side API proxy route (authoritative redaction)
+ * and client-side UI mapping.
+ */
+export function isInternalLayanan(item: Partial<LayananItem>): boolean {
+  let requiresVpn = false;
+  const rawVpn = item.vpn ?? item.is_vpn ?? item.requires_vpn ?? item.akses_vpn;
+
+  if (rawVpn !== undefined && rawVpn !== null) {
+    if (typeof rawVpn === "boolean") {
+      requiresVpn = rawVpn;
+    } else if (typeof rawVpn === "number") {
+      requiresVpn = rawVpn === 1;
+    } else if (typeof rawVpn === "string") {
+      const v = rawVpn.toLowerCase().trim();
+      requiresVpn = v === "yes" || v === "ya" || v === "1" || v === "true" || v === "wajib";
+    }
+  } else if (item.akses) {
+    const rawAkses = item.akses.toLowerCase().trim();
+    requiresVpn = rawAkses.includes("vpn");
+  } else {
+    const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
+    requiresVpn = checkString.includes("vpn");
+  }
+
+  if (item.akses) {
+    const rawAkses = item.akses.toLowerCase().trim();
+    return rawAkses.includes("internal") || rawAkses.includes("vpn") || rawAkses.includes("terbatas");
+  }
+
+  const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
+  return (
+    requiresVpn ||
+    checkString.includes("intranet") ||
+    checkString.includes("internal") ||
+    checkString.includes("kedinasan")
+  );
+}
+
+/**
  * Mapper presentasi UI untuk aksesibilitas dan catatan teknis.
  * Jika nantinya database menambahkan kolom `akses` dan `catatan`,
  * fungsi ini akan langsung memprioritaskan data dari API tersebut.
@@ -41,32 +81,13 @@ export function enrichLayanan(
     const rawAkses = item.akses.toLowerCase().trim();
     requiresVpn = rawAkses.includes("vpn");
   } else {
-    const checkString = `${item.nama_layanan} ${item.url} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
+    const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
     requiresVpn = checkString.includes("vpn");
   }
 
   // 3. Evaluasi Aksesibilitas (Internal vs Publik)
-  let accessType: AccessType = "public";
-  if (item.akses) {
-    const rawAkses = item.akses.toLowerCase().trim();
-    if (rawAkses.includes("internal") || rawAkses.includes("vpn") || rawAkses.includes("terbatas")) {
-      accessType = "internal";
-    } else {
-      accessType = "public";
-    }
-  } else {
-    const checkString = `${item.nama_layanan} ${item.url} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
-    if (
-      requiresVpn ||
-      checkString.includes("intranet") ||
-      checkString.includes("internal") ||
-      checkString.includes("kedinasan")
-    ) {
-      accessType = "internal";
-    } else {
-      accessType = "public";
-    }
-  }
+  const isInternal = isInternalLayanan(item);
+  const accessType: AccessType = isInternal ? "internal" : "public";
 
   // 3. Catatan Teknis Ringkas
   let technicalNote = item.catatan || "";

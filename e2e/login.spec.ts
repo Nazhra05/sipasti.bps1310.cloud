@@ -12,13 +12,41 @@ test.describe('Login Flow E2E Test (App B Client Portal)', () => {
   });
 
   test('should submit credentials and handle login flow', async ({ page }) => {
+    let isLoggedIn = false;
+
     // 1. Setup route interception BEFORE navigating
+    await page.route('**/api/auth/me', async (route) => {
+      if (isLoggedIn) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            authenticated: true,
+            user: {
+              id_admin: 99,
+              username: 'test.user',
+              name: 'test.user',
+              email: 'test.user@bps.go.id',
+              role: 'pegawai',
+            },
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ authenticated: false, message: 'Belum login', user: null }),
+        });
+      }
+    });
+
     await page.route('**/api/login', async (route) => {
+      isLoggedIn = true;
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         headers: {
-          'set-cookie': 'bps_solsel_auth_verified=true; Path=/; HttpOnly; SameSite=Lax',
+          'set-cookie': 'bps_solsel_session=eyJhbGciOiJIUzI1NiJ9.mock_token; Path=/; HttpOnly; SameSite=Lax',
         },
         body: JSON.stringify({
           status: true,
@@ -72,6 +100,16 @@ test.describe('Login Flow E2E Test (App B Client Portal)', () => {
 
     // 5. Verify error banner is visible
     await expect(page.getByText(/Username atau kata sandi tidak ditemukan/i)).toBeVisible();
+  });
+
+  test('should scrub legacy redirect query param from address bar to prevent URL leakage', async ({ page }) => {
+    await page.goto('/login?redirect=http%3A%2F%2F10.13.10.5%2Fsecret-portal&name=PortalKedinasan');
+
+    // Address bar should immediately scrub ?redirect=
+    await expect(page).not.toHaveURL(/redirect=/);
+    expect(page.url()).not.toContain('10.13.10.5');
+    await expect(page.getByText('PortalKedinasan')).toBeVisible();
+    await expect(page.getByText('10.13.10.5')).not.toBeVisible();
   });
 });
 

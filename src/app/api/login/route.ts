@@ -1,18 +1,7 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import { getApiConfig } from "@/lib/serverApiConfig";
 import { safeParseJsonResponse } from "@/lib/api";
-
-/**
- * Computes hash variations for legacy compatibility across different DB hashing algorithms
- * (SHA-256, MD5, SHA-1, plain text BCRYPT).
- */
-function getPasswordHashes(password: string) {
-  const sha256 = crypto.createHash("sha256").update(password).digest("hex");
-  const md5 = crypto.createHash("md5").update(password).digest("hex");
-  const sha1 = crypto.createHash("sha1").update(password).digest("hex");
-  return { sha256, md5, sha1 };
-}
+import { createSessionToken, SESSION_COOKIE_NAME } from "@/lib/session";
 
 export async function POST(request: Request) {
   const { API_BASE, headers } = getApiConfig();
@@ -46,50 +35,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const { sha256: sha256Pass, md5: md5Pass, sha1: sha1Pass } = getPasswordHashes(rawPassword);
+    // Forward credentials cleanly to PHP backend (App A) for native password_verify()
+    // and transparent upgrade to password_hash() (bcrypt). No client-side pre-hashing.
+    const res = await fetch(`${API_BASE}/auth/loginPortal.php`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        identity: rawIdentity,
+        password: rawPassword,
+      }),
+      cache: "no-store",
+    });
 
-    // Password variants to handle legacy database password hashing mismatch:
-    // 1. Raw plain text (for password_verify BCRYPT or plain text)
-    // 2. SHA-256 hex string (for legacy SHA-256 DB fields)
-    // 3. MD5 hex string (for legacy MD5 DB fields)
-    // 4. SHA-1 hex string (for legacy SHA-1 DB fields)
-    const passwordVariants = Array.from(new Set([
-      rawPassword,
-      sha256Pass,
-      md5Pass,
-      sha1Pass,
-    ]));
-
-    let finalData: Record<string, any> | null = null;
-    let finalStatus = 401;
-
-    // Try password variants sequentially until backend authenticates successfully
-    for (const passVariant of passwordVariants) {
-      const res = await fetch(`${API_BASE}/auth/loginPortal.php`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          identity: rawIdentity,
-          password: passVariant,
-          password_raw: rawPassword,
-          password_sha256: sha256Pass,
-          password_md5: md5Pass,
-        }),
-        cache: "no-store",
-      });
-
-      const data = await safeParseJsonResponse<Record<string, any>>(res);
-
-      if (data) {
-        finalData = data;
-        finalStatus = res.status;
-
-        // If login succeeded, break out of fallback loop immediately
-        if (data.status) {
-          break;
-        }
-      }
-    }
+    const finalData = await safeParseJsonResponse<Record<string, any>>(res);
 
     if (!finalData) {
       return NextResponse.json(
@@ -98,20 +56,37 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = NextResponse.json(finalData, { status: finalStatus });
+    const response = NextResponse.json(finalData, { status: res.status });
 
-    // On successful login, set HTTP-Only security cookie
+    // On successful login, generate unguessable, cryptographically signed session token
     if (finalData && finalData.status) {
       const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
       const isProd = process.env.NODE_ENV === "production";
 
-      // HTTP-Only cookie protected from client JS (XSS defense)
-      response.cookies.set("bps_solsel_auth_verified", "true", {
+      const sessionToken = createSessionToken(
+        {
+          userId: finalData.data?.id_admin || finalData.data?.id || 0,
+          username: finalData.data?.username || rawIdentity,
+          name: finalData.data?.name || finalData.data?.username || "Pegawai BPS",
+          email: finalData.data?.email || "",
+          role: finalData.data?.role || "Pegawai",
+        },
+        MAX_AGE
+      );
+
+      // HTTP-Only cookie carrying unguessable signed session token
+      response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
         path: "/",
         httpOnly: true,
         secure: isProd,
         sameSite: "lax",
         maxAge: MAX_AGE,
+      });
+
+      // Expire legacy fixed-flag cookie if present
+      response.cookies.set("bps_solsel_auth_verified", "", {
+        path: "/",
+        expires: new Date(0),
       });
 
       // User metadata cookie for UI display

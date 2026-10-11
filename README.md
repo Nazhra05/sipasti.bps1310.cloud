@@ -7,7 +7,7 @@ Next.js 16 client portal and API proxy for BPS Kabupaten Solok Selatan internal 
 - **Server API Proxy**: Proxies client requests to the remote PHP backend and injects secret API keys server-side (`.env.local`), keeping API credentials out of the browser bundle.
 - **Client Live Search & Filtering**: In-memory search across application titles, keywords, descriptions, and category tags without per-keystroke API calls.
 - **Access Segmentation**: Classifies links into Public Access vs. Internal VPN Access with visual badges and technical notes.
-- **Session Security**: Uses HTTP-Only cookies (`bps_solsel_auth_verified`) for session verification with XSS defense.
+- **Session Security**: Uses HTTP-Only cookies (`bps_solsel_session`) holding cryptographically signed HMAC-SHA256 tokens with unguessable random session IDs, blocking DevTools cookie forging and privilege escalation.
 - **Security Headers**: Includes Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options, X-Content-Type-Options, and AI bot blocking rules via `robots.txt`.
 - **Theme Persistence**: Light and Dark mode toggling with local storage memory.
 
@@ -32,8 +32,9 @@ Next.js 16 client portal and API proxy for BPS Kabupaten Solok Selatan internal 
 Create a `.env.local` file in the root directory:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://your-app-a-vps-domain.com/api
+API_BASE_URL=https://your-app-a-vps-domain.com/api
 BPS_API_KEY=YOUR_SERVER_API_KEY
+SESSION_SECRET=YOUR_UNGUESSABLE_SESSION_SECRET_MIN_32_CHARS
 ```
 
 ### Installation & Development
