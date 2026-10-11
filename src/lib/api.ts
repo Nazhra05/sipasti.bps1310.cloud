@@ -196,3 +196,63 @@ export async function loginApi(identity: string, password: string): Promise<Logi
     };
   }
 }
+
+export type RegisterPayload = {
+  first_name: string;
+  last_name?: string;
+  username: string;
+  email: string;
+  password: string;
+  confirm_password?: string;
+};
+
+export type RegisterApiResponse = {
+  status: boolean;
+  message: string;
+  data?: {
+    id_admin?: number;
+    username?: string;
+    email?: string;
+    role?: string;
+    status?: string;
+  } | null;
+};
+
+export async function registerApi(payload: RegisterPayload): Promise<RegisterApiResponse> {
+  try {
+    const isClient = typeof window !== "undefined";
+    const { API_BASE, headers: serverHeaders } = getApiConfig();
+
+    const targetUrl = isClient ? "/api/register" : `${API_BASE}/auth/registerPortal.php`;
+    const headers: Record<string, string> = isClient
+      ? { "Content-Type": "application/json" }
+      : serverHeaders;
+
+    const res = await fetch(targetUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+
+    const json = await safeParseJsonResponse<RegisterApiResponse>(res);
+
+    if (!json) {
+      return {
+        status: false,
+        message: "Server backend mengembalikan respon tidak valid. Silakan coba beberapa saat lagi.",
+        data: null,
+      };
+    }
+
+    return json;
+  } catch (err) {
+    console.error("[API] registerApi error:", err);
+    return {
+      status: false,
+      message: err instanceof Error ? err.message : "Terjadi kesalahan jaringan atau server saat pendaftaran.",
+      data: null,
+    };
+  }
+}
+

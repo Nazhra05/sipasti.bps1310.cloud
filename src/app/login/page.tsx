@@ -429,6 +429,19 @@ function LoginContent() {
                     )}
                   </button>
                 </form>
+
+                {/* Link to Register Page */}
+                <div className="text-center pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Belum memiliki akun pegawai?{" "}
+                    <Link
+                      href="/register"
+                      className="font-bold text-[#005AA9] dark:text-[#38a0f0] hover:underline"
+                    >
+                      Daftar di sini
+                    </Link>
+                  </p>
+                </div>
               </div>
             )}
           </div>

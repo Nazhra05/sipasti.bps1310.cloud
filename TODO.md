@@ -198,3 +198,31 @@ Integrasi langsung dengan App A (Dashboard Admin) sebagai headless backend REST 
   - [x] Pengujian penolakan request tanpa sesi login valid (401 Unauthorized).
   - [x] Pengujian forwarding request GET dan query action dengan header `X-API-KEY` dan `X-User-Id`.
   - [x] Pengujian forwarding request POST payload data ke backend PHP.
+
+---
+
+## 10. Halaman & Alur Registrasi Mandiri Pegawai (Employee Self-Registration)
+
+Pendaftaran mandiri akun pegawai BPS Solok Selatan kini dilakukan langsung dari landing page (Next.js), terhubung secara aman dengan backend App A untuk verifikasi dan persetujuan administrator.
+
+- [x] **Halaman Antarmuka Registrasi Modern (`src/app/register/page.tsx`)**
+  - [x] Desain terpadu yang selaras dengan tema portal BPS (Navy `#005AA9`, Dark mode `#0b1120`, Emerald `#6DBE45`).
+  - [x] Bidang formulir lengkap: Nama Depan, Nama Belakang, Username Pegawai, Email Kedinasan, Kata Sandi, Konfirmasi Sandi, serta Persetujuan Syarat & Ketentuan.
+  - [x] Tombol toggle visibilitas kata sandi (Eye/EyeOff) untuk kedua kolom sandi.
+  - [x] Perlindungan submit ganda (*Double-Submit Lock*) dengan animasi loading spinner.
+  - [x] Tampilan konfirmasi pendaftaran berhasil dengan penjelasan status *Pending* demi keamanan informasi kedinasan sebelum disetujui Administrator.
+  - [x] Tautan navigasi bolak-balik yang mulus antara halaman `/login` dan `/register`.
+- [x] **Server-Side API Proxy Router (`src/app/api/register/route.ts`)**
+  - [x] Validasi dan sanitasi input ketat (panjang karakter, format email resmi, pencocokan kata sandi).
+  - [x] Injeksi header aman `X-API-KEY` server-to-server ke backend App A (`/auth/registerPortal.php`) tanpa mengekspos kredensial ke bundel klien.
+  - [x] Penanganan respons terstandarisasi untuk galat validasi (400), konflik duplikasi akun (409), serta keberhasilan registrasi (201).
+- [x] **Klien API Pembantu (`src/lib/api.ts`)**
+  - [x] Penambahan fungsi `registerApi` dan kontrak tipe `RegisterPayload` serta `RegisterApiResponse`.
+- [x] **Penguatan Perlindungan Robot (`src/app/robots.ts`)**
+  - [x] Menambahkan `/register` pada direktif `disallow` untuk memblokir perayap bot pencari dan AI scraper.
+- [x] **Jaminan Kualitas Pengujian Otomatis (`src/app/api/register/route.test.ts`)**
+  - [x] Pengujian penolakan input kosong/tidak lengkap (HTTP 400).
+  - [x] Pengujian penolakan ketidakcocokan konfirmasi kata sandi (HTTP 400).
+  - [x] Pengujian keberhasilan penerusan data ke backend dengan injeksi `X-API-KEY` (HTTP 201).
+  - [x] Pengujian penanganan respons server yang tidak valid (HTTP 502).
+
