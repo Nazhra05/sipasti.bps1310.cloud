@@ -240,7 +240,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 transition-colors">
       {/* Navbar Header */}
-      <Navbar onOpenVpnGuide={() => setIsVpnModalOpen(true)} />
+      <Navbar
+        onOpenVpnGuide={() => setIsVpnModalOpen(true)}
+        onOpenRepository={() => setActiveMainView("repository")}
+      />
 
       {/* Hero Section */}
       <HeroSection />

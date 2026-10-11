@@ -35,14 +35,10 @@ export function proxy(request: NextRequest) {
   // Authoritative permission and token validation MUST occur inside Route Handlers
   // and in the upstream PHP backend.
   // ─────────────────────────────────────────────────────────────────────────────
+  // Verification of session token for request header injection if needed
   const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const sessionPayload = sessionToken ? verifySessionToken(sessionToken) : null;
   const isAuthVerified = sessionPayload !== null;
-
-  // If user is legitimately authenticated and visits /login, redirect to homepage (UX convenience)
-  if (pathname === "/login" && isAuthVerified) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
 
   // Clone request headers to inject x-nonce and Content-Security-Policy for Server Components
   const requestHeaders = new Headers(request.headers);
