@@ -12,7 +12,7 @@
 
 /* Base surface tokens for Comfort UI with clear contrast */
 :root {
-  --bg-app: #f1f5f9;       /* Slate 100 for clear backdrop contrast against white cards */
+  --bg-app: #ffffff;       /* Pure white matching Hero background */
   --bg-card: #ffffff;      /* Pure white cards */
   --border-subtle: #cbd5e1; /* Slate 300 for visible borders */
   --text-main: #0f172a;
@@ -25,7 +25,7 @@
 }
 
 .dark {
-  --bg-app: #0b1120;
+  --bg-app: #0c1424;       /* Deep navy #0c1424 matching Hero dark background */
   --bg-card: #151f32;
   --border-subtle: #22324d;
   --text-main: #f8fafc;
@@ -55,3 +55,42 @@ body {
 .dark ::-webkit-scrollbar-thumb {
   background: #334155;
 }
+
+/* Skeleton Loading Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.8s infinite;
+}
+
+.dark .animate-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+

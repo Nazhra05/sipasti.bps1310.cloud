@@ -232,11 +232,25 @@ export default function PersonalRepository({
       {/* Content Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-32 rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 p-5 animate-pulse"
-            />
+              className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-3.5 animate-shimmer"
+            >
+              <div className="flex items-center justify-between">
+                <div className="h-5 w-24 rounded-md bg-slate-200 dark:bg-slate-800" />
+                <div className="h-4 w-4 rounded-full bg-slate-200 dark:bg-slate-800" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-4.5 w-3/4 rounded-md bg-slate-200 dark:bg-slate-800" />
+                <div className="h-3 w-full rounded bg-slate-100 dark:bg-slate-800/60" />
+                <div className="h-3 w-4/5 rounded bg-slate-100 dark:bg-slate-800/60" />
+              </div>
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <div className="h-4 w-14 rounded bg-slate-200 dark:bg-slate-800" />
+                <div className="h-4 w-20 rounded bg-slate-200 dark:bg-slate-800" />
+              </div>
+            </div>
           ))}
         </div>
       ) : (
@@ -245,13 +259,15 @@ export default function PersonalRepository({
           {activeTab === "favorites" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {repoData?.favorites.length === 0 ? (
-                <div className="col-span-full p-8 text-center rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800">
-                  <Star className="w-8 h-8 text-amber-400 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    Belum ada layanan favorit
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Beri tanda bintang pada kartu aplikasi di Katalog Layanan untuk menyematkannya di sini.
+                <div className="col-span-full p-10 text-center rounded-3xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-500 flex items-center justify-center mb-3.5">
+                    <Star className="w-8 h-8 fill-amber-400/30" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
+                    Belum Ada Layanan Favorit
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-2 leading-relaxed">
+                    Beri tanda bintang (★) pada kartu aplikasi di Katalog Layanan BPS untuk menyematkannya di sini.
                   </p>
                 </div>
               ) : (
@@ -284,14 +300,19 @@ export default function PersonalRepository({
                     <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
                       <button
                         onClick={() => handleCopy(fav.url, `fav-${fav.id_favorite}`)}
-                        className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-semibold cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-semibold cursor-pointer active:scale-95 transition-all duration-150"
                       >
                         {copiedId === `fav-${fav.id_favorite}` ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md animate-in zoom-in-75 duration-150">
+                            <Check className="w-3.5 h-3.5" />
+                            <span className="text-[11px] font-bold">Tersalin!</span>
+                          </span>
                         ) : (
-                          <Copy className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1">
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Salin</span>
+                          </span>
                         )}
-                        <span>Salin</span>
                       </button>
 
                       <a
@@ -614,20 +635,22 @@ export default function PersonalRepository({
 
 function EmptyState({ label, onAdd }: { label: string; onAdd: () => void }) {
   return (
-    <div className="col-span-full p-8 text-center rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800">
-      <FolderHeart className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
-      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
-        Belum ada koleksi {label}
-      </p>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
-        Tambahkan tautan {label.toLowerCase()} pribadi Anda agar tersimpan rapi di sini.
+    <div className="col-span-full p-10 text-center rounded-3xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col items-center justify-center">
+      <div className="w-16 h-16 rounded-2xl bg-blue-500/10 dark:bg-blue-500/15 text-[#005AA9] dark:text-[#38a0f0] flex items-center justify-center mb-3.5">
+        <FolderHeart className="w-8 h-8 opacity-80" />
+      </div>
+      <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
+        Belum Ada Koleksi {label}
+      </h3>
+      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-4 leading-relaxed">
+        Tambahkan tautan {label.toLowerCase()} dinas atau referensi pribadi Anda agar tersimpan rapi dan mudah diakses kembali.
       </p>
       <button
         onClick={onAdd}
-        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#005AA9] dark:text-[#38a0f0] bg-[#005AA9]/10 hover:bg-[#005AA9]/20 transition cursor-pointer"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] active:scale-95 shadow-xs transition cursor-pointer"
       >
         <Plus className="w-3.5 h-3.5" />
-        <span>Tambah {label}</span>
+        <span>Tambah {label} Baru</span>
       </button>
     </div>
   );
@@ -677,14 +700,19 @@ function RepoCard({
       <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
         <button
           onClick={onCopy}
-          className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-semibold cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-semibold cursor-pointer active:scale-95 transition-all duration-150"
         >
           {isCopied ? (
-            <Check className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md animate-in zoom-in-75 duration-150">
+              <Check className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-bold">Tersalin!</span>
+            </span>
           ) : (
-            <Copy className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1">
+              <Copy className="w-3.5 h-3.5" />
+              <span>Salin</span>
+            </span>
           )}
-          <span>Salin</span>
         </button>
 
         <a

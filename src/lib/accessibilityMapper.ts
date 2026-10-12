@@ -89,15 +89,15 @@ export function enrichLayanan(
   const isInternal = isInternalLayanan(item);
   const accessType: AccessType = isInternal ? "internal" : "public";
 
-  // 3. Catatan Teknis Ringkas
+  // 3. Catatan Teknis / Keterangan Akses Ringkas
   let technicalNote = item.catatan || "";
   if (!technicalNote) {
     if (requiresVpn) {
-      technicalNote = "butuh penggunaan VPN BPS untuk mengakses";
+      technicalNote = "Akses Internal: butuh penggunaan VPN BPS untuk mengakses";
     } else if (accessType === "internal") {
-      technicalNote = "Akses Internal: Khusus penggunaan kedinasan pegawai dan operasional internal BPS.";
+      technicalNote = "Akses Internal: dapat diakses langsung tanpa VPN";
     } else {
-      technicalNote = "Akses Publik: Dapat diakses langsung melalui internet dari browser tanpa VPN.";
+      technicalNote = "Akses Publik: dapat diakses langsung tanpa VPN";
     }
   }
 

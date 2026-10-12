@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Copy, Check, Globe, Shield, Info, ArrowUpRight, Lock, Star } from "lucide-react";
+import { ExternalLink, Copy, Check, Globe, Shield, ArrowUpRight, Lock, Star } from "lucide-react";
 import { EnrichedLayanan } from "@/lib/accessibilityMapper";
 import { useAuth } from "@/context/AuthContext";
+import { recordServiceClick } from "@/lib/localAnalytics";
 import LinkLogo from "./LinkLogo";
 
 interface LinkCardProps {
@@ -55,6 +56,9 @@ export default function LinkCard({
     e.preventDefault();
     e.stopPropagation();
     try {
+      // Record privacy-friendly local access counter
+      recordServiceClick(layanan.id_layanan, layanan.nama_layanan);
+
       // Do NOT expose or store restricted internal URLs for unauthenticated users
       if (typeof window !== "undefined") {
         try {
@@ -80,81 +84,35 @@ export default function LinkCard({
   return (
     <div className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-[#151f32] border border-slate-300 dark:border-slate-700/80 p-5 shadow-xs hover:shadow-md hover:-translate-y-1 hover:border-[#005AA9]/40 dark:hover:border-[#00A6B4]/50 transition-all duration-200">
       <div>
-        {/* Top Badges: Category & Accessibility Status + Wajib VPN Label */}
+        {/* Top Badges: Category & Favorite Toggle */}
         <div className="flex items-center justify-between gap-2 mb-3.5">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors truncate">
-              {layanan.category_name}
-            </span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors truncate">
+            {layanan.category_name}
+          </span>
 
-            {onToggleFavorite && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onToggleFavorite(layanan.id_layanan);
-                }}
-                aria-label={isFavorite ? "Hapus dari favorit" : "Tambah ke favorit"}
-                title={isFavorite ? "Tersimpan di favorit pribadi" : "Simpan ke favorit pribadi"}
-                className={`p-1 rounded-md border transition-all cursor-pointer shrink-0 ${
-                  isFavorite
-                    ? "bg-amber-500/15 border-amber-500/40 text-amber-500 hover:bg-amber-500/25"
-                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500 hover:border-amber-400/40"
-                }`}
-              >
-                <Star className={`w-3 h-3 ${isFavorite ? "fill-amber-400 text-amber-500" : ""}`} />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5 flex-wrap justify-end">
-            {/* Label Status VPN (Butuh VPN vs Tanpa VPN) - Accent Orange #FFA500 */}
-            {layanan.requires_vpn ? (
-              <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FFA500]/15 dark:bg-[#FFA500]/20 text-[#8c5200] dark:text-[#ffbe4d] border border-[#FFA500]/40 dark:border-[#FFA500]/50"
-                title="Memerlukan koneksi VPN BPS untuk mengakses"
-              >
-                <Shield className="w-3 h-3 text-[#FFA500]" />
-                <span>Butuh VPN</span>
-              </span>
-            ) : (
-              <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700"
-                title="Dapat diakses langsung tanpa VPN"
-              >
-                <Globe className="w-3 h-3 text-slate-500 dark:text-slate-400" />
-                <span>Tanpa VPN</span>
-              </span>
-            )}
-
-            {/* Accessibility Status Badge: Publik (Green #6DBE45) vs Internal (Teal #00A6B4) */}
-            {isInternal ? (
-              <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold border transition-colors ${
-                  isAuthenticated
-                    ? "bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border-[#6DBE45]/40 dark:border-[#6DBE45]/50"
-                    : "bg-[#00A6B4]/15 dark:bg-[#00A6B4]/20 text-[#006069] dark:text-[#38d4e2] border border-[#00A6B4]/40 dark:border-[#00A6B4]/50"
-                }`}
-                title={isAuthenticated ? "Aplikasi Internal (Terverifikasi)" : "Aplikasi internal operasional BPS (Perlu Login)"}
-              >
-                <Lock className={`w-3.5 h-3.5 ${isAuthenticated ? "text-[#3b781e] dark:text-[#6DBE45]" : "text-[#00828e] dark:text-[#00A6B4]"}`} />
-                <span>{isAuthenticated ? "Internal (Terverifikasi)" : "Internal"}</span>
-              </span>
-            ) : (
-              <span
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border border-[#6DBE45]/40 dark:border-[#6DBE45]/50"
-                title="Aplikasi dapat diakses publik tanpa VPN"
-              >
-                <Globe className="w-3.5 h-3.5 text-[#3b781e] dark:text-[#6DBE45]" />
-                <span>Publik</span>
-              </span>
-            )}
-          </div>
+          {onToggleFavorite && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleFavorite(layanan.id_layanan);
+              }}
+              aria-label={isFavorite ? "Hapus dari favorit" : "Tambah ke favorit"}
+              title={isFavorite ? "Tersimpan di favorit pribadi" : "Simpan ke favorit pribadi"}
+              className={`p-1 rounded-md border transition-all cursor-pointer shrink-0 ${
+                isFavorite
+                  ? "bg-amber-500/15 border-amber-500/40 text-amber-500 hover:bg-amber-500/25"
+                  : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500 hover:border-amber-400/40"
+              }`}
+            >
+              <Star className={`w-3.5 h-3.5 ${isFavorite ? "fill-amber-400 text-amber-500" : ""}`} />
+            </button>
+          )}
         </div>
 
         {/* Header with App Logo & Title */}
-        <div className="flex items-start gap-3.5 mb-2.5">
+        <div className="flex items-start gap-3.5 mb-3">
           {isProtected ? (
             /* Button mode for unauthenticated internal link: NO href attribute to prevent browser URL move link preview */
             <button
@@ -210,31 +168,54 @@ export default function LinkCard({
           </div>
         </div>
 
-        {/* Description */}
-        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-3.5 line-clamp-2">
+        {/* Deskripsi Layanan */}
+        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-3 line-clamp-2">
           {layanan.deskripsi_layanan || "Layanan dan sistem kerja resmi BPS Kabupaten Solok Selatan."}
         </p>
 
-        {/* Technical Note Box with Obvious Contrast */}
-        <div
-          className={`flex items-start gap-2 p-2.5 rounded-xl text-[11px] leading-relaxed mb-4 border transition-colors ${
-            layanan.requires_vpn
-              ? "bg-[#FFA500]/10 dark:bg-[#FFA500]/15 text-[#804b00] dark:text-[#ffbe4d] border-[#FFA500]/30 dark:border-[#FFA500]/40 font-medium"
-              : isInternal
-              ? "bg-[#00A6B4]/10 dark:bg-[#00A6B4]/15 text-[#00555c] dark:text-[#38d4e2] border-[#00A6B4]/30 dark:border-[#00A6B4]/40 font-medium"
-              : "bg-slate-100 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 border border-slate-300/80 dark:border-slate-700/60 font-medium"
-          }`}
-        >
-          <Info
-            className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
-              layanan.requires_vpn
-                ? "text-[#b36b00] dark:text-[#FFA500]"
-                : isInternal
-                ? "text-[#00828e] dark:text-[#00A6B4]"
-                : "text-slate-500 dark:text-slate-400"
-            }`}
-          />
-          <span>{layanan.technical_note}</span>
+        {/* Labels: Publik/Internal & Butuh/Tanpa VPN (Dipindahkan ke bawah deskripsi menggantikan teks keterangan) */}
+        <div className="flex items-center gap-1.5 flex-wrap mb-4">
+          {/* Status Aksesibilitas: Publik vs Internal */}
+          {isInternal ? (
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold border transition-colors ${
+                isAuthenticated
+                  ? "bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border-[#6DBE45]/40 dark:border-[#6DBE45]/50"
+                  : "bg-[#00A6B4]/15 dark:bg-[#00A6B4]/20 text-[#006069] dark:text-[#38d4e2] border border-[#00A6B4]/40 dark:border-[#00A6B4]/50"
+              }`}
+              title={isAuthenticated ? "Aplikasi Internal (Terverifikasi)" : "Aplikasi internal operasional BPS (Perlu Login)"}
+            >
+              <Lock className={`w-3.5 h-3.5 ${isAuthenticated ? "text-[#3b781e] dark:text-[#6DBE45]" : "text-[#00828e] dark:text-[#00A6B4]"}`} />
+              <span>{isAuthenticated ? "Internal (Terverifikasi)" : "Internal"}</span>
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#6DBE45]/15 dark:bg-[#6DBE45]/20 text-[#2f6318] dark:text-[#8ee064] border border-[#6DBE45]/40 dark:border-[#6DBE45]/50"
+              title="Aplikasi dapat diakses publik tanpa VPN"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#3b781e] dark:text-[#6DBE45]" />
+              <span>Publik</span>
+            </span>
+          )}
+
+          {/* Label Status VPN: Butuh VPN vs Tanpa VPN */}
+          {layanan.requires_vpn ? (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FFA500]/15 dark:bg-[#FFA500]/20 text-[#8c5200] dark:text-[#ffbe4d] border border-[#FFA500]/40 dark:border-[#FFA500]/50"
+              title="Memerlukan koneksi VPN BPS untuk mengakses"
+            >
+              <Shield className="w-3 h-3 text-[#FFA500]" />
+              <span>Butuh VPN</span>
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700"
+              title="Dapat diakses langsung tanpa VPN"
+            >
+              <Globe className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+              <span>Tanpa VPN</span>
+            </span>
+          )}
         </div>
       </div>
 
@@ -255,6 +236,7 @@ export default function LinkCard({
             href={layanan.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => recordServiceClick(layanan.id_layanan, layanan.nama_layanan)}
             className={`group/btn ${
               isInternal ? "w-full" : "flex-1"
             } inline-flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-lg text-xs font-semibold bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] text-white transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]`}

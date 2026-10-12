@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X, Globe, Lock, LayoutGrid } from "lucide-react";
+import { Search, X, Globe, Lock, LayoutGrid, PlusCircle } from "lucide-react";
 import { KategoriItem } from "@/lib/api";
 import { AccessType } from "@/lib/accessibilityMapper";
 
@@ -33,96 +33,113 @@ export default function SearchAndFilter({
 }: SearchAndFilterProps) {
   return (
     <div className="space-y-4">
-      {/* Search Input & Access Segment Filter */}
+      {/* Search (Paling Kiri) | Filter internal/publik | space | Tambah Layanan (Paling Kanan) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Clean Live Search Input with Clear Contrast & Focus Motion */}
-        <div className="relative flex-1 max-w-lg group">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#00A6B4] transition-colors duration-150">
-            <Search className="w-4 h-4" />
+        {/* Sisi Kiri: Search paling kiri + Filter internal/publik */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 min-w-0">
+          {/* 1. Search Paling Kiri */}
+          <div className="relative w-full sm:w-64 md:w-72 lg:w-80 group shrink-0">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#00A6B4] transition-colors duration-150">
+              <Search className="w-4 h-4" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Saring aplikasi dalam katalog..."
+              className="w-full pl-10 pr-9 py-2 rounded-xl bg-white dark:bg-[#151f32] border border-slate-300 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A6B4]/25 focus:border-[#00A6B4] transition-all duration-200 shadow-2xs h-10"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer"
+                title="Bersihkan pencarian"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Cari aplikasi, akronim, kata kunci, atau nama fungsi..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white dark:bg-[#151f32] border border-slate-300 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A6B4]/25 focus:border-[#00A6B4] transition-all duration-200 shadow-2xs"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => onSearchChange("")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer"
-              title="Bersihkan pencarian"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
 
-        {/* Clean Segmented Access Pill with Micro-motions */}
-        <div className="inline-flex p-1 rounded-xl bg-slate-200/90 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 self-start md:self-auto shadow-2xs">
-          <button
-            onClick={() => onSelectAccess("all")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
-              selectedAccess === "all"
-                ? "bg-[#005AA9] text-white shadow-xs"
-                : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-700/50"
-            }`}
-          >
-            <span>Semua Akses</span>
-            <span
-              className={`px-1.5 py-0.2 rounded text-[10px] font-bold transition-colors ${
+          {/* 2. Filter internal/publik */}
+          <div className="inline-flex p-1 rounded-xl bg-slate-200/90 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-2xs shrink-0 self-start sm:self-auto h-10 items-center">
+            <button
+              onClick={() => onSelectAccess("all")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                 selectedAccess === "all"
-                  ? "bg-white/20 text-white"
-                  : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                  ? "bg-[#005AA9] text-white shadow-xs"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-700/50"
               }`}
             >
-              {totalCount}
-            </span>
-          </button>
-          <button
-            onClick={() => onSelectAccess("public")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
-              selectedAccess === "public"
-                ? "bg-[#6DBE45] text-white shadow-xs"
-                : "text-slate-700 dark:text-slate-300 hover:text-[#2f6318] dark:hover:text-[#8ee064] hover:bg-white/40 dark:hover:bg-slate-700/50"
-            }`}
-          >
-            <Globe className="w-3.5 h-3.5" />
-            <span>Publik</span>
-            {publicCount !== undefined && (
+              <span>Semua Akses</span>
               <span
                 className={`px-1.5 py-0.2 rounded text-[10px] font-bold transition-colors ${
-                  selectedAccess === "public"
+                  selectedAccess === "all"
                     ? "bg-white/20 text-white"
                     : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
                 }`}
               >
-                {publicCount}
+                {totalCount}
               </span>
-            )}
-          </button>
-          <button
-            onClick={() => onSelectAccess("internal")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
-              selectedAccess === "internal"
-                ? "bg-[#00A6B4] text-white shadow-xs"
-                : "text-slate-700 dark:text-slate-300 hover:text-[#006069] dark:hover:text-[#38d4e2] hover:bg-white/40 dark:hover:bg-slate-700/50"
-            }`}
+            </button>
+            <button
+              onClick={() => onSelectAccess("public")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                selectedAccess === "public"
+                  ? "bg-[#6DBE45] text-white shadow-xs"
+                  : "text-slate-700 dark:text-slate-300 hover:text-[#2f6318] dark:hover:text-[#8ee064] hover:bg-white/40 dark:hover:bg-slate-700/50"
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>Publik</span>
+              {publicCount !== undefined && (
+                <span
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-bold transition-colors ${
+                    selectedAccess === "public"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  {publicCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => onSelectAccess("internal")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                selectedAccess === "internal"
+                  ? "bg-[#00A6B4] text-white shadow-xs"
+                  : "text-slate-700 dark:text-slate-300 hover:text-[#006069] dark:hover:text-[#38d4e2] hover:bg-white/40 dark:hover:bg-slate-700/50"
+              }`}
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Internal</span>
+              {internalCount !== undefined && (
+                <span
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-bold transition-colors ${
+                    selectedAccess === "internal"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  {internalCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 3. Tambah Layanan (Paling Kanan - ukuran sebesar filter, bg biru, icon putih) */}
+        <div className="shrink-0 self-start md:self-auto">
+          <a
+            href="/api/auth/sso?target=layanan.php"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-xl text-xs sm:text-sm font-semibold bg-[#005AA9] hover:bg-[#004280] text-white shadow-xs hover:shadow-md transition-all duration-150 active:scale-95 cursor-pointer shrink-0"
+            title="Tambah Layanan Baru di Dashboard Administrator"
           >
-            <Lock className="w-3.5 h-3.5" />
-            <span>Internal</span>
-            {internalCount !== undefined && (
-              <span
-                className={`px-1.5 py-0.2 rounded text-[10px] font-bold transition-colors ${
-                  selectedAccess === "internal"
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-                }`}
-              >
-                {internalCount}
-              </span>
-            )}
-          </button>
+            <PlusCircle className="w-4 h-4 text-white shrink-0" />
+            <span>Tambah Layanan</span>
+          </a>
         </div>
       </div>
 

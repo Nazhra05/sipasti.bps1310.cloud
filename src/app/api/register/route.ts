@@ -1,14 +1,41 @@
 import { NextResponse } from "next/server";
 import { getApiConfig } from "@/lib/serverApiConfig";
 import { safeParseJsonResponse } from "@/lib/api";
+import {
+  getClientIp,
+  checkRateLimit,
+  recordFailedAttempt,
+  resetRateLimit,
+} from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   const { API_BASE, headers } = getApiConfig();
+  const clientIp = getClientIp(request);
+  const rateLimitKey = `register:${clientIp}`;
+
+  // Rate Limiting Check (Max 5 failed attempts per minute)
+  const rateCheck = checkRateLimit(rateLimitKey, 5, 60000);
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      {
+        status: false,
+        message: `Terlalu banyak permintaan pendaftaran. Silakan coba kembali dalam ${rateCheck.retryAfterSeconds} detik.`,
+        data: null,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateCheck.retryAfterSeconds),
+        },
+      }
+    );
+  }
 
   try {
     const body = await request.json().catch(() => null);
 
     if (!body || typeof body !== "object") {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Format payload data tidak valid", data: null },
         { status: 400 }
@@ -24,6 +51,7 @@ export async function POST(request: Request) {
 
     // Validation checks
     if (!firstName || !username || !email || !password) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Nama depan, username, email, dan kata sandi wajib diisi", data: null },
         { status: 400 }
@@ -31,6 +59,7 @@ export async function POST(request: Request) {
     }
 
     if (firstName.length > 100 || lastName.length > 100 || username.length > 100 || email.length > 150) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Panjang karakter melebihi batas keamanan yang diizinkan", data: null },
         { status: 400 }
@@ -39,6 +68,7 @@ export async function POST(request: Request) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Format email kedinasan tidak valid", data: null },
         { status: 400 }
@@ -46,6 +76,7 @@ export async function POST(request: Request) {
     }
 
     if (password.length < 6) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Kata sandi minimal 6 karakter", data: null },
         { status: 400 }
@@ -53,6 +84,7 @@ export async function POST(request: Request) {
     }
 
     if (confirmPassword && password !== confirmPassword) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Konfirmasi kata sandi tidak cocok dengan kata sandi", data: null },
         { status: 400 }
@@ -82,6 +114,12 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!finalData.status) {
+      recordFailedAttempt(rateLimitKey);
+    } else {
+      resetRateLimit(rateLimitKey);
+    }
+
     return NextResponse.json(finalData, { status: res.status });
   } catch (err) {
     console.error("[Proxy register error]:", err);
@@ -91,3 +129,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

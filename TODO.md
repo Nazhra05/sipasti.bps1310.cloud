@@ -156,13 +156,11 @@ Pengujian komprehensif dua lapis untuk menjamin keandalan fungsionalitas dan log
 
 ## 8. Rencana Pengembangan Lanjutan (Backlog / Future Enhancements)
 
-Daftar ide opsional untuk iterasi rilis App B di masa mendatang:
-
-- [x] **Penyimpanan Bookmark & Favorit Pegawai (Terintegrasi Backend)**
+Daftar ide opsional untuk iterasi rilis App B di masa menda- [x] **Penyimpanan Bookmark & Favorit Pegawai (Terintegrasi Backend)**
   - Pegawai dapat menandai tautan aplikasi favorit yang tersimpan terpusat dan aman di repositori pegawai.
-- [ ] **Pemberitahuan Status Server Backend Terintegrasi (Healthcheck Ping)**
+- [x] **Pemberitahuan Status Server Backend Terintegrasi (Healthcheck Ping)**
   - Menampilkan indikator dot hijau/merah kecil jika server App A sedang maintenance.
-- [ ] **Pencatatan Analytics Akses Lokal (Privacy-Friendly Counter)**
+- [x] **Pencatatan Analytics Akses Lokal (Privacy-Friendly Counter)**
   - Mengukur aplikasi kedinasan mana yang paling sering diklik pegawai untuk keperluan evaluasi internal tanpa melacak data pribadi.
 
 ---
@@ -225,4 +223,100 @@ Pendaftaran mandiri akun pegawai BPS Solok Selatan kini dilakukan langsung dari 
   - [x] Pengujian penolakan ketidakcocokan konfirmasi kata sandi (HTTP 400).
   - [x] Pengujian keberhasilan penerusan data ke backend dengan injeksi `X-API-KEY` (HTTP 201).
   - [x] Pengujian penanganan respons server yang tidak valid (HTTP 502).
+
+---
+
+## 11. Rencana Peningkatan dan Pengerasan Sistem (Berdasarkan Audit Dokumentasi Root)
+
+Bagian ini memuat daftar perbaikan, penyempurnaan UI/UX, dan pengerasan arsitektur untuk **App B** hasil evaluasi 6 dokumen arsitektur di root (`API_and_Interface_Design.md`, `Business_Logic.md`, `Code_Quality_and_Architecture.md`, `Project_Context.md`, `Security.md`, dan `UI_UX.md`). Seluruh butir diurutkan berdasarkan tingkat kemandirian eksekusi (mulai dari peningkatan lokal yang aman tanpa dependensi eksternal, hingga penyelarasan kontrak terkoordinasi).
+
+### Prioritas 1: Perbaikan Mandiri & Non-Breaking (Peningkatan UI/UX & Pengerasan Route Handler)
+*Dapat dikerjakan langsung di sisi Next.js tanpa dependensi backend PHP dan tanpa risiko gangguan ke pengguna.*
+
+- [x] **Penerapan Skeleton Loading Shimmer pada Ruang Kerja Mandiri (`PersonalRepository.tsx`)**:
+  - Mengganti animasi spinner pemuatan sederhana dengan kartu placeholder berefek kilau (*shimmer*) bergradasi halus pada sub-tab repositori pegawai, sehingga transisi visual saat data dimuat terasa lebih elegan dan modern.
+- [x] **Penyempurnaan Visual Status Data Kosong (*Empty State Illustration*)**:
+  - Mengganti teks polos "Data tidak ditemukan" pada hasil pencarian katalog layanan dan repositori pribadi dengan komponen grafis ilustrasi SVG ramah pengguna, dilengkapi tombol pintas interaktif "Reset Filter / Tampilkan Semua Layanan".
+- [x] **In-Memory Rate Limiting pada Route Handler Autentikasi (`/api/login` & `/api/register`)**:
+  - Menerapkan pembatasan frekuensi pengiriman request berbasis alamat IP klien (maksimal 5 percobaan gagal per menit) langsung di lapisan Route Handler Next.js guna melindungi gerbang portal dari upaya brute-force dan spam akun.
+- [x] **Pemberian Indikator Salin Tautan (*Copy URL*) Berhasil yang Lebih Responsif**:
+  - Menambahkan mikro-animasi centang hijau seketika pada tombol salin di samping notifikasi Toast untuk memberikan penegasan visual instan kepada pegawai saat menyalin alamat tautan.
+
+### Prioritas 2: Resiliensi Interaksi Pengguna & Pemantauan Sistem (Client-Side Enhancements)
+*Peningkatan toleransi kesalahan dan fitur bantu pengguna di portal.*
+
+- [x] **Indikator Kesehatan Layanan Backend (*Backend Healthcheck Ping*)**:
+  - Menerapkan pemantauan status konektivitas ke backend App A secara periodik (indikator status dot hijau/oranye yang halus di footer atau navbar) guna memberi transparansi kondisi jaringan dinas kepada pengunjung.
+- [x] **Tampilan Panduan & Penanganan Masa Berlaku Verifikasi Akun**:
+  - Menambahkan modal dialog edukatif dan formulir pengajuan kirim ulang token verifikasi pada status pending/unverified di dialog login jika pegawai belum menerima atau token 24 jam telah kedaluwarsa.
+- [x] **Pencatatan Analytics Akses Aplikasi Mandiri (*Privacy-Friendly Local Counter*)**:
+  - Mengimplementasikan penghitung frekuensi klik tautan kedinasan yang tersimpan lokal di browser atau diagregasikan tanpa merekam identitas pribadi untuk membantu evaluasi aplikasi yang paling sering dibutuhkan pegawai.
+
+### Prioritas 3: Harmonisasi Kontrak Terkoordinasi & Sinkronisasi Sesi dengan App A
+*Penyelarasan konsumsi data saat App A merilis kontrak terpadu.*
+
+- [x] **Adaptasi Safe Parser untuk Skema Envelope JSON Terpadu**:
+  - Memperbarui antarmuka TypeScript dan pembungkus pemanggilan API di `src/lib/api.ts` agar siap mengonsumsi bentuk envelope standar `{ success: true, message: "...", data: [...], meta: {...} }` dari App A secara mulus.
+- [x] **Dukungan Paginasi / Infinite Scrolling pada Katalog Layanan Portal**:
+  - Menyiapkan komponen grid katalog layanan untuk mendukung konsumsi data bertahap berbasis paginasi atau lazy load jika jumlah layanan statistik bertumbuh melampaui batas efisiensi in-memory browser.
+- [x] **Integrasi Validasi Status Akun Real-Time pada Route `/api/auth/me`**:
+  - Menghubungkan pengecekan berkala ke endpoint validasi status akun di App A agar pegawai yang akunnya dinonaktifkan atau dihapus oleh administrator langsung dikeluarkan dari portal tanpa menunggu cookie sesi kedaluwarsa.
+
+---
+
+## 12. Rekayasa Desain Antarmuka: Redesign Navbar & Hero Berbasis Google Antigravity (REA Inspection)
+
+Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive behavior*, serta restrukturisasi tata letak komponen navbar dan hero section terinspirasi dari hasil *reverse engineering* (REA) arsitektur **Google Antigravity** (`https://antigravity.google`).
+
+### A. Redesign Navbar (Header Terpadu)
+- [ ] **Struktur & Efek Glassmorphism Modern**:
+  - [ ] Transformasi latar belakang dari warna biru pekat legacy (`bg-[#005AA9]`) ke *ultra-sleek frosted glassmorphism* (`backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-black/5 dark:border-white/10`).
+  - [ ] Implementasi *smart scroll behavior* (`data-scroll-reactive="true"`): navbar otomatis bersembunyi halus saat pengguna scroll ke bawah (`-translate-y-full`) dan muncul kembali seketika saat scroll naik (`translate-y-0`) dengan bayangan elevasi adaptif.
+- [ ] **Restrukturisasi Sisi Kiri Navbar**:
+  - [ ] **Logo**: Branding resmi BPS Kabupaten Solok Selatan dengan transisi interaktif.
+  - [ ] **Kategori (Dropdown 7 Kategori)**: Tombol pemicu dengan chevron SVG interaktif dan popover menu kaca yang memuat ke-7 kategori layanan statistik (Distribusi, Produksi, Neraca, Sosial, TI, Umum, Diseminasi) untuk pemfilteran instan.
+  - [ ] **Repositori Pribadi**: Tombol pintas menuju ruang kerja mandiri, favorit, dan koleksi tautan pegawai.
+  - [ ] **Tambah Layanan**: Tombol aksi cepat dengan penanda tautan eksternal menuju modul penambahan layanan di Dashboard Admin (App A).
+  - [ ] **Panduan**: Akses cepat menuju dialog panduan VPN dan tata cara akses jaringan kedinasan.
+- [ ] **Restrukturisasi Sisi Kanan Navbar**:
+  - [ ] **Search Bar Kecil (Compact Search Pill)**: Input pencarian mini terpadu dengan shortcut keyboard yang tersinkronisasi langsung dengan filter global.
+  - [ ] **Mode (Dark/Light Toggle)**: Pengalih tema rotasi halus dengan ikon Sun/Moon.
+  - [ ] **Kontak**: Popover bantuan cepat (WhatsApp Pelayanan, Email resmi BPS Solok Selatan, dan Website resmi).
+  - [ ] **Akun**: Indikator status login, profil pengguna, dan menu keluar.
+
+### B. Redesign Hero Section
+- [ ] **Penyelarasan Identitas & Headline**:
+  - [ ] Mempertahankan artwork resmi Logo SIPASTI (`/SIPASTI Logo.png`) dengan container mengambang dan efek pencahayaan lembut.
+  - [ ] Menetapkan judul utama bersih dan tegas: `"Temukan kebutuhan informasimu dengan sipasti"`.
+  - [ ] Subheadline deskriptif yang elegan dengan tipografi modern bernuansa Material You / Google Sans.
+- [ ] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
+  - [ ] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam (`shadow-xl shadow-sky-500/5`), ikon pencarian aksen sky, dan input yang nyaman.
+  - [ ] Tombol pembersih instan (`X`) dan indikator badge jumlah layanan statistik terdaftar.
+  - [ ] Deretan filter cepat (*Quick Access Pills*: Semua, Akses Publik, Jaringan Internal VPN) tepat di bawah search bar utama untuk kemudahan navigasi satu sentuhan.
+- [x] **Visual Ambient Background**:
+  - [x] Menambahkan gradien latar belakang bertingkat dan aksen *radial ambient glow* halus untuk menghadirkan atmosfer ruang modern berteknologi tinggi (*liftoff experience*).
+
+### C. Pemisahan Repositori & Favorit ke Halaman Mandiri (`/repositori`)
+- [x] **Dedicated Page Architecture**: Memindahkan Ruang Kerja Mandiri & Repositori dari modal/tab embedded di homepage ke halaman khusus [`src/app/repositori/page.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/app/repositori/page.tsx) dengan redirect dari `/repository`.
+- [x] **Unified Collapsible Sidebar (`RepositorySidebar.tsx`)**: Menyesuaikan arsitektur sidebar menyerupai Dashboard Admin BPS dengan toggle collapsible (lebar 256px saat terbuka, 80px saat tertutup), badge count real-time, dan styling khas `landingpageintra`.
+- [x] **Dukungan Kategori Standar**: Layanan Favorit, Link Website, Data & Dokumen, Link Drive, Aplikasi Mobile, Galeri Foto, dan Referensi.
+- [x] **Tombol Tambah Jenis Repositori & Palet 28 Ikon**: Modal interaktif [`AddRepoCategoryModal.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/AddRepoCategoryModal.tsx) dengan pilihan 28 ikon Lucide yang diselaraskan dengan kebutuhan kedinasan & statistik.
+- [x] **Integrasi Multi-Item & Pencarian Instan**: Modal penambahan item [`AddRepoItemModal.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/AddRepoItemModal.tsx), kartu item terpadu [`RepoCardItem.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/RepoCardItem.tsx), filter pencarian real-time, dan feedback salin tautan instan.
+- [x] **Peniadaan Navbar di Halaman Repositori & Penempatan Akun di Sidebar**:
+  - [x] Tiadakan `Navbar` di [`src/app/repositori/page.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/app/repositori/page.tsx), layout full-height bersih dengan sidebar sticky dan top bar minimalis (dilengkapi pengalih tema Dark/Light mode).
+  - [x] Tempatkan tombol Akun pengguna tepat di bawah tombol *Tambah Jenis Repositori* di [`RepositorySidebar.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/RepositorySidebar.tsx) yang memanggil modal detail akun (`AccountDetailModal`).
+  - [x] Kontekstualisasi [`AccountDetailModal.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/AccountDetailModal.tsx) dengan prop `isInsideRepository={true}`: tombol "Repositori Pribadi" otomatis beralih menjadi tombol "Kembali ke Portal" dengan ikon panah kiri hijau/emerald dan redirect langsung ke `/`.
+
+### D. Section 3D Stacked Carousel 7 Kategori
+- [x] **Heading**: `"Memudahkan pencarian link per kategori"`.
+- [x] **Arsitektur 7 Kartu Bertumpuk (*Tightened 3D Motion*)**:
+  - Mengimplementasikan pustaka `motion/react` dengan kalkulasi fanning yang diperketat (*tightened spacing*) agar 7 kategori statistik fanning secara presisi tanpa tumpang tindih berlebih.
+  - Interaksi drag & swipe responsif (spring physics: `stiffness: 220`, `damping: 28`).
+  - Dilengkapi tombol panah kiri/kanan dan 7 indikator pil navigasi langsung.
+- [x] **Tata Letak Konten Kartu**:
+  - Kiri atas: Nama Kategori, ikon tematik, dan badge nomor pilar.
+  - Deskripsi: Penjelasan ringkas lingkup bidang statistik.
+  - Cuplikan Layanan: 2-3 peek links riil dari database (lengkap dengan badge akses Publik/Internal & ikon eksternal).
+  - Kanan bawah: Tombol *"Lihat semua"* yang otomatis memfilter katalog layanan dan melakukan *smooth scroll* ke daftar layanan.
+
 

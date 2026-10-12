@@ -48,10 +48,27 @@ export type WebsiteCategory = {
   links: WebsiteLink[];
 };
 
-type ApiResponse<T> = {
-  status: boolean;
-  message: string;
+export type ApiMeta = {
+  page?: number;
+  limit?: number;
+  total?: number;
+  total_pages?: number;
+  [key: string]: any;
+};
+
+export type ApiResponse<T> = {
+  success?: boolean;
+  status?: boolean | string;
+  message?: string;
   data: T | null;
+  meta?: ApiMeta;
+};
+
+export type UnifiedApiResponse<T> = ApiResponse<T>;
+
+export type PaginatedResult<T> = {
+  data: T[];
+  meta?: ApiMeta;
 };
 
 // ─────────────────────────────────────────────
@@ -86,7 +103,7 @@ export async function safeParseJsonResponse<T>(res: Response): Promise<T | null>
 }
 
 // ─────────────────────────────────────────────
-// GENERIC SAFE FETCHER
+// GENERIC SAFE FETCHER (ARRAY)
 // ─────────────────────────────────────────────
 
 async function safeFetch<T>(endpoint: string, label: string): Promise<T[]> {
@@ -114,7 +131,15 @@ async function safeFetch<T>(endpoint: string, label: string): Promise<T[]> {
 
     const json = await safeParseJsonResponse<ApiResponse<T[]>>(res);
 
-    if (!json || !json.status || !Array.isArray(json.data)) {
+    // Support both unified schema (success: true) and legacy format (status: true / "success" / "ok")
+    const isSuccessful =
+      Boolean(json) &&
+      (json?.success === true ||
+        json?.status === true ||
+        json?.status === "success" ||
+        json?.status === "ok");
+
+    if (!isSuccessful || !Array.isArray(json?.data)) {
       console.warn(`[API] ${label}: Invalid or non-array payload returned.`);
       return [];
     }
@@ -123,6 +148,60 @@ async function safeFetch<T>(endpoint: string, label: string): Promise<T[]> {
   } catch (err) {
     console.warn(`[API] ${label}: Network/fetch error —`, err instanceof Error ? err.message : err);
     return [];
+  }
+}
+
+// ─────────────────────────────────────────────
+// GENERIC SAFE FETCHER (WITH PAGINATION META)
+// ─────────────────────────────────────────────
+
+export async function safeFetchPaginated<T>(
+  endpoint: string,
+  label: string
+): Promise<PaginatedResult<T>> {
+  try {
+    const isClient = typeof window !== "undefined";
+    const { API_BASE, headers: serverHeaders } = getApiConfig();
+
+    const targetUrl = isClient
+      ? `/api/${endpoint.replace(".php", "")}`
+      : `${API_BASE}/${endpoint}`;
+
+    const headers: Record<string, string> = isClient
+      ? { "Content-Type": "application/json" }
+      : serverHeaders;
+
+    const res = await fetch(targetUrl, {
+      headers,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.warn(`[API] ${label}: HTTP ${res.status} ${res.statusText}`);
+      return { data: [] };
+    }
+
+    const json = await safeParseJsonResponse<ApiResponse<T[]>>(res);
+
+    const isSuccessful =
+      Boolean(json) &&
+      (json?.success === true ||
+        json?.status === true ||
+        json?.status === "success" ||
+        json?.status === "ok");
+
+    if (!isSuccessful || !Array.isArray(json?.data)) {
+      console.warn(`[API] ${label}: Invalid or non-array payload returned.`);
+      return { data: [] };
+    }
+
+    return {
+      data: json.data,
+      meta: json.meta,
+    };
+  } catch (err) {
+    console.warn(`[API] ${label}: Network/fetch error —`, err instanceof Error ? err.message : err);
+    return { data: [] };
   }
 }
 

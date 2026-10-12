@@ -85,6 +85,14 @@ export interface UserRepoCounts {
   other: number;
 }
 
+export interface CustomRepoCategory {
+  id: string;
+  name: string;
+  iconName: string;
+  description?: string;
+  created_at?: string;
+}
+
 export interface UserRepositoryData {
   counts: UserRepoCounts;
   favorites: UserFavoriteItem[];
@@ -96,3 +104,4 @@ export interface UserRepositoryData {
   photo_links: UserPhotoLink[];
   other_links: UserOtherLink[];
 }
+

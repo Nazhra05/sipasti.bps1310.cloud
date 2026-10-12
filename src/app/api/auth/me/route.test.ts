@@ -68,4 +68,45 @@ describe("GET /api/auth/me (Session Verification Route Handler)", () => {
     expect(data.user.name).toBe("Budi Santoso");
     expect(data.user.role).toBe("admin");
   });
+
+  it("should return 401 and expire session cookie when backend App A reports account is deactivated", async () => {
+    process.env.CHECK_REMOTE_SESSION = "true";
+
+    const validToken = createSessionToken({
+      userId: 88,
+      username: "revoked_user",
+      name: "Revoked Officer",
+      email: "revoked@bps.go.id",
+      role: "pegawai",
+    });
+
+    mockCookieValue = validToken;
+
+    // Mock fetch to simulate App A reporting active: false
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        data: { active: false },
+      }),
+    }) as unknown as typeof fetch;
+
+    try {
+      const res = await GET();
+      const data = await res.json();
+
+      expect(res.status).toBe(401);
+      expect(data.authenticated).toBe(false);
+      expect(data.message).toContain("dinonaktifkan");
+
+      // Verify cookie is expired
+      const setCookie = res.headers.get("set-cookie") || "";
+      expect(setCookie).toContain("bps_solsel_session=;");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
+

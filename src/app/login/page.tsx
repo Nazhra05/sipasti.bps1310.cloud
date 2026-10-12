@@ -21,6 +21,7 @@ import {
 import Navbar from "@/components/Navbar";
 import VpnGuideModal from "@/components/VpnGuideModal";
 import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
+import ResendVerificationModal from "@/components/ResendVerificationModal";
 import { useAuth } from "@/context/AuthContext";
 import { toSafeExternalUrl } from "@/lib/safeUrl";
 import { fetchLayanan } from "@/lib/api";
@@ -45,6 +46,7 @@ function LoginContent() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isVpnModalOpen, setIsVpnModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isResendModalOpen, setIsResendModalOpen] = useState(false);
 
   // Synchronous submit lock reference to prevent rapid double-click race conditions
   const isProcessingRef = useRef(false);
@@ -325,9 +327,25 @@ function LoginContent() {
 
                 {/* Notifications Alert */}
                 {errorMessage && (
-                  <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs flex items-center gap-2 animate-in fade-in duration-150">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                    <span>{errorMessage}</span>
+                  <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs flex flex-col gap-2 animate-in fade-in duration-150">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                      <span>{errorMessage}</span>
+                    </div>
+                    {(errorMessage.toLowerCase().includes("verifikasi") ||
+                      errorMessage.toLowerCase().includes("pending") ||
+                      errorMessage.toLowerCase().includes("aktif")) && (
+                      <div className="pt-2 border-t border-red-200/60 dark:border-red-800/60 flex items-center justify-between text-[11px]">
+                        <span>Token kedaluwarsa atau belum menerima email?</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsResendModalOpen(true)}
+                          className="font-bold underline cursor-pointer text-[#005AA9] dark:text-[#38a0f0]"
+                        >
+                          Kirim Ulang Token
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -475,6 +493,11 @@ function LoginContent() {
       {/* Modals */}
       <VpnGuideModal isOpen={isVpnModalOpen} onClose={() => setIsVpnModalOpen(false)} />
       <PrivacyPolicyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
+      <ResendVerificationModal
+        isOpen={isResendModalOpen}
+        onClose={() => setIsResendModalOpen(false)}
+        defaultEmail={username.includes("@") ? username : ""}
+      />
     </div>
   );
 }

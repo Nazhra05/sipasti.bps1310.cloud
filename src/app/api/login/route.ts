@@ -2,14 +2,41 @@ import { NextResponse } from "next/server";
 import { getApiConfig } from "@/lib/serverApiConfig";
 import { safeParseJsonResponse } from "@/lib/api";
 import { createSessionToken, SESSION_COOKIE_NAME } from "@/lib/session";
+import {
+  getClientIp,
+  checkRateLimit,
+  recordFailedAttempt,
+  resetRateLimit,
+} from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   const { API_BASE, headers } = getApiConfig();
+  const clientIp = getClientIp(request);
+  const rateLimitKey = `login:${clientIp}`;
+
+  // Rate Limiting Check (Max 5 failed attempts per minute)
+  const rateCheck = checkRateLimit(rateLimitKey, 5, 60000);
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      {
+        status: false,
+        message: `Terlalu banyak percobaan login yang gagal. Silakan coba kembali dalam ${rateCheck.retryAfterSeconds} detik.`,
+        data: null,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateCheck.retryAfterSeconds),
+        },
+      }
+    );
+  }
 
   try {
     const body = await request.json().catch(() => null);
 
     if (!body || typeof body !== "object") {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Format payload data tidak valid", data: null },
         { status: 400 }
@@ -21,6 +48,7 @@ export async function POST(request: Request) {
     const rawPassword = typeof body.password === "string" ? body.password : "";
 
     if (!rawIdentity || !rawPassword) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Identity (username/email) dan kata sandi wajib diisi", data: null },
         { status: 400 }
@@ -29,6 +57,7 @@ export async function POST(request: Request) {
 
     // Enforce max length safety limits
     if (rawIdentity.length > 255 || rawPassword.length > 255) {
+      recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { status: false, message: "Panjang input melebihi batas keamanan yang diizinkan", data: null },
         { status: 400 }
@@ -54,6 +83,12 @@ export async function POST(request: Request) {
         { status: false, message: "Respon server backend tidak valid (Bukan format JSON)", data: null },
         { status: 502 }
       );
+    }
+
+    if (!finalData.status) {
+      recordFailedAttempt(rateLimitKey);
+    } else {
+      resetRateLimit(rateLimitKey);
     }
 
     const response = NextResponse.json(finalData, { status: res.status });
