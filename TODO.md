@@ -269,30 +269,29 @@ Bagian ini memuat daftar perbaikan, penyempurnaan UI/UX, dan pengerasan arsitekt
 Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive behavior*, serta restrukturisasi tata letak komponen navbar dan hero section terinspirasi dari hasil *reverse engineering* (REA) arsitektur **Google Antigravity** (`https://antigravity.google`).
 
 ### A. Redesign Navbar (Header Terpadu)
-- [ ] **Struktur & Efek Glassmorphism Modern**:
-  - [ ] Transformasi latar belakang dari warna biru pekat legacy (`bg-[#005AA9]`) ke *ultra-sleek frosted glassmorphism* (`backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-black/5 dark:border-white/10`).
-  - [ ] Implementasi *smart scroll behavior* (`data-scroll-reactive="true"`): navbar otomatis bersembunyi halus saat pengguna scroll ke bawah (`-translate-y-full`) dan muncul kembali seketika saat scroll naik (`translate-y-0`) dengan bayangan elevasi adaptif.
-- [ ] **Restrukturisasi Sisi Kiri Navbar**:
-  - [ ] **Logo**: Branding resmi BPS Kabupaten Solok Selatan dengan transisi interaktif.
-  - [ ] **Kategori (Dropdown 7 Kategori)**: Tombol pemicu dengan chevron SVG interaktif dan popover menu kaca yang memuat ke-7 kategori layanan statistik (Distribusi, Produksi, Neraca, Sosial, TI, Umum, Diseminasi) untuk pemfilteran instan.
-  - [ ] **Repositori Pribadi**: Tombol pintas menuju ruang kerja mandiri, favorit, dan koleksi tautan pegawai.
-  - [ ] **Tambah Layanan**: Tombol aksi cepat dengan penanda tautan eksternal menuju modul penambahan layanan di Dashboard Admin (App A).
-  - [ ] **Panduan**: Akses cepat menuju dialog panduan VPN dan tata cara akses jaringan kedinasan.
-- [ ] **Restrukturisasi Sisi Kanan Navbar**:
-  - [ ] **Search Bar Kecil (Compact Search Pill)**: Input pencarian mini terpadu dengan shortcut keyboard yang tersinkronisasi langsung dengan filter global.
-  - [ ] **Mode (Dark/Light Toggle)**: Pengalih tema rotasi halus dengan ikon Sun/Moon.
-  - [ ] **Kontak**: Popover bantuan cepat (WhatsApp Pelayanan, Email resmi BPS Solok Selatan, dan Website resmi).
-  - [ ] **Akun**: Indikator status login, profil pengguna, dan menu keluar.
+- [x] **Struktur & Efek Glassmorphism Modern**:
+  - [x] Transformasi latar belakang dari warna biru pekat legacy (`bg-[#005AA9]`) ke *ultra-sleek frosted glassmorphism* (`backdrop-blur-md bg-white/80 dark:bg-[#0c1424]/80`).
+  - [x] Implementasi *smart scroll behavior* (`data-scroll-reactive="true"`): navbar otomatis bersembunyi halus saat pengguna scroll ke bawah (`-translate-y-full`) dan muncul kembali seketika saat scroll naik (`translate-y-0`) dengan bayangan elevasi adaptif.
+- [x] **Restrukturisasi Sisi Kiri Navbar**:
+  - [x] **Logo**: Branding resmi BPS Kabupaten Solok Selatan dengan transisi interaktif.
+  - [x] **Home**: Tautan beranda dengan deteksi rute aktif dan smooth scroll ke hero.
+  - [x] **Kategori (Dropdown 7 Kategori)**: Tombol pemicu dengan chevron SVG interaktif dan popover menu kaca yang memuat ke-7 kategori layanan statistik (Distribusi, Produksi, Neraca, Sosial, TI, Umum, Diseminasi) untuk pemfilteran instan (hover-triggered).
+  - [x] **Repositori Pribadi**: Tombol pintas menuju ruang kerja mandiri, favorit, dan koleksi tautan pegawai.
+  - [x] **Katalog Layanan**: Tombol pintas menuju direktori katalog lengkap (`/katalog`).
+  - [x] **Panduan**: Akses cepat menuju dialog panduan VPN dan tata cara akses jaringan kedinasan.
+- [x] **Restrukturisasi Sisi Kanan Navbar**:
+  - [x] **Mode (Dark/Light Toggle)**: Pengalih tema rotasi halus dengan ikon Sun/Moon.
+  - [x] **Kontak**: Popover bantuan cepat (WhatsApp Pelayanan, Email resmi BPS Solok Selatan, dan Website resmi) berbasis hover.
+  - [x] **Akun**: Indikator status login, profil pengguna, dan menu keluar.
 
 ### B. Redesign Hero Section
-- [ ] **Penyelarasan Identitas & Headline**:
-  - [ ] Mempertahankan artwork resmi Logo SIPASTI (`/SIPASTI Logo.png`) dengan container mengambang dan efek pencahayaan lembut.
-  - [ ] Menetapkan judul utama bersih dan tegas: `"Temukan kebutuhan informasimu dengan sipasti"`.
-  - [ ] Subheadline deskriptif yang elegan dengan tipografi modern bernuansa Material You / Google Sans.
-- [ ] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
-  - [ ] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam (`shadow-xl shadow-sky-500/5`), ikon pencarian aksen sky, dan input yang nyaman.
-  - [ ] Tombol pembersih instan (`X`) dan indikator badge jumlah layanan statistik terdaftar.
-  - [ ] Deretan filter cepat (*Quick Access Pills*: Semua, Akses Publik, Jaringan Internal VPN) tepat di bawah search bar utama untuk kemudahan navigasi satu sentuhan.
+- [x] **Penyelarasan Identitas & Headline**:
+  - [x] Mempertahankan artwork resmi Logo SIPASTI (`/SIPASTI Logo.png`) dengan container mengambang dan efek pencahayaan lembut.
+  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan Informasi Relevan BPS Solok Selatan dengan SIPASTI"`.
+  - [x] Subheadline deskriptif dengan tipografi modern dan typographic reveal via GSAP SplitText.
+- [x] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
+  - [x] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam, ikon pencarian aksen sky, dan input yang nyaman.
+  - [x] Tombol pembersih instan (`X`) dan tag pencarian terpopuler (*Popular Search Tags*: Sensus & Survei, Simpeg, PDRB Neraca, Pelayanan PST, Koneksi VPN) yang mengarahkan langsung ke `/katalog` dengan query pencarian terkait.
 - [x] **Visual Ambient Background**:
   - [x] Menambahkan gradien latar belakang bertingkat dan aksen *radial ambient glow* halus untuk menghadirkan atmosfer ruang modern berteknologi tinggi (*liftoff experience*).
 
@@ -317,6 +316,39 @@ Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive
   - Kiri atas: Nama Kategori, ikon tematik, dan badge nomor pilar.
   - Deskripsi: Penjelasan ringkas lingkup bidang statistik.
   - Cuplikan Layanan: 2-3 peek links riil dari database (lengkap dengan badge akses Publik/Internal & ikon eksternal).
-  - Kanan bawah: Tombol *"Lihat semua"* yang otomatis memfilter katalog layanan dan melakukan *smooth scroll* ke daftar layanan.
+  - Kanan bawah: Tombol *"Lihat semua"* yang otomatis mengarahkan ke `/katalog?kategori={id}`.
+
+### E. Section Why SIPASTI & Bouncer Icons
+- [x] **Antigravity Bouncer Icons**: 16 ikon murni (7 kategori statistik, 8 koleksi repositori, 1 search spark) dengan floating physics dan horizontal parallax drift tanpa border/tombol.
+- [x] **Why SIPASTI Section**: 3 kartu referensi terpadu (Find What You Need, Access BPS Resources, Keep Your References) dengan navigasi langsung ke Hero dan Katalog.
+- [x] **Penyatuan Warna Latar & Penghapusan Border Antar Seksi**: Unifikasi token latar belakang (`bg-white` & `dark:bg-[#0c1424]`) di seluruh halaman dan navbar guna menghadirkan estetika satu kesatuan yang mulus dan hemat beban GPU.
+
+---
+
+## 13. Arsitektur Halaman Khusus Katalog Layanan (`/katalog`) & Navigasi Terpadu
+
+Pemisahan modul katalog layanan ke rute mandiri guna merampingkan beban DOM beranda, meningkatkan performa Core Web Vitals, serta penyempurnaan hierarki navigasi.
+
+- [x] **Dedicated Page Katalog (`src/app/katalog/page.tsx`)**:
+  - [x] Pemindahan modul pencarian, filter akses (Semua/Publik/Internal), tombol *Tambah Layanan*, tab 7 kategori, counter status, dan grid kartu layanan (`LinkGrid`) ke rute dedicated `/katalog`.
+  - [x] Mempertahankan konsistensi visual penuh dengan `Navbar` dan `Footer` pada rute katalog.
+  - [x] Dukungan sinkronisasi parameter URL (*deep-linking* query `?kategori={id}` dan `?search={query}`) yang dibungkus `<Suspense>`.
+- [x] **Heading & Subheading BPS**:
+  - [x] Penambahan judul utama: **"Semua Layanan, Satu Direktori"** dengan sentuhan gradien identitas BPS (`#005AA9` ke `#00A6B4` ke `#6DBE45`).
+  - [x] Penambahan subjudul: `"Temukan berbagai layanan dan referensi digital BPS yang terorganisasi dalam satu tempat."`
+- [x] **Typographic Reveal Terfokus (GSAP SplitText)**:
+  - [x] Penerapan animasi `SplitText` yang dibatasi khusus pada subheading per seksi (tidak pada heading atau teks panjang), menghemat pembuatan node DOM berlebih dan menjaga kestabilan memori.
+- [x] **Menu Home & Indikator Rute Aktif pada Navbar**:
+  - [x] Penambahan tautan **Home** pada Navbar desktop dan mobile drawer lengkap dengan ikon `Home`.
+  - [x] Deteksi rute aktif otomatis via `usePathname()` untuk tombol Home dan Katalog Layanan.
+  - [x] Interaksi cerdas: mengklik Home saat di beranda akan melakukan *smooth scroll* ke atas, sedangkan saat di halaman lain akan mengarahkan kembali ke `/`.
+  - [x] Interaksi dropdown Kategori berbasis hover dengan timer debounce 150ms yang halus.
+- [x] **Peningkatan Spacing per Seksi & Clearance Katalog**:
+  - [x] Penambahan *negative space* yang lapang pada Beranda (Hero `pb-20 sm:pb-36`, Carousel `py-20 sm:py-36`, Bouncer `py-16 sm:py-28`, Why SIPASTI `py-20 sm:py-36`, dan Footer `mt-20 sm:mt-28`).
+  - [x] Penambahan jarak lega (80–100px) antara heading katalog dengan formulir filter dan grid katalog tanpa membutuhkan garis border pemisah.
+- [x] **Efisiensi Performa & Code Splitting**:
+  - [x] Pemisahan bundle JavaScript via Next.js App Router: beranda tidak lagi mengunduh atau merender ratusan node kartu katalog saat first paint.
+  - [x] Eliminasi komputasi filtering in-memory berat di beranda, menurunkan Total Blocking Time (TBT) dan memaksimalkan skor INP.
+
 
 
