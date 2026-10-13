@@ -11,17 +11,17 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
 
-interface WhySipastiSectionProps {
+interface WhyRancakSectionProps {
   onScrollToHero?: () => void;
   onScrollToCatalog?: () => void;
   onOpenRepository?: () => void;
 }
 
-export default function WhySipastiSection({
+export default function WhyRancakSection({
   onScrollToHero,
   onScrollToCatalog,
   onOpenRepository,
-}: WhySipastiSectionProps) {
+}: WhyRancakSectionProps) {
   const subheadingRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function WhySipastiSection({
           ease: "power2.out",
         });
       } catch (err) {
-        console.warn("Why SIPASTI SplitText warning:", err);
+        console.warn("Why RANCAK SplitText warning:", err);
       }
     });
 
@@ -91,8 +91,8 @@ export default function WhySipastiSection({
 
   return (
     <section
-      id="why-sipasti"
-      aria-label="Mengapa Memilih SIPASTI"
+      id="why-rancak"
+      aria-label="Mengapa Memilih RANCAK"
       className="relative w-full py-20 sm:py-28 lg:py-36 bg-white dark:bg-[#0c1424] transition-colors overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -100,8 +100,8 @@ export default function WhySipastiSection({
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
             Why{" "}
-            <span className="bg-gradient-to-r from-[#005AA9] via-[#00A6B4] to-[#6DBE45] bg-clip-text text-transparent">
-              SIPASTI?
+            <span className="bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent">
+              RANCAK?
             </span>
           </h2>
           <p

@@ -282,7 +282,7 @@ function KatalogContent() {
           <div className="text-center max-w-3xl mx-auto pt-4 sm:pt-8 pb-10 sm:pb-16 lg:pb-20">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]">
               Semua Layanan,{" "}
-              <span className="bg-gradient-to-r from-[#005AA9] via-[#00A6B4] to-[#6DBE45] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent">
                 Satu Direktori
               </span>
             </h1>

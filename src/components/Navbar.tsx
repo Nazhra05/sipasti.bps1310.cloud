@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -303,26 +302,20 @@ export default function Navbar({
             <div className="flex items-center justify-between h-16 gap-3">
               {/* =========================================================
                   SISI KIRI:
-                  Logo sipasti, Kategori (dropdown 7 kategori), 
+                  Logo RANCAK, Kategori (dropdown 7 kategori), 
                   Repositori Pribadi, Tambah Layanan, Panduan, Kontak
               ========================================================= */}
               <div className="flex items-center gap-1 sm:gap-2 lg:gap-2.5 shrink-0 min-w-0">
-                {/* 1. Logo SIPASTI */}
+                {/* 1. Logo RANCAK */}
                 <Link
                   href="/"
-                  className="flex items-center gap-2 group focus:outline-none shrink-0 mr-1 sm:mr-2"
-                  aria-label="SIPASTI - BADAN PUSAT STATISTIK KABUPATEN SOLOK SELATAN"
+                  onClick={handleHomeClick}
+                  className="flex items-center gap-2 group focus:outline-none shrink-0 mr-1 sm:mr-2 select-none"
+                  aria-label="RANCAK - BADAN PUSAT STATISTIK KABUPATEN SOLOK SELATAN"
                 >
-                  <div className="relative flex items-center justify-center h-9 w-auto shrink-0 select-none">
-                    <Image
-                      src="/SIPASTI Logo.png"
-                      alt="Logo SIPASTI"
-                      width={130}
-                      height={40}
-                      className="h-7 sm:h-8 md:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-2xs"
-                      priority
-                    />
-                  </div>
+                  <span className="text-xl sm:text-2xl font-black tracking-wider bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent transition-transform duration-200 group-hover:scale-105 drop-shadow-2xs">
+                    RANCAK
+                  </span>
                 </Link>
 
                 {/* Vertical Divider Line */}

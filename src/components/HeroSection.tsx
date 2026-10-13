@@ -95,8 +95,8 @@ export default function HeroSection({
           {/* Headline Utama (Bersih di bawah fixed navbar dengan clearance Antigravity) */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.24] max-w-3xl mx-auto">
             Temukan Informasi Relevan BPS Solok Selatan dengan{" "}
-            <span className="bg-gradient-to-r from-[#005AA9] via-[#00A6B4] to-[#6DBE45] bg-clip-text text-transparent">
-              SIPASTI
+            <span className="bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent">
+              RANCAK
             </span>
           </h1>
 

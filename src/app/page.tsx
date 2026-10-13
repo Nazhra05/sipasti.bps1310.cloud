@@ -10,7 +10,7 @@ import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import Toast from "@/components/Toast";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import BouncerIcons from "@/components/BouncerIcons";
-import WhySipastiSection from "@/components/WhySipastiSection";
+import WhyRancakSection from "@/components/WhyRancakSection";
 import SmoothScrollLayout from "@/components/SmoothScrollLayout";
 import { fetchKategori, fetchLayanan, KategoriItem, LayananItem } from "@/lib/api";
 import { savePortalCache, getPortalCache } from "@/lib/offlineFallback";
@@ -118,8 +118,8 @@ export default function Home() {
         {/* Antigravity Bouncer Icons Section */}
         <BouncerIcons />
 
-        {/* Why SIPASTI Section */}
-        <WhySipastiSection
+        {/* Why RANCAK Section */}
+        <WhyRancakSection
           onScrollToHero={() => {
             try {
               const smoother = (window as unknown as { ScrollSmootherInstance?: { scrollTo: (target: string | number, smooth?: boolean) => void } }).ScrollSmootherInstance;

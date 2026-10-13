@@ -457,7 +457,7 @@ export default function RepositorySidebar({
         <div className="p-3 border-t border-white/10 dark:border-slate-800 shrink-0">
           <Link
             href="/"
-            title="Kembali ke Portal Utama SIPASTI BPS"
+            title="Kembali ke Portal Utama RANCAK BPS"
             className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80 transition-colors cursor-pointer ${
               isCollapsed ? "justify-center" : ""
             }`}

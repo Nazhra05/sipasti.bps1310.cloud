@@ -318,7 +318,7 @@ function LoginContent() {
                   </div>
 
                   <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Login Sipasti
+                    Login RANCAK
                   </h1>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                     Verifikasi identitas akun pegawai untuk membuka akses tautan internal BPS Solok Selatan.

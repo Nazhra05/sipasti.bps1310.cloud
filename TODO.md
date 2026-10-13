@@ -286,8 +286,8 @@ Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive
 
 ### B. Redesign Hero Section
 - [x] **Penyelarasan Identitas & Headline**:
-  - [x] Mempertahankan artwork resmi Logo SIPASTI (`/SIPASTI Logo.png`) dengan container mengambang dan efek pencahayaan lembut.
-  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan Informasi Relevan BPS Solok Selatan dengan SIPASTI"`.
+  - [x] Memperbarui identitas Logo RANCAK tipografi bergradasi tematik Biru (`#005AA9`), Hijau (`#6DBE45`), dan Orange (`#F37021`).
+  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan Informasi Relevan BPS Solok Selatan dengan RANCAK"`.
   - [x] Subheadline deskriptif dengan tipografi modern dan typographic reveal via GSAP SplitText.
 - [x] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
   - [x] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam, ikon pencarian aksen sky, dan input yang nyaman.
@@ -318,9 +318,9 @@ Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive
   - Cuplikan Layanan: 2-3 peek links riil dari database (lengkap dengan badge akses Publik/Internal & ikon eksternal).
   - Kanan bawah: Tombol *"Lihat semua"* yang otomatis mengarahkan ke `/katalog?kategori={id}`.
 
-### E. Section Why SIPASTI & Bouncer Icons
+### E. Section Why RANCAK & Bouncer Icons
 - [x] **Antigravity Bouncer Icons**: 16 ikon murni (7 kategori statistik, 8 koleksi repositori, 1 search spark) dengan floating physics dan horizontal parallax drift tanpa border/tombol.
-- [x] **Why SIPASTI Section**: 3 kartu referensi terpadu (Find What You Need, Access BPS Resources, Keep Your References) dengan navigasi langsung ke Hero dan Katalog.
+- [x] **Why RANCAK Section**: 3 kartu referensi terpadu (Find What You Need, Access BPS Resources, Keep Your References) dengan navigasi langsung ke Hero dan Katalog.
 - [x] **Penyatuan Warna Latar & Penghapusan Border Antar Seksi**: Unifikasi token latar belakang (`bg-white` & `dark:bg-[#0c1424]`) di seluruh halaman dan navbar guna menghadirkan estetika satu kesatuan yang mulus dan hemat beban GPU.
 
 ---
@@ -334,7 +334,7 @@ Pemisahan modul katalog layanan ke rute mandiri guna merampingkan beban DOM bera
   - [x] Mempertahankan konsistensi visual penuh dengan `Navbar` dan `Footer` pada rute katalog.
   - [x] Dukungan sinkronisasi parameter URL (*deep-linking* query `?kategori={id}` dan `?search={query}`) yang dibungkus `<Suspense>`.
 - [x] **Heading & Subheading BPS**:
-  - [x] Penambahan judul utama: **"Semua Layanan, Satu Direktori"** dengan sentuhan gradien identitas BPS (`#005AA9` ke `#00A6B4` ke `#6DBE45`).
+  - [x] Penambahan judul utama: **"Semua Layanan, Satu Direktori"** dengan sentuhan gradien identitas BPS (`#005AA9` ke `#6DBE45` ke `#F37021`).
   - [x] Penambahan subjudul: `"Temukan berbagai layanan dan referensi digital BPS yang terorganisasi dalam satu tempat."`
 - [x] **Typographic Reveal Terfokus (GSAP SplitText)**:
   - [x] Penerapan animasi `SplitText` yang dibatasi khusus pada subheading per seksi (tidak pada heading atau teks panjang), menghemat pembuatan node DOM berlebih dan menjaga kestabilan memori.
@@ -344,7 +344,7 @@ Pemisahan modul katalog layanan ke rute mandiri guna merampingkan beban DOM bera
   - [x] Interaksi cerdas: mengklik Home saat di beranda akan melakukan *smooth scroll* ke atas, sedangkan saat di halaman lain akan mengarahkan kembali ke `/`.
   - [x] Interaksi dropdown Kategori berbasis hover dengan timer debounce 150ms yang halus.
 - [x] **Peningkatan Spacing per Seksi & Clearance Katalog**:
-  - [x] Penambahan *negative space* yang lapang pada Beranda (Hero `pb-20 sm:pb-36`, Carousel `py-20 sm:py-36`, Bouncer `py-16 sm:py-28`, Why SIPASTI `py-20 sm:py-36`, dan Footer `mt-20 sm:mt-28`).
+  - [x] Penambahan *negative space* yang lapang pada Beranda (Hero `pb-20 sm:pb-36`, Carousel `py-20 sm:py-36`, Bouncer `py-16 sm:py-28`, Why RANCAK `py-20 sm:py-36`, dan Footer `mt-20 sm:mt-28`).
   - [x] Penambahan jarak lega (80–100px) antara heading katalog dengan formulir filter dan grid katalog tanpa membutuhkan garis border pemisah.
 - [x] **Efisiensi Performa & Code Splitting**:
   - [x] Pemisahan bundle JavaScript via Next.js App Router: beranda tidak lagi mengunduh atau merender ratusan node kartu katalog saat first paint.
@@ -375,5 +375,19 @@ Memindahkan fungsionalitas manajemen layanan portal dan pengaturan profil/akun p
   - [x] Implementasi metode `POST`, `PUT`, dan `DELETE` yang memvalidasi cookie sesi `bps_solsel_session` dan menginjeksi `created_by`/`user_id` secara server-side.
   - [x] Suite pengujian unit Vitest terverifikasi 100% lulus (58 skenario uji).
 
+---
 
+## 15. Rebranding Identitas Menjadi RANCAK & Harmonisasi Palet 3 Warna
 
+Transformasi identitas merek dari SIPASTI menjadi **RANCAK** beserta pembaruan palet gradien tematik 3 warna: Biru, Hijau, dan Orange.
+
+- [x] **Penggantian Nama Merek Seluruh Aplikasi**:
+  - [x] Mengganti seluruh teks `SIPASTI` menjadi `RANCAK` pada Headline Hero, Why Section, Halaman Login, Tooltip Sidebar, dan dokumentasi.
+  - [x] Pembaruan heading login: `"Login RANCAK"`.
+  - [x] Pembaruan section intro: `"Why RANCAK?"` dengan `id="why-rancak"`.
+- [x] **Harmonisasi Palet 3 Warna (Biru, Hijau, Orange)**:
+  - [x] Memperbarui skema 3 warna dari *Biru (`#005AA9`), Biru Muda (`#00A6B4`), Hijau (`#6DBE45`)* menjadi **Biru (`#005AA9`), Hijau (`#6DBE45`), dan Orange (`#F37021`)**.
+  - [x] Penerapan gradasi tematik baru pada headline Hero (`bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021]`), judul Why RANCAK, dan headline Katalog Layanan ("Satu Direktori").
+- [x] **Logo Typographic RANCAK pada Navbar**:
+  - [x] Mengganti logo gambar statis SIPASTI pada Navbar dengan teks **RANCAK** yang didesain tebal, dinamis, dan bernyawa seolah logo resmi (`font-black tracking-wider` dengan gradasi Biru, Hijau, dan Orange).
+  - [x] Efek interaksi hover scale dan klik cerdas kembali ke beranda.
