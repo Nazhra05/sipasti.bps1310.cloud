@@ -350,5 +350,30 @@ Pemisahan modul katalog layanan ke rute mandiri guna merampingkan beban DOM bera
   - [x] Pemisahan bundle JavaScript via Next.js App Router: beranda tidak lagi mengunduh atau merender ratusan node kartu katalog saat first paint.
   - [x] Eliminasi komputasi filtering in-memory berat di beranda, menurunkan Total Blocking Time (TBT) dan memaksimalkan skor INP.
 
+---
+
+## 14. Integrasi Kelola Repositori Portal & Pengaturan Native Pegawai di Next.js
+
+Memindahkan fungsionalitas manajemen layanan portal dan pengaturan profil/akun pegawai dari `Dashboard_Admin` ke `landingpageintra` secara menyeluruh, sehingga `Dashboard_Admin` dikhususkan penuh untuk tugas-tugas administratif.
+
+- [x] **Hierarki Sidebar Repositori Pribadi (`RepositorySidebar.tsx`)**:
+  - [x] Penambahan section **"Tambah Layanan"** di atas "Kategori Utama" dengan tombol **"Kelola Repositori Portal"** lengkap dengan badge counter layanan.
+  - [x] Penempatan section **"Kategori Utama"** dan tombol repositori lainnya di bawahnya.
+  - [x] Penambahan tombol **"Pengaturan"** tepat di bawah tombol Akun pada sidebar.
+- [x] **Tampilan & Manajemen Kelola Repositori Portal**:
+  - [x] Hanya menampilkan layanan yang ditambahkan oleh user bersangkutan (`created_by === user.id`).
+  - [x] Seluruh layanan yang ditambahkan/diperbarui otomatis masuk ke tabel utama `layanan` dan langsung muncul pada direktori katalog publik/internal (`/katalog` dan beranda).
+  - [x] Fitur penambahan, pengeditan, penyalinan tautan, dan penghapusan layanan dengan dialog konfirmasi aman.
+  - [x] Modal form mandiri [`PortalLayananModal.tsx`](file:///d:/BPS/Rangkiang/landingpageintra/src/components/PortalLayananModal.tsx) dengan validasi nama, kategori, akses (Publik/Internal), VPN, URL, dan deskripsi.
+- [x] **Tampilan Pengaturan Native Pegawai**:
+  - [x] Panel profil pengguna lengkap dengan inisial avatar, nama, username, email, dan status verifikasi akun.
+  - [x] Preferensi tema tampilan (pengalih Dark/Light mode instan).
+  - [x] Panel keamanan sesi dan tombol logout terenkripsi aman.
+  - [x] Tautan cepat Single Sign-On (SSO) khusus peran `ADMIN` untuk membuka Dashboard Admin tanpa perlu login ulang.
+- [x] **Proksi Endpoint Layanan Terotorisasi (`/api/layanan`)**:
+  - [x] Dukungan parameter `?my_services=1` untuk memuat layanan portal milik user yang sedang aktif.
+  - [x] Implementasi metode `POST`, `PUT`, dan `DELETE` yang memvalidasi cookie sesi `bps_solsel_session` dan menginjeksi `created_by`/`user_id` secara server-side.
+  - [x] Suite pengujian unit Vitest terverifikasi 100% lulus (58 skenario uji).
+
 
 

@@ -18,6 +18,8 @@ import {
   FolderHeart,
   LucideIcon,
   LogIn,
+  Layers,
+  Settings,
 } from "lucide-react";
 import { UserInfo } from "@/context/AuthContext";
 import { CustomRepoCategory, UserRepoCounts } from "@/types/userRepo";
@@ -63,6 +65,7 @@ interface RepositorySidebarProps {
   user?: UserInfo | null;
   isAuthenticated?: boolean;
   onOpenAccountModal?: () => void;
+  portalServicesCount?: number;
 }
 
 export default function RepositorySidebar({
@@ -78,6 +81,7 @@ export default function RepositorySidebar({
   user,
   isAuthenticated,
   onOpenAccountModal,
+  portalServicesCount = 0,
 }: RepositorySidebarProps) {
   // Collapsible state (collapsed by default or expanded)
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -162,6 +166,58 @@ export default function RepositorySidebar({
 
         {/* Navigation Menu List */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-none">
+          {/* Section 0: Tambah Layanan (Kelola Repositori Portal) */}
+          <div>
+            {!isCollapsed && (
+              <span className="block px-2 mb-2 text-[10px] font-bold tracking-wider uppercase text-blue-200/60 dark:text-slate-500">
+                Tambah Layanan
+              </span>
+            )}
+
+            <ul className="space-y-1">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectCategory("portal_services");
+                    onCloseMobile();
+                  }}
+                  title={`Kelola Repositori Portal (${portalServicesCount})`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                    isCollapsed ? "justify-center" : "justify-between"
+                  } ${
+                    activeCategory === "portal_services"
+                      ? "bg-white text-[#005AA9] dark:bg-sky-500/20 dark:text-sky-300 dark:border dark:border-sky-500/40 shadow-sm font-bold"
+                      : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <Layers
+                      className={`w-4.5 h-4.5 shrink-0 ${
+                        activeCategory === "portal_services"
+                          ? "text-[#005AA9] dark:text-sky-300"
+                          : "text-white/80 dark:text-slate-300"
+                      }`}
+                    />
+                    {!isCollapsed && <span className="truncate">Kelola Repositori Portal</span>}
+                  </div>
+
+                  {!isCollapsed && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                        activeCategory === "portal_services"
+                          ? "bg-[#005AA9]/10 text-[#005AA9] dark:bg-sky-400/20 dark:text-sky-300"
+                          : "bg-white/15 text-white/90 dark:bg-slate-800 dark:text-slate-400"
+                      }`}
+                    >
+                      {portalServicesCount}
+                    </span>
+                  )}
+                </button>
+              </li>
+            </ul>
+          </div>
+
           {/* Section 1: Standard Categories */}
           <div>
             {!isCollapsed && (
@@ -364,6 +420,36 @@ export default function RepositorySidebar({
                 {!isCollapsed && <span>Masuk Akun</span>}
               </Link>
             )}
+          </div>
+
+          {/* Action: Tombol Pengaturan */}
+          <div className="pt-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                onSelectCategory("settings");
+                onCloseMobile();
+              }}
+              title="Pengaturan Akun & Profil"
+              className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                isCollapsed ? "justify-center px-0" : ""
+              } ${
+                activeCategory === "settings"
+                  ? "bg-white text-[#005AA9] dark:bg-sky-500/20 dark:text-sky-300 dark:border dark:border-sky-500/40 shadow-sm font-bold"
+                  : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80 border border-white/10 dark:border-slate-800"
+              }`}
+            >
+              <div
+                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                  activeCategory === "settings"
+                    ? "bg-[#005AA9] text-white dark:bg-sky-400 dark:text-slate-900"
+                    : "bg-white/15 text-white"
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+              </div>
+              {!isCollapsed && <span>Pengaturan</span>}
+            </button>
           </div>
         </div>
 

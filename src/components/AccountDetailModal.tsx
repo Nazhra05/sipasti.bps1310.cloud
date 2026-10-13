@@ -25,6 +25,7 @@ interface AccountDetailModalProps {
   onLogout: () => void;
   onOpenRepository?: () => void;
   isInsideRepository?: boolean;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export default function AccountDetailModal({
@@ -34,6 +35,7 @@ export default function AccountDetailModal({
   onLogout,
   onOpenRepository,
   isInsideRepository = false,
+  onNavigateTab,
 }: AccountDetailModalProps) {
   const router = useRouter();
 
@@ -63,6 +65,24 @@ export default function AccountDetailModal({
       onOpenRepository();
     } else {
       router.push("/repositori");
+    }
+  };
+
+  const handlePortalServicesClick = () => {
+    onClose();
+    if (onNavigateTab) {
+      onNavigateTab("portal_services");
+    } else {
+      router.push("/repositori?tab=portal_services");
+    }
+  };
+
+  const handleSettingsClick = () => {
+    onClose();
+    if (onNavigateTab) {
+      onNavigateTab("settings");
+    } else {
+      router.push("/repositori?tab=settings");
     }
   };
 
@@ -105,7 +125,7 @@ export default function AccountDetailModal({
 
         {/* Modal Body */}
         <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-          {/* Container foto dan username (masih style sebelumnya) */}
+          {/* Container foto dan username */}
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#005AA9] dark:bg-[#004280] text-white flex items-center justify-center font-bold text-xl shadow-xs shrink-0">
               {(user.name || user.username || "P").charAt(0).toUpperCase()}
@@ -133,11 +153,10 @@ export default function AccountDetailModal({
 
           {/* Quick Actions: Kelola Layanan & Repositori Pribadi */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <a
-              href="/api/auth/sso?target=layanan.php"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 transition group cursor-pointer"
+            <button
+              type="button"
+              onClick={handlePortalServicesClick}
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 transition group cursor-pointer text-left"
             >
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-lg bg-[#005AA9]/10 text-[#005AA9] dark:bg-sky-500/20 dark:text-sky-300">
@@ -147,8 +166,8 @@ export default function AccountDetailModal({
                   Kelola Layanan
                 </span>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#005AA9] dark:group-hover:text-sky-300 transition" />
-            </a>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#005AA9] dark:group-hover:text-sky-300 transition" />
+            </button>
 
             <button
               type="button"
@@ -207,7 +226,7 @@ export default function AccountDetailModal({
                 </span>
               </div>
 
-              {/* Email (tidak lagi Email Dinas) */}
+              {/* Email */}
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60">
                 <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                   <Mail className="w-4 h-4 text-slate-400" />
@@ -220,13 +239,12 @@ export default function AccountDetailModal({
             </div>
           </div>
 
-          {/* Pengaturan */}
+          {/* Pengaturan (Native Next.js) */}
           <div className="pt-1">
-            <a
-              href="/api/auth/sso?target=pengaturan.php"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 transition group cursor-pointer"
+            <button
+              type="button"
+              onClick={handleSettingsClick}
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 transition group cursor-pointer text-left"
             >
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-lg bg-slate-200/70 text-slate-700 dark:bg-slate-700 dark:text-slate-200">
@@ -237,13 +255,40 @@ export default function AccountDetailModal({
                     Pengaturan
                   </span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                    Kelola profil, kata sandi, dan preferensi akun
+                    Kelola profil, keamanan, dan preferensi akun
                   </span>
                 </div>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition" />
-            </a>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition" />
+            </button>
           </div>
+
+          {/* SSO to Dashboard Admin (Only for Admin users) */}
+          {isAdmin && (
+            <div className="pt-1">
+              <a
+                href="/api/auth/sso?target=index.php"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-400/30 dark:border-amber-500/30 transition group cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                    <ExternalLink className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
+                      Buka Dashboard Admin (SSO)
+                    </span>
+                    <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">
+                      Kelola konfigurasi sistem khusus Administrator
+                    </span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer: Logout (kiri) dan Tutup (kanan) */}
