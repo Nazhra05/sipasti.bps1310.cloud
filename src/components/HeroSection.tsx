@@ -93,10 +93,10 @@ export default function HeroSection({
       <div className="relative w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
           {/* Headline Utama (Bersih di bawah fixed navbar dengan clearance Antigravity) */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.24] max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.16] max-w-4xl mx-auto">
             Temukan dan Kelola Referensi Digital
             <br className="hidden sm:inline" />{" "}
-            BPS Solok Selatan
+            Badan Pusat Statistik Solok Selatan
             <br className="hidden sm:inline" />{" "}
             dengan{" "}
             <span className="bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent">

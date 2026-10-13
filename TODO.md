@@ -287,7 +287,7 @@ Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive
 ### B. Redesign Hero Section
 - [x] **Penyelarasan Identitas & Headline**:
   - [x] Memperbarui identitas Logo RANCAK tipografi bergradasi tematik Biru (`#005AA9`), Hijau (`#6DBE45`), dan Orange (`#F37021`).
-  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan dan Kelola Referensi Digital BPS Solok Selatan dengan RANCAK"`.
+  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan dan Kelola Referensi Digital Badan Pusat Statistik Solok Selatan dengan RANCAK"`.
   - [x] Subheadline deskriptif: `"Ruang Akses dan Navigasi Cepat Aplikasi dan Koleksi"` dengan typographic reveal via GSAP SplitText.
 - [x] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
   - [x] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam, ikon pencarian aksen sky, dan input yang nyaman.
