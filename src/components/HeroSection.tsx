@@ -94,7 +94,11 @@ export default function HeroSection({
         <div className="flex flex-col items-center text-center">
           {/* Headline Utama (Bersih di bawah fixed navbar dengan clearance Antigravity) */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.24] max-w-3xl mx-auto">
-            Temukan Informasi Relevan BPS Solok Selatan dengan{" "}
+            Temukan dan Kelola Referensi Digital
+            <br className="hidden sm:inline" />{" "}
+            BPS Solok Selatan
+            <br className="hidden sm:inline" />{" "}
+            dengan{" "}
             <span className="bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent">
               RANCAK
             </span>
@@ -105,7 +109,7 @@ export default function HeroSection({
             ref={subheadingRef}
             className="mt-3 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal"
           >
-            Portal satu pintu direktori layanan statistik, aplikasi operasional, dan sistem kerja resmi BPS Kabupaten Solok Selatan
+            Ruang Akses dan Navigasi Cepat Aplikasi dan Koleksi
           </p>
 
           {/* Centered Search Bar (Antigravity Clean Capsule - Spacing Rapat) */}

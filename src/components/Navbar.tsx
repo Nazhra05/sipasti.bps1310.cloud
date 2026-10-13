@@ -313,7 +313,7 @@ export default function Navbar({
                   className="flex items-center gap-2 group focus:outline-none shrink-0 mr-1 sm:mr-2 select-none"
                   aria-label="RANCAK - BADAN PUSAT STATISTIK KABUPATEN SOLOK SELATAN"
                 >
-                  <span className="text-xl sm:text-2xl font-black tracking-wider bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent transition-transform duration-200 group-hover:scale-105 drop-shadow-2xs">
+                  <span className="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021] bg-clip-text text-transparent transition-transform duration-200 group-hover:scale-105 drop-shadow-2xs">
                     RANCAK
                   </span>
                 </Link>

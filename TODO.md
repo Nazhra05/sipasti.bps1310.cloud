@@ -287,8 +287,8 @@ Menerapkan bahasa desain modern, *frosted glassmorphism*, *smart scroll reactive
 ### B. Redesign Hero Section
 - [x] **Penyelarasan Identitas & Headline**:
   - [x] Memperbarui identitas Logo RANCAK tipografi bergradasi tematik Biru (`#005AA9`), Hijau (`#6DBE45`), dan Orange (`#F37021`).
-  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan Informasi Relevan BPS Solok Selatan dengan RANCAK"`.
-  - [x] Subheadline deskriptif dengan tipografi modern dan typographic reveal via GSAP SplitText.
+  - [x] Menetapkan judul utama bersih dan tegas: `"Temukan dan Kelola Referensi Digital BPS Solok Selatan dengan RANCAK"`.
+  - [x] Subheadline deskriptif: `"Ruang Akses dan Navigasi Cepat Aplikasi dan Koleksi"` dengan typographic reveal via GSAP SplitText.
 - [x] **Search Bar Utama (Pengganti CTA Download Google Antigravity)**:
   - [x] Mengganti model CTA tombol download tunggal menjadi **Search Bar Mengambang Berukuran Besar (Prominent Hero Search Box)** berbentuk pill (`rounded-full`) dengan efek bayangan mendalam, ikon pencarian aksen sky, dan input yang nyaman.
   - [x] Tombol pembersih instan (`X`) dan tag pencarian terpopuler (*Popular Search Tags*: Sensus & Survei, Simpeg, PDRB Neraca, Pelayanan PST, Koneksi VPN) yang mengarahkan langsung ke `/katalog` dengan query pencarian terkait.
@@ -389,5 +389,5 @@ Transformasi identitas merek dari SIPASTI menjadi **RANCAK** beserta pembaruan p
   - [x] Memperbarui skema 3 warna dari *Biru (`#005AA9`), Biru Muda (`#00A6B4`), Hijau (`#6DBE45`)* menjadi **Biru (`#005AA9`), Hijau (`#6DBE45`), dan Orange (`#F37021`)**.
   - [x] Penerapan gradasi tematik baru pada headline Hero (`bg-gradient-to-r from-[#005AA9] via-[#6DBE45] to-[#F37021]`), judul Why RANCAK, dan headline Katalog Layanan ("Satu Direktori").
 - [x] **Logo Typographic RANCAK pada Navbar**:
-  - [x] Mengganti logo gambar statis SIPASTI pada Navbar dengan teks **RANCAK** yang didesain tebal, dinamis, dan bernyawa seolah logo resmi (`font-black tracking-wider` dengan gradasi Biru, Hijau, dan Orange).
+  - [x] Mengganti logo gambar statis SIPASTI pada Navbar dengan teks **RANCAK** proporsional dan rapat (`font-black tracking-tight text-lg sm:text-xl` dengan gradasi Biru, Hijau, dan Orange).
   - [x] Efek interaksi hover scale dan klik cerdas kembali ke beranda.
