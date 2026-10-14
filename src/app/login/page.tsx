@@ -23,7 +23,7 @@ import VpnGuideModal from "@/components/VpnGuideModal";
 import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import ResendVerificationModal from "@/components/ResendVerificationModal";
 import { useAuth } from "@/context/AuthContext";
-import { toSafeExternalUrl } from "@/lib/safeUrl";
+import { toSafeExternalUrl, toSafeRedirectUrl } from "@/lib/safeUrl";
 import { fetchLayanan } from "@/lib/api";
 
 function LoginContent() {
@@ -82,7 +82,7 @@ function LoginContent() {
 
     const rawRedirect = searchParams.get("redirect");
     if (rawRedirect) {
-      const safeUrl = toSafeExternalUrl(rawRedirect);
+      const safeUrl = toSafeRedirectUrl(rawRedirect);
       if (safeUrl) {
         try {
           const appData = {
@@ -137,7 +137,7 @@ function LoginContent() {
             if (rawPending) {
               const parsed = JSON.parse(rawPending);
               if (parsed?.id) targetId = Number(parsed.id);
-              if (parsed?.url) targetUrl = toSafeExternalUrl(parsed.url);
+              if (parsed?.url) targetUrl = toSafeRedirectUrl(parsed.url);
               sessionStorage.removeItem("bps_pending_app_target");
             }
           } catch (storageErr) {
@@ -151,7 +151,7 @@ function LoginContent() {
             const freshLayanan = await fetchLayanan();
             const targetApp = freshLayanan.find((item) => item.id_layanan === targetId);
             if (targetApp?.url) {
-              targetUrl = toSafeExternalUrl(targetApp.url);
+              targetUrl = toSafeRedirectUrl(targetApp.url);
             }
           } catch (fetchErr) {
             console.warn("Gagal mengambil tautan aplikasi setelah login:", fetchErr);
@@ -160,8 +160,12 @@ function LoginContent() {
 
         setTimeout(() => {
           if (targetUrl) {
-            window.open(targetUrl, "_blank", "noopener,noreferrer");
-            router.push("/");
+            if (targetUrl.startsWith("/")) {
+              router.push(targetUrl);
+            } else {
+              window.open(targetUrl, "_blank", "noopener,noreferrer");
+              router.push("/");
+            }
           } else {
             router.push("/");
           }
@@ -172,7 +176,7 @@ function LoginContent() {
         isProcessingRef.current = false;
       }
     } catch (err) {
-      setErrorMessage("Terjadi kesalahan sistem saat menghubungi server.");
+      setErrorMessage("Terjadi kendala saat memproses masuk. Silakan coba beberapa saat lagi.");
       setIsSubmitting(false);
       isProcessingRef.current = false;
     }
@@ -268,9 +272,13 @@ function LoginContent() {
                           finalUrl = found?.url;
                         }
                         if (finalUrl) {
-                          const safeUrl = toSafeExternalUrl(finalUrl);
+                          const safeUrl = toSafeRedirectUrl(finalUrl);
                           if (safeUrl) {
-                            window.open(safeUrl, "_blank", "noopener,noreferrer");
+                            if (safeUrl.startsWith("/")) {
+                              router.push(safeUrl);
+                            } else {
+                              window.open(safeUrl, "_blank", "noopener,noreferrer");
+                            }
                           }
                         }
                         sessionStorage.removeItem("bps_pending_app_target");
@@ -336,13 +344,13 @@ function LoginContent() {
                       errorMessage.toLowerCase().includes("pending") ||
                       errorMessage.toLowerCase().includes("aktif")) && (
                       <div className="pt-2 border-t border-red-200/60 dark:border-red-800/60 flex items-center justify-between text-[11px]">
-                        <span>Token kedaluwarsa atau belum menerima email?</span>
+                        <span>Tautan verifikasi kedaluwarsa atau belum menerima email?</span>
                         <button
                           type="button"
                           onClick={() => setIsResendModalOpen(true)}
                           className="font-bold underline cursor-pointer text-[#005AA9] dark:text-[#38a0f0]"
                         >
-                          Kirim Ulang Token
+                          Kirim Ulang Email Verifikasi
                         </button>
                       </div>
                     )}

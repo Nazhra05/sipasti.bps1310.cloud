@@ -30,7 +30,7 @@ export async function fetchUserRepository(): Promise<{
   } catch (error) {
     return {
       success: false,
-      message: "Terjadi kesalahan jaringan saat mengambil repositori.",
+      message: "Gagal memuat repositori pribadi. Periksa koneksi internet Anda dan coba lagi.",
     };
   }
 }

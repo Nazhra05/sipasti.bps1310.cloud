@@ -22,6 +22,8 @@ import { savePortalCache, getPortalCache } from "@/lib/offlineFallback";
 import { useAuth } from "@/context/AuthContext";
 import { fetchUserRepository, toggleFavoriteService } from "@/lib/userRepoApi";
 import { UserRepositoryData } from "@/types/userRepo";
+import { searchAndRankServices } from "@/lib/searchMatcher";
+import Footer from "@/components/Footer";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -133,31 +135,24 @@ function KatalogContent() {
         catData.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
         const enriched = layData.map((item) => enrichLayanan(item, catMap));
         setLayananList(enriched);
-      } else {
-        const cached = getPortalCache();
-        setCategories(cached.categories);
-        setIsOfflineMode(true);
-        setLastUpdatedTime(cached.cachedAt);
-
-        const catMap = new Map<number, string>();
-        cached.categories.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
-        const enriched = cached.layanan.map((item) => enrichLayanan(item, catMap));
-        setLayananList(enriched);
+        return;
       }
     } catch (err) {
       console.error("Gagal memuat data dari API:", err);
-      const cached = getPortalCache();
-      setCategories(cached.categories);
-      setIsOfflineMode(true);
-      setLastUpdatedTime(cached.cachedAt);
-
-      const catMap = new Map<number, string>();
-      cached.categories.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
-      const enriched = cached.layanan.map((item) => enrichLayanan(item, catMap));
-      setLayananList(enriched);
     } finally {
       setIsLoading(false);
     }
+
+    // Fallback ke data snapshot / cache lokal jika API tidak merespons
+    const cached = getPortalCache();
+    setCategories(cached.categories);
+    setIsOfflineMode(true);
+    setLastUpdatedTime(cached.cachedAt);
+
+    const catMap = new Map<number, string>();
+    cached.categories.forEach((c) => catMap.set(c.id_kategori, c.nama_kategori));
+    const enriched = cached.layanan.map((item) => enrichLayanan(item, catMap));
+    setLayananList(enriched);
   }, []);
 
   useEffect(() => {
@@ -220,28 +215,20 @@ function KatalogContent() {
     showToast(`Tautan "${name}" berhasil disalin!`);
   };
 
-  // Live Filtering
+  // Live Filtering dengan Pembobotan Nama, Deskripsi, dan Sinonim
   const filteredList = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
+    let baseList = layananList;
+    if (selectedCategoryId !== null) {
+      baseList = baseList.filter((item) => item.id_kategori === selectedCategoryId);
+    }
+    if (selectedAccess !== "all") {
+      baseList = baseList.filter((item) => item.access_type === selectedAccess);
+    }
 
-    return layananList.filter((item) => {
-      if (selectedCategoryId !== null && item.id_kategori !== selectedCategoryId) {
-        return false;
-      }
-      if (selectedAccess !== "all" && item.access_type !== selectedAccess) {
-        return false;
-      }
-      if (!q) return true;
+    const q = searchQuery.trim();
+    if (!q) return baseList;
 
-      const titleMatch = item.nama_layanan.toLowerCase().includes(q);
-      const descMatch = (item.deskripsi_layanan || "").toLowerCase().includes(q);
-      const catMatch = item.category_name.toLowerCase().includes(q);
-      const keywordMatch = (item.keyword || "").toLowerCase().includes(q);
-      const noteMatch = item.technical_note.toLowerCase().includes(q);
-      const urlMatch = item.url.toLowerCase().includes(q);
-
-      return titleMatch || descMatch || catMatch || keywordMatch || noteMatch || urlMatch;
-    });
+    return searchAndRankServices(baseList, q);
   }, [layananList, searchQuery, selectedCategoryId, selectedAccess]);
 
   const categoryCounts = useMemo(() => {
@@ -365,26 +352,10 @@ function KatalogContent() {
         </main>
 
         {/* Footer */}
-        <footer id="footer" className="w-full bg-white dark:bg-[#0c1424] py-10 sm:py-14 mt-20 sm:mt-28 transition-colors text-slate-500 dark:text-slate-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsPrivacyModalOpen(true)}
-                className="hover:text-slate-900 dark:hover:text-white underline cursor-pointer transition-colors"
-              >
-                Kebijakan Privasi
-              </button>
-              <span className="text-slate-300 dark:text-slate-700">•</span>
-              <button
-                onClick={() => setIsVpnModalOpen(true)}
-                className="hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                Panduan VPN
-              </button>
-            </div>
-          </div>
-        </footer>
+        <Footer
+          onOpenPrivacyPolicy={() => setIsPrivacyModalOpen(true)}
+          onOpenVpnGuide={() => setIsVpnModalOpen(true)}
+        />
       </SmoothScrollLayout>
 
       {/* Modals & Notifications */}

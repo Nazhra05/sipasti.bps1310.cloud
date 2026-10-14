@@ -391,3 +391,64 @@ Transformasi identitas merek dari SIPASTI menjadi **RANCAK** beserta pembaruan p
 - [x] **Logo Typographic RANCAK pada Navbar**:
   - [x] Mengganti logo gambar statis SIPASTI pada Navbar dengan teks **RANCAK** proporsional dan rapat (`font-black tracking-tight text-lg sm:text-xl` dengan gradasi Biru, Hijau, dan Orange).
   - [x] Efek interaksi hover scale dan klik cerdas kembali ke beranda.
+
+---
+
+## 16. Restrukturisasi Sidebar Repositori, Pembersihan Bahasa Teknis, & Fitur Ganti Kata Sandi
+
+Penyelarasan alur navigasi repositori pribadi dan eliminasi istilah teknis backend pada seluruh antarmuka pengguna:
+
+- [x] **Restrukturisasi Sidebar Repositori Pribadi (`RepositorySidebar.tsx`)**:
+  - [x] Memindahkan tombol **"Kembali ke Portal"** ke atas tombol **"Tambah Layanan"** untuk akses cepat ke beranda portal.
+  - [x] Memindahkan tombol **"Akun"** ke posisi bawah menggantikan posisi tombol kembali sebelumnya.
+  - [x] Menghilangkan tombol **"Pengaturan"** dari sidebar untuk menghindari redundansi (karena menu pengaturan sudah tersedia di dalam modal akun).
+- [x] **Pembersihan Bahasa Teknis Backend (*Humanized UI Copy*)**:
+  - [x] Menghapus istilah teknis seperti "Username Akun", "Status Integrasi SSO", "HMAC-SHA256", "Logout", "Informasi Kredensial" dari modal akun dan menu pengaturan.
+  - [x] Mengganti dengan istilah ramah pengguna: "Nama Pengguna", "Status Akun", "Keluar Akun", "Akses Khusus Administrator", "standar pengamanan data BPS".
+- [x] **Layar Pemuatan Elegan (*Typographic Reveal Loading Screen*)**:
+  - [x] Mengganti spinner konvensional dengan layar pemuatan bertuliskan **RANCAK**.
+  - [x] Animasi looping typographic reveal via GSAP SplitText yang elegan dan mulus.
+- [x] **Fitur Mandiri Perbarui Kata Sandi**:
+  - [x] Formulir perbarui kata sandi terintegrasi pada menu Pengaturan Repositori (`kata sandi saat ini`, `kata sandi baru`, `konfirmasi kata sandi`).
+  - [x] Indikator toggle visibilitas kata sandi (*show/hide password*).
+  - [x] Integrasi route proksi `/api/auth/change-password` ke endpoint backend PHP (`change_password.php`).
+
+---
+
+## 17. Spotlight Floating Search Bar pada Hero & Navigasi Cerdas Enter
+
+Peningkatan pengalaman interaksi pencarian pada Hero Section:
+
+- [x] **Floating Search Bar & Spotlight Focus**:
+  - [x] Search bar melayang ke atas (*translate-y*) dan sedikit membesar saat diklik/fokus, sejajar dengan heading Hero section.
+  - [x] Reduksi kelengkungan search bar dan modal dari `rounded-full` menjadi `rounded-xl` (dengan gap `mt-2`) sesuai referensi desain minimalis.
+- [x] **Dropdown Modal Pencarian Instan**:
+  - [x] Menampilkan seksi **Terakhir Digunakan** (maksimal 2 tautan) berdasarkan riwayat lokal.
+  - [x] Menampilkan seksi **Paling Sering Diakses** (maksimal 3 tautan).
+  - [x] Menghilangkan ikon dan label redundan untuk tampilan yang bersih dan fokus pada teks tautan.
+- [x] **Navigasi Cerdas Tombol Enter (*Enter-to-Open First Result*)**:
+  - [x] Menangani event `Enter` pada input pencarian dan form submission Hero Section.
+  - [x] Secara otomatis mengalihkan atau membuka tautan layanan urutan pertama (`searchResults[0]`) seolah-olah diklik langsung.
+
+---
+
+## 18. Audit & Verifikasi Keamanan Penuh Route Handlers & API Proxy (BFF Pattern)
+
+Memastikan 100% fitur pada `landingpageintra` menggunakan route dan API internal yang terisolasi dan aman:
+
+- [x] **Arsitektur Backend-For-Frontend (BFF)**:
+  - [x] 100% panggilan data antarmuka melewati route handler Next.js internal (`/api/*`).
+  - [x] Pembuatan route handler [`/api/auth/resend-verification`](file:///d:/BPS/Rangkiang/landingpageintra/src/app/api/auth/resend-verification/route.ts) untuk mengeliminasi sisa tautan statis localhost.
+  - [x] Penegakan isolasi kredensial: `BPS_API_KEY`, `SESSION_SECRET`, dan `API_BASE_URL` strictly berada di server environment.
+- [x] **Server-Side URL Redaction & Access Control**:
+  - [x] Penyensoran otomatis URL aplikasi internal pada `GET /api/layanan` untuk pengunjung publik non-login.
+  - [x] Perlindungan IDOR pada `GET /api/user-repo` dan `POST /api/user-repo` dengan injeksi identitas server `X-User-Id`.
+- [x] **Enkripsi Kriptografis & Anti-Brute Force**:
+  - [x] Sesi `httpOnly`, `sameSite: "lax"`, bertanda tangan HMAC-SHA256 (`bps_solsel_session`).
+  - [x] In-memory rate limiting (maksimal 5x percobaan gagal per menit) pada login, pendaftaran, dan ubah sandi.
+  - [x] Validasi URL aman (`toSafeExternalUrl`) memblokir skema berbahaya (`javascript:`, `data:`).
+- [x] **Kompilasi Pengujian Unit Otomatis**:
+  - [x] 17 berkas uji Vitest dengan 70 skenario pengujian unit berstatus lulus (**100% Pass**).
+- [x] **Penyusunan Dokumentasi Komprehensif**:
+  - [x] Penyusunan dokumen arsitektur dan audit keamanan lengkap pada [`DOKUMENTASI_ROUTE_DAN_API.md`](file:///d:/BPS/Rangkiang/landingpageintra/DOKUMENTASI_ROUTE_DAN_API.md).
+

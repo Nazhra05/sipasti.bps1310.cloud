@@ -62,7 +62,7 @@ export async function createPortalLayanan(
     return json || { status: res.ok, message: res.ok ? "Layanan berhasil ditambahkan." : "Gagal menambahkan layanan." };
   } catch (err) {
     console.error("[createPortalLayanan] Error:", err);
-    return { status: false, message: "Terjadi kesalahan jaringan saat menyimpan layanan." };
+    return { status: false, message: "Gagal menyimpan layanan. Periksa koneksi internet Anda dan coba lagi." };
   }
 }
 
@@ -82,7 +82,7 @@ export async function updatePortalLayanan(
     return json || { status: res.ok, message: res.ok ? "Layanan berhasil diperbarui." : "Gagal memperbarui layanan." };
   } catch (err) {
     console.error("[updatePortalLayanan] Error:", err);
-    return { status: false, message: "Terjadi kesalahan jaringan saat memperbarui layanan." };
+    return { status: false, message: "Gagal memperbarui layanan. Periksa koneksi internet Anda dan coba lagi." };
   }
 }
 
@@ -100,6 +100,6 @@ export async function deletePortalLayanan(
     return json || { status: res.ok, message: res.ok ? "Layanan berhasil dihapus." : "Gagal menghapus layanan." };
   } catch (err) {
     console.error("[deletePortalLayanan] Error:", err);
-    return { status: false, message: "Terjadi kesalahan jaringan saat menghapus layanan." };
+    return { status: false, message: "Gagal menghapus layanan. Periksa koneksi internet Anda dan coba lagi." };
   }
 }

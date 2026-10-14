@@ -24,16 +24,11 @@ export default function Error({
 
         <div>
           <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">
-            Terjadi Kesalahan Sistem
+            Terjadi Kendala Sementara
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Halaman mengalami kendala saat memuat data. Silakan coba segarkan kembali halaman ini.
           </p>
-          {error?.message && (
-            <div className="mt-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-mono text-slate-700 dark:text-slate-300 text-left overflow-x-auto border border-slate-200 dark:border-slate-700">
-              {error.message}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">

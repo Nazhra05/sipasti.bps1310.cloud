@@ -14,7 +14,7 @@ export async function GET() {
     if (!res.ok) {
       console.error(`[Proxy kategori] HTTP ${res.status}: ${res.statusText}`);
       return NextResponse.json(
-        { status: false, message: `Server backend HTTP ${res.status}`, data: [] },
+        { status: false, message: "Gagal memuat kategori", data: [] },
         { status: res.status }
       );
     }
@@ -23,7 +23,7 @@ export async function GET() {
 
     if (!data) {
       return NextResponse.json(
-        { status: false, message: "Respon backend tidak dapat diproses (Bukan format JSON)", data: [] },
+        { status: false, message: "Kategori sedang tidak dapat diproses. Silakan coba beberapa saat lagi.", data: [] },
         { status: 502 }
       );
     }
@@ -31,6 +31,6 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (err) {
     console.error("[Proxy kategori] Error:", err);
-    return NextResponse.json({ status: false, message: "Kesalahan jaringan server proxy", data: [] }, { status: 500 });
+    return NextResponse.json({ status: false, message: "Gagal memuat data kategori", data: [] }, { status: 500 });
   }
 }

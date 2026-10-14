@@ -7,9 +7,12 @@ export function getApiConfig() {
     process.env.API_BASE_URL ??
     "http://localhost:8000/api";
 
-  const API_KEY =
-    process.env.BPS_API_KEY ??
-    "YOUR_API_KEY_HERE";
+  const rawApiKey = process.env.BPS_API_KEY;
+  if (process.env.NODE_ENV === "production" && (!rawApiKey || rawApiKey === "YOUR_API_KEY_HERE")) {
+    throw new Error("FATAL CONFIGURATION ERROR: BPS_API_KEY must be securely defined in production environment.");
+  }
+
+  const API_KEY = rawApiKey ?? "YOUR_API_KEY_HERE";
 
   return {
     API_BASE: API_BASE.replace(/\/+$/, ""),

@@ -67,7 +67,14 @@ export async function GET() {
 
       if (checkRes.ok) {
         const checkData = await safeParseJsonResponse<Record<string, any>>(checkRes);
-        if (checkData && checkData.data && checkData.data.active === false) {
+        const isAccountRevoked =
+          checkData &&
+          checkData.data &&
+          (checkData.data.revoked === true ||
+           checkData.data.valid === false ||
+           checkData.data.active === false);
+
+        if (isAccountRevoked) {
           const res = NextResponse.json(
             {
               authenticated: false,

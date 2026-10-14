@@ -34,20 +34,6 @@ export type LayananItem = {
   is_active?: number | string | boolean;
 };
 
-export type WebsiteLink = {
-  id_layanan: number;
-  label: string;
-  href: string;
-  logo: string;
-};
-
-export type WebsiteCategory = {
-  title: string;
-  category: string;
-  description: string;
-  links: WebsiteLink[];
-};
-
 export type ApiMeta = {
   page?: number;
   limit?: number;
@@ -63,8 +49,6 @@ export type ApiResponse<T> = {
   data: T | null;
   meta?: ApiMeta;
 };
-
-export type UnifiedApiResponse<T> = ApiResponse<T>;
 
 export type PaginatedResult<T> = {
   data: T[];
@@ -104,51 +88,12 @@ export async function safeParseJsonResponse<T>(res: Response): Promise<T | null>
 
 // ─────────────────────────────────────────────
 // GENERIC SAFE FETCHER (ARRAY)
+// Delegated directly to safeFetchPaginated for DRY, unified handling
 // ─────────────────────────────────────────────
 
 async function safeFetch<T>(endpoint: string, label: string): Promise<T[]> {
-  try {
-    const isClient = typeof window !== "undefined";
-    const { API_BASE, headers: serverHeaders } = getApiConfig();
-
-    const targetUrl = isClient
-      ? `/api/${endpoint.replace(".php", "")}`
-      : `${API_BASE}/${endpoint}`;
-
-    const headers: Record<string, string> = isClient
-      ? { "Content-Type": "application/json" }
-      : serverHeaders;
-
-    const res = await fetch(targetUrl, {
-      headers,
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.warn(`[API] ${label}: HTTP ${res.status} ${res.statusText}`);
-      return [];
-    }
-
-    const json = await safeParseJsonResponse<ApiResponse<T[]>>(res);
-
-    // Support both unified schema (success: true) and legacy format (status: true / "success" / "ok")
-    const isSuccessful =
-      Boolean(json) &&
-      (json?.success === true ||
-        json?.status === true ||
-        json?.status === "success" ||
-        json?.status === "ok");
-
-    if (!isSuccessful || !Array.isArray(json?.data)) {
-      console.warn(`[API] ${label}: Invalid or non-array payload returned.`);
-      return [];
-    }
-
-    return json.data;
-  } catch (err) {
-    console.warn(`[API] ${label}: Network/fetch error —`, err instanceof Error ? err.message : err);
-    return [];
-  }
+  const result = await safeFetchPaginated<T>(endpoint, label);
+  return result.data;
 }
 
 // ─────────────────────────────────────────────
@@ -161,7 +106,9 @@ export async function safeFetchPaginated<T>(
 ): Promise<PaginatedResult<T>> {
   try {
     const isClient = typeof window !== "undefined";
-    const { API_BASE, headers: serverHeaders } = getApiConfig();
+    const { API_BASE, headers: serverHeaders } = isClient
+      ? { API_BASE: "", headers: {} }
+      : getApiConfig();
 
     const targetUrl = isClient
       ? `/api/${endpoint.replace(".php", "")}`
@@ -217,10 +164,6 @@ export async function fetchLayanan(): Promise<LayananItem[]> {
   return safeFetch<LayananItem>("layanan.php", "fetchLayanan");
 }
 
-export async function fetchWebsite(): Promise<WebsiteCategory[]> {
-  return safeFetch<WebsiteCategory>("website.php", "fetchWebsite");
-}
-
 // ─────────────────────────────────────────────
 // AUTHENTICATION LOGIN API
 // ─────────────────────────────────────────────
@@ -241,7 +184,9 @@ export type LoginApiResponse = {
 export async function loginApi(identity: string, password: string): Promise<LoginApiResponse> {
   try {
     const isClient = typeof window !== "undefined";
-    const { API_BASE, headers: serverHeaders } = getApiConfig();
+    const { API_BASE, headers: serverHeaders } = isClient
+      ? { API_BASE: "", headers: {} }
+      : getApiConfig();
 
     const targetUrl = isClient ? "/api/login" : `${API_BASE}/auth/loginPortal.php`;
     const headers: Record<string, string> = isClient
@@ -260,7 +205,7 @@ export async function loginApi(identity: string, password: string): Promise<Logi
     if (!json) {
       return {
         status: false,
-        message: "Server backend mengembalikan respon tidak valid. Silakan coba beberapa saat lagi.",
+        message: "Layanan sedang tidak dapat diakses saat ini. Silakan coba beberapa saat lagi.",
         data: null,
       };
     }
@@ -270,7 +215,7 @@ export async function loginApi(identity: string, password: string): Promise<Logi
     console.error("[API] loginApi error:", err);
     return {
       status: false,
-      message: err instanceof Error ? err.message : "Terjadi kesalahan jaringan atau server saat login.",
+      message: "Gagal memproses masuk. Periksa koneksi internet Anda dan coba lagi.",
       data: null,
     };
   }
@@ -300,7 +245,9 @@ export type RegisterApiResponse = {
 export async function registerApi(payload: RegisterPayload): Promise<RegisterApiResponse> {
   try {
     const isClient = typeof window !== "undefined";
-    const { API_BASE, headers: serverHeaders } = getApiConfig();
+    const { API_BASE, headers: serverHeaders } = isClient
+      ? { API_BASE: "", headers: {} }
+      : getApiConfig();
 
     const targetUrl = isClient ? "/api/register" : `${API_BASE}/auth/registerPortal.php`;
     const headers: Record<string, string> = isClient
@@ -319,7 +266,7 @@ export async function registerApi(payload: RegisterPayload): Promise<RegisterApi
     if (!json) {
       return {
         status: false,
-        message: "Server backend mengembalikan respon tidak valid. Silakan coba beberapa saat lagi.",
+        message: "Layanan pendaftaran sedang tidak dapat diakses saat ini. Silakan coba beberapa saat lagi.",
         data: null,
       };
     }
@@ -329,7 +276,7 @@ export async function registerApi(payload: RegisterPayload): Promise<RegisterApi
     console.error("[API] registerApi error:", err);
     return {
       status: false,
-      message: err instanceof Error ? err.message : "Terjadi kesalahan jaringan atau server saat pendaftaran.",
+      message: "Gagal memproses pendaftaran. Periksa koneksi internet Anda dan coba lagi.",
       data: null,
     };
   }

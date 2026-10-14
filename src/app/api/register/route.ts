@@ -109,7 +109,7 @@ export async function POST(request: Request) {
 
     if (!finalData) {
       return NextResponse.json(
-        { status: false, message: "Respon server pendaftaran tidak valid (Bukan format JSON)", data: null },
+        { status: false, message: "Layanan pendaftaran sedang tidak dapat diakses. Silakan coba beberapa saat lagi.", data: null },
         { status: 502 }
       );
     }
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("[Proxy register error]:", err);
     return NextResponse.json(
-      { status: false, message: "Terjadi kesalahan sistem saat memproses pendaftaran", data: null },
+      { status: false, message: "Gagal memproses pendaftaran. Silakan coba beberapa saat lagi.", data: null },
       { status: 500 }
     );
   }

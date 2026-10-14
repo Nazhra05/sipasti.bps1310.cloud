@@ -113,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (err) {
       console.error("Kesalahan otentikasi login:", err);
-      return { success: false, message: "Terjadi kesalahan jaringan atau server saat login." };
+      return { success: false, message: "Gagal masuk. Periksa koneksi internet Anda dan coba lagi." };
     }
   };
 

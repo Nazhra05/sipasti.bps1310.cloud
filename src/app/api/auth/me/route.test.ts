@@ -108,5 +108,43 @@ describe("GET /api/auth/me (Session Verification Route Handler)", () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it("should return 401 and expire session cookie when backend App A reports revoked: true", async () => {
+    process.env.CHECK_REMOTE_SESSION = "true";
+
+    const validToken = createSessionToken({
+      userId: 89,
+      username: "revoked_flag_user",
+      name: "Revoked Flag Officer",
+      email: "revoked2@bps.go.id",
+      role: "pegawai",
+    });
+
+    mockCookieValue = validToken;
+
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        data: { revoked: true, valid: false },
+      }),
+    }) as unknown as typeof fetch;
+
+    try {
+      const res = await GET();
+      const data = await res.json();
+
+      expect(res.status).toBe(401);
+      expect(data.authenticated).toBe(false);
+      expect(data.message).toContain("dinonaktifkan");
+
+      const setCookie = res.headers.get("set-cookie") || "";
+      expect(setCookie).toContain("bps_solsel_session=;");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
 

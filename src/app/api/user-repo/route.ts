@@ -52,7 +52,7 @@ export async function GET(request: Request) {
 
     if (!data) {
       return NextResponse.json(
-        { success: false, message: "Gagal memproses respon dari server repositori" },
+        { success: false, message: "Gagal memproses data repositori" },
         { status: 502 }
       );
     }
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("[Proxy user-repo GET error]:", error);
     return NextResponse.json(
-      { success: false, message: "Terjadi gangguan komunikasi dengan backend repositori" },
+      { success: false, message: "Gagal memproses data repositori pribadi" },
       { status: 500 }
     );
   }
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     if (!data) {
       return NextResponse.json(
-        { success: false, message: "Gagal memproses respon mutasi dari server repositori" },
+        { success: false, message: "Gagal menyimpan perubahan ke repositori" },
         { status: 502 }
       );
     }

@@ -238,6 +238,43 @@ describe("Route Handlers /api/layanan", () => {
       expect(json.status).toBe(true);
       expect(json.data.id_layanan).toBe(101);
     });
+
+    it("should reject regular user when 3-service quota is reached with 400", async () => {
+      const validToken = createSessionToken({ userId: 99, username: "user_full_quota", role: "USER" });
+      global.fetch = vi.fn().mockImplementation(async (url: string) => {
+        if (url.includes("created_by=99")) {
+          return {
+            ok: true,
+            status: 200,
+            text: async () =>
+              JSON.stringify({
+                status: true,
+                data: [{ id_layanan: 1 }, { id_layanan: 2 }, { id_layanan: 3 }],
+              }),
+          } as unknown as Response;
+        }
+        return { ok: true, status: 200, text: async () => "{}" } as unknown as Response;
+      });
+
+      const req = new Request("http://localhost:3000/api/layanan", {
+        method: "POST",
+        headers: {
+          cookie: `${SESSION_COOKIE_NAME}=${validToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nama_layanan: "Layanan Keempat",
+          url: "https://keempat.bps.go.id",
+          id_kategori: 1,
+        }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.status).toBe(false);
+      expect(json.message).toContain("maksimal 3 layanan");
+    });
   });
 
   describe("PUT /api/layanan", () => {

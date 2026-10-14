@@ -7,7 +7,6 @@ import {
   Globe,
   FileSpreadsheet,
   HardDrive,
-  Smartphone,
   Image as ImageIcon,
   Bookmark,
   ChevronLeft,
@@ -19,7 +18,6 @@ import {
   LucideIcon,
   LogIn,
   Layers,
-  Settings,
 } from "lucide-react";
 import { UserInfo } from "@/context/AuthContext";
 import { CustomRepoCategory, UserRepoCounts } from "@/types/userRepo";
@@ -30,7 +28,6 @@ export type RepoCategoryKey =
   | "websites"
   | "data"
   | "drive"
-  | "mobile"
   | "photos"
   | "others"
   | string;
@@ -47,7 +44,6 @@ export const STANDARD_CATEGORIES: StandardCategoryItem[] = [
   { id: "websites", name: "Link Website", icon: Globe, countKey: "website" },
   { id: "data", name: "Data & Dokumen", icon: FileSpreadsheet, countKey: "data" },
   { id: "drive", name: "Link Drive", icon: HardDrive, countKey: "drive" },
-  { id: "mobile", name: "Aplikasi Mobile", icon: Smartphone, countKey: "mobile_app" },
   { id: "photos", name: "Galeri Foto", icon: ImageIcon, countKey: "photo" },
   { id: "others", name: "Referensi & Catatan", icon: Bookmark, countKey: "other" },
 ];
@@ -166,6 +162,20 @@ export default function RepositorySidebar({
 
         {/* Navigation Menu List */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-none">
+          {/* Action: Kembali ke Portal (di atas Tambah Layanan) */}
+          <div>
+            <Link
+              href="/"
+              title="Kembali ke Portal Utama RANCAK BPS"
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80 transition-all duration-150 cursor-pointer border border-white/10 dark:border-slate-800/60 ${
+                isCollapsed ? "justify-center px-0" : ""
+              }`}
+            >
+              <ArrowLeft className="w-4 h-4 shrink-0 text-white" />
+              {!isCollapsed && <span>Kembali ke Portal</span>}
+            </Link>
+          </div>
+
           {/* Section 0: Tambah Layanan (Kelola Repositori Portal) */}
           <div>
             {!isCollapsed && (
@@ -376,95 +386,52 @@ export default function RepositorySidebar({
             </button>
           </div>
 
-          {/* Action: Tombol Akun (Memanggil Modal Akun) */}
-          <div className="pt-1.5">
-            {isAuthenticated && user ? (
-              <button
-                type="button"
-                onClick={onOpenAccountModal}
-                title={`Akun: ${user.name || user.username} (Buka Detail Akun)`}
-                className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs transition-all duration-150 cursor-pointer bg-white/10 hover:bg-white/20 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-white/15 dark:border-slate-700/80 text-white shadow-xs group ${
-                  isCollapsed ? "justify-center px-0" : ""
-                }`}
-              >
-                <div className="w-7 h-7 rounded-lg bg-white text-[#005AA9] dark:bg-sky-400 dark:text-slate-900 flex items-center justify-center font-bold text-xs shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                  {(user.name || user.username || "P").charAt(0).toUpperCase()}
-                </div>
-                {!isCollapsed && (
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="font-semibold text-white truncate text-xs leading-tight">
-                      {user.name || "Pegawai"}
-                    </div>
-                    <div className="text-[10px] text-blue-200/80 dark:text-slate-400 truncate leading-tight">
-                      @{user.username}
-                    </div>
-                  </div>
-                )}
-                {!isCollapsed && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/15 text-white/90 shrink-0">
-                    Akun
-                  </span>
-                )}
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                title="Masuk ke Akun"
-                className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer bg-white/10 hover:bg-white/20 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-white/15 dark:border-slate-700/80 text-white shadow-xs ${
-                  isCollapsed ? "justify-center px-0" : ""
-                }`}
-              >
-                <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">
-                  <LogIn className="w-4 h-4" />
-                </div>
-                {!isCollapsed && <span>Masuk Akun</span>}
-              </Link>
-            )}
-          </div>
-
-          {/* Action: Tombol Pengaturan */}
-          <div className="pt-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                onSelectCategory("settings");
-                onCloseMobile();
-              }}
-              title="Pengaturan Akun & Profil"
-              className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                isCollapsed ? "justify-center px-0" : ""
-              } ${
-                activeCategory === "settings"
-                  ? "bg-white text-[#005AA9] dark:bg-sky-500/20 dark:text-sky-300 dark:border dark:border-sky-500/40 shadow-sm font-bold"
-                  : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80 border border-white/10 dark:border-slate-800"
-              }`}
-            >
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                  activeCategory === "settings"
-                    ? "bg-[#005AA9] text-white dark:bg-sky-400 dark:text-slate-900"
-                    : "bg-white/15 text-white"
-                }`}
-              >
-                <Settings className="w-4 h-4" />
-              </div>
-              {!isCollapsed && <span>Pengaturan</span>}
-            </button>
-          </div>
         </div>
 
-        {/* Footer: Kembali ke Portal */}
+        {/* Footer: Tombol Akun */}
         <div className="p-3 border-t border-white/10 dark:border-slate-800 shrink-0">
-          <Link
-            href="/"
-            title="Kembali ke Portal Utama RANCAK BPS"
-            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-blue-100 hover:text-white hover:bg-white/10 dark:hover:bg-slate-800/80 transition-colors cursor-pointer ${
-              isCollapsed ? "justify-center" : ""
-            }`}
-          >
-            <ArrowLeft className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Kembali ke Portal</span>}
-          </Link>
+          {isAuthenticated && user ? (
+            <button
+              type="button"
+              onClick={onOpenAccountModal}
+              title={`Akun: ${user.name || user.username} (Buka Detail Akun)`}
+              className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs transition-all duration-150 cursor-pointer bg-white/10 hover:bg-white/20 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-white/15 dark:border-slate-700/80 text-white shadow-xs group ${
+                isCollapsed ? "justify-center px-0" : ""
+              }`}
+            >
+              <div className="w-7 h-7 rounded-lg bg-white text-[#005AA9] dark:bg-sky-400 dark:text-slate-900 flex items-center justify-center font-bold text-xs shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                {(user.name || user.username || "P").charAt(0).toUpperCase()}
+              </div>
+              {!isCollapsed && (
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="font-semibold text-white truncate text-xs leading-tight">
+                    {user.name || "Pegawai"}
+                  </div>
+                  <div className="text-[10px] text-blue-200/80 dark:text-slate-400 truncate leading-tight">
+                    @{user.username}
+                  </div>
+                </div>
+              )}
+              {!isCollapsed && (
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/15 text-white/90 shrink-0">
+                  Akun
+                </span>
+              )}
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              title="Masuk ke Akun"
+              className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer bg-white/10 hover:bg-white/20 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-white/15 dark:border-slate-700/80 text-white shadow-xs ${
+                isCollapsed ? "justify-center px-0" : ""
+              }`}
+            >
+              <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">
+                <LogIn className="w-4 h-4" />
+              </div>
+              {!isCollapsed && <span>Masuk Akun</span>}
+            </Link>
+          )}
         </div>
       </aside>
     </>

@@ -41,12 +41,11 @@ export default class ErrorBoundary extends Component<Props, State> {
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              {this.props.fallbackTitle || "Terjadi Kesalahan Komponen"}
+              {this.props.fallbackTitle || "Terjadi Kendala Sementara"}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               {this.props.fallbackMessage ||
-                this.state.error?.message ||
-                "Komponen ini mengalami masalah saat dimuat. Silakan muat ulang komponen."}
+                "Halaman mengalami kendala sementara saat memuat data. Silakan coba muat ulang."}
             </p>
           </div>
           <button

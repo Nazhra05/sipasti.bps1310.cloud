@@ -7,7 +7,6 @@ import {
   addWebsiteLink,
   addDataLink,
   addDriveLink,
-  addMobileApp,
   addPhotoLink,
   addOtherLink,
 } from "@/lib/userRepoApi";
@@ -15,7 +14,7 @@ import {
 interface AddRepoItemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  activeCategory: string; // "favorites" | "websites" | "data" | "drive" | "mobile" | "photos" | "others" | "custom_..."
+  activeCategory: string; // "favorites" | "websites" | "data" | "drive" | "photos" | "others" | "custom_..."
   customCategories: CustomRepoCategory[];
   onSuccess: () => void;
   onShowToast: (message: string) => void;
@@ -75,8 +74,6 @@ export default function AddRepoItemModal({
         ok = (await addDataLink(trimmedName, trimmedUrl, subtype || "Dokumen", description.trim())).success;
       } else if (selectedTarget === "drive") {
         ok = (await addDriveLink(trimmedName, trimmedUrl, subtype || "Google Drive", description.trim())).success;
-      } else if (selectedTarget === "mobile") {
-        ok = (await addMobileApp(trimmedName, trimmedUrl, subtype || "Android", description.trim())).success;
       } else if (selectedTarget === "photos") {
         ok = (await addPhotoLink(trimmedName, trimmedUrl, description.trim())).success;
       } else if (selectedTarget === "others") {
@@ -99,7 +96,7 @@ export default function AddRepoItemModal({
         setError("Gagal menyimpan item ke repositori. Silakan coba lagi.");
       }
     } catch {
-      setError("Terjadi kesalahan sistem saat menyimpan data.");
+      setError("Tidak dapat menyimpan data saat ini. Silakan coba beberapa saat lagi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -155,7 +152,6 @@ export default function AddRepoItemModal({
                 <option value="websites">Link Website</option>
                 <option value="data">Data & Dokumen</option>
                 <option value="drive">Link Drive</option>
-                <option value="mobile">Aplikasi Mobile</option>
                 <option value="photos">Galeri Foto</option>
                 <option value="others">Referensi Lainnya</option>
               </optgroup>

@@ -10,30 +10,40 @@ export interface EnrichedLayanan extends LayananItem {
 }
 
 /**
+ * Evaluates whether a service requires BPS VPN connection based on explicit API flags,
+ * access descriptions, or service metadata keywords.
+ */
+export function resolveRequiresVpn(item: Partial<LayananItem>): boolean {
+  const rawVpn = item.vpn ?? item.is_vpn ?? item.requires_vpn ?? item.akses_vpn;
+
+  if (rawVpn !== undefined && rawVpn !== null) {
+    if (typeof rawVpn === "boolean") {
+      return rawVpn;
+    }
+    if (typeof rawVpn === "number") {
+      return rawVpn === 1;
+    }
+    if (typeof rawVpn === "string") {
+      const v = rawVpn.toLowerCase().trim();
+      return v === "yes" || v === "ya" || v === "1" || v === "true" || v === "wajib";
+    }
+  }
+
+  if (item.akses) {
+    return item.akses.toLowerCase().trim().includes("vpn");
+  }
+
+  const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
+  return checkString.includes("vpn");
+}
+
+/**
  * Canonical check whether a service is restricted/internal.
  * Used both in server-side API proxy route (authoritative redaction)
  * and client-side UI mapping.
  */
 export function isInternalLayanan(item: Partial<LayananItem>): boolean {
-  let requiresVpn = false;
-  const rawVpn = item.vpn ?? item.is_vpn ?? item.requires_vpn ?? item.akses_vpn;
-
-  if (rawVpn !== undefined && rawVpn !== null) {
-    if (typeof rawVpn === "boolean") {
-      requiresVpn = rawVpn;
-    } else if (typeof rawVpn === "number") {
-      requiresVpn = rawVpn === 1;
-    } else if (typeof rawVpn === "string") {
-      const v = rawVpn.toLowerCase().trim();
-      requiresVpn = v === "yes" || v === "ya" || v === "1" || v === "true" || v === "wajib";
-    }
-  } else if (item.akses) {
-    const rawAkses = item.akses.toLowerCase().trim();
-    requiresVpn = rawAkses.includes("vpn");
-  } else {
-    const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
-    requiresVpn = checkString.includes("vpn");
-  }
+  const requiresVpn = resolveRequiresVpn(item);
 
   if (item.akses) {
     const rawAkses = item.akses.toLowerCase().trim();
@@ -64,32 +74,14 @@ export function enrichLayanan(
     kategoriMap.get(item.id_kategori) ||
     "Umum";
 
-  // 2. Evaluasi Status VPN dari API (yes/no/1/0/true/false/ya/tidak)
-  let requiresVpn = false;
-  const rawVpn = item.vpn ?? item.is_vpn ?? item.requires_vpn ?? item.akses_vpn;
-
-  if (rawVpn !== undefined && rawVpn !== null) {
-    if (typeof rawVpn === "boolean") {
-      requiresVpn = rawVpn;
-    } else if (typeof rawVpn === "number") {
-      requiresVpn = rawVpn === 1;
-    } else if (typeof rawVpn === "string") {
-      const v = rawVpn.toLowerCase().trim();
-      requiresVpn = v === "yes" || v === "ya" || v === "1" || v === "true" || v === "wajib";
-    }
-  } else if (item.akses) {
-    const rawAkses = item.akses.toLowerCase().trim();
-    requiresVpn = rawAkses.includes("vpn");
-  } else {
-    const checkString = `${item.nama_layanan ?? ""} ${item.url ?? ""} ${item.keyword ?? ""} ${item.deskripsi_layanan ?? ""}`.toLowerCase();
-    requiresVpn = checkString.includes("vpn");
-  }
+  // 2. Evaluasi Status VPN dari API
+  const requiresVpn = resolveRequiresVpn(item);
 
   // 3. Evaluasi Aksesibilitas (Internal vs Publik)
   const isInternal = isInternalLayanan(item);
   const accessType: AccessType = isInternal ? "internal" : "public";
 
-  // 3. Catatan Teknis / Keterangan Akses Ringkas
+  // 4. Catatan Teknis / Keterangan Akses Ringkas
   let technicalNote = item.catatan || "";
   if (!technicalNote) {
     if (requiresVpn) {

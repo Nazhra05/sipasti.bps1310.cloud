@@ -19,9 +19,9 @@ export interface SessionPayload {
  */
 function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET || process.env.BPS_API_KEY;
-  if (!secret) {
+  if (!secret || secret === "bps-solsel-internal-session-secret-key-32chars-minimum-security") {
     if (process.env.NODE_ENV === "production") {
-      console.warn("[Security Warning] SESSION_SECRET or BPS_API_KEY is not defined. Using internal fallback secret.");
+      throw new Error("FATAL CONFIGURATION ERROR: SESSION_SECRET or BPS_API_KEY must be securely defined in production environment.");
     }
     return "bps-solsel-internal-session-secret-key-32chars-minimum-security";
   }

@@ -10,7 +10,6 @@ import {
   Globe,
   FileSpreadsheet,
   HardDrive,
-  Smartphone,
   Image as ImageIcon,
   Bookmark,
   FolderHeart,
@@ -27,6 +26,10 @@ import {
   Edit3,
   Trash2,
   User,
+  KeyRound,
+  Eye,
+  EyeOff,
+  ShieldCheck,
 } from "lucide-react";
 import Toast from "@/components/Toast";
 import VpnGuideModal from "@/components/VpnGuideModal";
@@ -36,6 +39,7 @@ import AddRepoItemModal from "@/components/AddRepoItemModal";
 import AccountDetailModal from "@/components/AccountDetailModal";
 import PortalLayananModal from "@/components/PortalLayananModal";
 import RepoCardItem from "@/components/RepoCardItem";
+import LoadingScreen from "@/components/LoadingScreen";
 import { useAuth } from "@/context/AuthContext";
 import { UserRepositoryData, CustomRepoCategory } from "@/types/userRepo";
 import { LayananItem, KategoriItem, fetchKategori } from "@/lib/api";
@@ -46,7 +50,6 @@ import {
   deleteWebsiteLink,
   deleteDataLink,
   deleteDriveLink,
-  deleteMobileApp,
   deletePhotoLink,
   deleteOtherLink,
 } from "@/lib/userRepoApi";
@@ -134,6 +137,79 @@ export default function RepositoriPage() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   }, []);
+
+  // State Ganti Kata Sandi (Pengaturan)
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMessage(null);
+
+    if (!currentPassword) {
+      setPasswordMessage({ type: "error", text: "Kata sandi saat ini wajib diisi." });
+      return;
+    }
+    if (!newPassword) {
+      setPasswordMessage({ type: "error", text: "Kata sandi baru wajib diisi." });
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: "error", text: "Kata sandi baru minimal harus 6 karakter." });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: "error", text: "Konfirmasi kata sandi baru tidak cocok." });
+      return;
+    }
+    if (currentPassword === newPassword) {
+      setPasswordMessage({
+        type: "error",
+        text: "Kata sandi baru tidak boleh sama dengan kata sandi saat ini.",
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPasswordMessage({
+          type: "success",
+          text: data.message || "Kata sandi Anda berhasil diperbarui.",
+        });
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setPasswordMessage({
+          type: "error",
+          text: data.message || "Gagal memperbarui kata sandi.",
+        });
+      }
+    } catch {
+      setPasswordMessage({
+        type: "error",
+        text: "Terjadi kendala saat menghubungi layanan. Silakan coba kembali.",
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   // Load custom categories from localStorage
   useEffect(() => {
@@ -260,7 +336,6 @@ export default function RepositoriPage() {
     if (category === "websites") ok = (await deleteWebsiteLink(id)).success;
     else if (category === "data") ok = (await deleteDataLink(id)).success;
     else if (category === "drive") ok = (await deleteDriveLink(id)).success;
-    else if (category === "mobile") ok = (await deleteMobileApp(id)).success;
     else if (category === "photos") ok = (await deletePhotoLink(id)).success;
     else if (category === "others" || category.startsWith("custom_")) ok = (await deleteOtherLink(id)).success;
 
@@ -326,7 +401,6 @@ export default function RepositoriPage() {
         websites: "Tautan website dinas, portal eksternal, dan referensi daring harian.",
         data: "Kumpulan berkas dokumen, laporan statistik, format tabel, dan lembar kerja.",
         drive: "Tautan penyimpanan berkas Google Drive, OneDrive, atau cloud storage tim.",
-        mobile: "Daftar aplikasi mobile operasional dan APK pendukung survei BPS.",
         photos: "Galeri dokumentasi kegiatan sensus, rapat dinas, dan arsip publikasi.",
         others: "Catatan, referensi cepat, dan tautan kerja dinas lainnya.",
       };
@@ -409,11 +483,6 @@ export default function RepositoriPage() {
         matchesQuery(dr.nama_drive, dr.url_drive, dr.deskripsi)
       );
     }
-    if (activeCategory === "mobile") {
-      return repoData.mobile_apps.filter((m) =>
-        matchesQuery(m.nama_aplikasi, m.url_aplikasi, m.deskripsi)
-      );
-    }
     if (activeCategory === "photos") {
       return repoData.photo_links.filter((p) =>
         matchesQuery(p.judul_foto, p.url_foto, p.deskripsi)
@@ -439,6 +508,10 @@ export default function RepositoriPage() {
 
     return [];
   }, [repoData, activeCategory, searchFilter, customCategories]);
+
+  if (isAuthLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] dark:bg-[#0b1120] text-slate-900 dark:text-white transition-colors">
@@ -550,17 +623,32 @@ export default function RepositoriPage() {
 
               {/* Button: Tambah Layanan Portal */}
               {isAuthenticated && activeCategory === "portal_services" && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingPortalItem(null);
-                    setIsPortalModalOpen(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm hover:shadow transition-all cursor-pointer shrink-0"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Tambah Layanan Portal</span>
-                </button>
+                userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN" ? (
+                  <button
+                    type="button"
+                    disabled
+                    title="Batas kuota tercapai: Akun Anda telah mendaftarkan 3 layanan portal. Silakan hapus salah satu layanan terlebih dahulu untuk menambah layanan baru."
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-not-allowed opacity-80 shrink-0"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Kuota Penuh (3/3)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingPortalItem(null);
+                      setIsPortalModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm hover:shadow transition-all cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Tambah Layanan Portal</span>
+                    <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-0.5 rounded-full">
+                      {userPortalServices.length}/3
+                    </span>
+                  </button>
+                )
               )}
 
               {/* Button: Tambah Koleksi (Repositori Pribadi) */}
@@ -616,6 +704,46 @@ export default function RepositoriPage() {
                 {/* VIEW 1: KELOLA REPOSITORI PORTAL */}
                 {activeCategory === "portal_services" && (
                   <div>
+                    {/* Status Kuota Layanan Mandiri (Maksimal 3) */}
+                    <div className="mb-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-blue-50/50 to-indigo-50/40 dark:from-sky-950/40 dark:via-blue-950/30 dark:to-slate-900 border border-sky-200/70 dark:border-sky-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-[#005AA9] text-white shadow-xs shrink-0">
+                          <Layers className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              Kuota Layanan Mandiri Pegawai
+                            </span>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN"
+                                  ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
+                                  : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
+                              }`}
+                            >
+                              {userPortalServices.length} / 3 Terpakai
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                            Setiap pegawai dapat menambahkan hingga maksimal 3 layanan mandiri ke direktori portal. Gunakan tombol <strong>Hapus</strong> pada kartu layanan jika ingin membebaskan kuota.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                        {userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN" ? (
+                          <div className="text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800">
+                            Kuota Maksimal Tercapai
+                          </div>
+                        ) : (
+                          <div className="text-[11px] font-bold text-sky-700 dark:text-sky-300 bg-sky-100/70 dark:bg-sky-950/60 px-3 py-1.5 rounded-xl border border-sky-200 dark:border-sky-800">
+                            Tersisa {Math.max(0, 3 - userPortalServices.length)} slot
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     {isLoadingPortalServices ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -642,7 +770,7 @@ export default function RepositoriPage() {
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm leading-relaxed">
                           {searchFilter
                             ? `Tidak ada layanan portal yang cocok dengan "${searchFilter}". Coba kata kunci lain.`
-                            : "Layanan yang Anda daftarkan di sini akan otomatis bertambah ke Katalog Layanan portal BPS. Klik tombol di bawah untuk mendaftarkan layanan baru."}
+                            : "Layanan yang Anda daftarkan di sini akan otomatis bertambah ke Katalog Layanan portal BPS (maksimal 3 layanan)."}
                         </p>
                         {!searchFilter && (
                           <button
@@ -654,7 +782,7 @@ export default function RepositoriPage() {
                             className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm transition-all cursor-pointer"
                           >
                             <Plus className="w-4 h-4" />
-                            <span>Tambah Layanan Pertama</span>
+                            <span>Tambah Layanan Pertama (Maks. 3)</span>
                           </button>
                         )}
                       </div>
@@ -738,7 +866,7 @@ export default function RepositoriPage() {
                                 </a>
                               </div>
 
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-1.5">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -746,17 +874,19 @@ export default function RepositoriPage() {
                                     setIsPortalModalOpen(true);
                                   }}
                                   title="Edit layanan ini"
-                                  className="p-1.5 rounded-lg text-slate-500 hover:text-[#005AA9] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-[#005AA9] dark:hover:text-sky-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition cursor-pointer"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Edit</span>
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDeletePortalService(service)}
-                                  title="Hapus layanan ini"
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                                  title="Hapus layanan ini dari portal"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 border border-rose-200/80 dark:border-rose-900/50 transition cursor-pointer"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
+                                  <span>Hapus</span>
                                 </button>
                               </div>
                             </div>
@@ -825,7 +955,7 @@ export default function RepositoriPage() {
                         </div>
                         <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60">
                           <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">
-                            Username Akun
+                            Nama Pengguna
                           </span>
                           <span className="text-xs font-bold text-slate-900 dark:text-white">
                             @{user?.username || "-"}
@@ -841,7 +971,7 @@ export default function RepositoriPage() {
                         </div>
                         <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60">
                           <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">
-                            Status Integrasi SSO
+                            Status Akun
                           </span>
                           <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                             <Check className="w-3.5 h-3.5" />
@@ -851,7 +981,128 @@ export default function RepositoriPage() {
                       </div>
                     </div>
 
-                    {/* Card 2: Preferensi Tampilan */}
+                    {/* Card 2: Perbarui Kata Sandi */}
+                    <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
+                      <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div className="p-2.5 rounded-2xl bg-[#005AA9]/10 text-[#005AA9] dark:bg-sky-500/20 dark:text-sky-300">
+                          <KeyRound className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                            Perbarui Kata Sandi
+                          </h2>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            Ganti kata sandi akun Anda secara berkala untuk menjaga keamanan data portal
+                          </p>
+                        </div>
+                      </div>
+
+                      {passwordMessage && (
+                        <div
+                          className={`p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-all ${
+                            passwordMessage.type === "success"
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60"
+                              : "bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60"
+                          }`}
+                        >
+                          {passwordMessage.type === "success" ? (
+                            <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <Lock className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                          )}
+                          <span>{passwordMessage.text}</span>
+                        </div>
+                      )}
+
+                      <form onSubmit={handleChangePassword} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {/* Kata Sandi Saat Ini */}
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                              Kata Sandi Saat Ini
+                            </label>
+                            <div className="relative">
+                              <input
+                                type={showCurrentPassword ? "text" : "password"}
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                placeholder="Masukkan kata sandi saat ini"
+                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005AA9] dark:focus:ring-sky-500"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                tabIndex={-1}
+                              >
+                                {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Kata Sandi Baru */}
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                              Kata Sandi Baru
+                            </label>
+                            <div className="relative">
+                              <input
+                                type={showNewPassword ? "text" : "password"}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                placeholder="Minimal 6 karakter"
+                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005AA9] dark:focus:ring-sky-500"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                tabIndex={-1}
+                              >
+                                {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Konfirmasi Kata Sandi Baru */}
+                          <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                              Konfirmasi Kata Sandi Baru
+                            </label>
+                            <div className="relative">
+                              <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Ulangi kata sandi baru"
+                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005AA9] dark:focus:ring-sky-500"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                tabIndex={-1}
+                              >
+                                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end pt-2">
+                          <button
+                            type="submit"
+                            disabled={isChangingPassword}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#005AA9] hover:bg-[#004280] text-white shadow-xs transition disabled:opacity-60 cursor-pointer"
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>{isChangingPassword ? "Menyimpan..." : "Simpan Kata Sandi Baru"}</span>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    {/* Card 3: Preferensi Tampilan */}
                     <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
                       <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300">
@@ -873,7 +1124,7 @@ export default function RepositoriPage() {
                             Tema Ruang Kerja
                           </span>
                           <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {theme === "dark" ? "Mode Gelap (Dark Mode) sedang aktif" : "Mode Terang (Light Mode) sedang aktif"}
+                            {theme === "dark" ? "Mode Gelap aktif" : "Mode Terang aktif"}
                           </span>
                         </div>
                         <button
@@ -896,7 +1147,7 @@ export default function RepositoriPage() {
                       </div>
                     </div>
 
-                    {/* Card 3: Keamanan & Sesi */}
+                    {/* Card 4: Keamanan & Sesi */}
                     <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
                       <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">
@@ -913,7 +1164,7 @@ export default function RepositoriPage() {
                       </div>
 
                       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                        Pastikan selalu keluar dari akun Anda jika menggunakan komputer bersama atau jaringan publik. Seluruh kredensial diamankan dengan enkripsi HMAC-SHA256 terstandarisasi BPS.
+                        Pastikan selalu keluar dari akun Anda jika menggunakan komputer bersama atau jaringan publik. Seluruh informasi akun dan kata sandi Anda terlindungi dengan standar pengamanan data BPS.
                       </p>
 
                       <div className="flex items-center gap-3 pt-2">
@@ -925,12 +1176,12 @@ export default function RepositoriPage() {
                           }}
                           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900/50 transition cursor-pointer"
                         >
-                          <span>Keluar dari Akun (Logout)</span>
+                          <span>Keluar dari Akun</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* Card 4: Khusus Akun Admin - SSO ke Dashboard Admin */}
+                    {/* Card 5: Khusus Akun Admin - Dashboard Admin */}
                     {user?.role?.toUpperCase() === "ADMIN" && (
                       <div className="p-6 sm:p-7 rounded-3xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-700/50 shadow-xs space-y-4">
                         <div className="flex items-center gap-3">
@@ -939,10 +1190,10 @@ export default function RepositoriPage() {
                           </div>
                           <div>
                             <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                              Akses Khusus Administrator (SSO)
+                              Akses Khusus Administrator
                             </h2>
                             <p className="text-xs text-slate-600 dark:text-slate-400">
-                              Akun Anda memiliki hak akses Admin. Anda dapat membuka Dashboard Admin lengkap tanpa perlu login ulang.
+                              Akun Anda memiliki hak akses Administrator. Anda dapat membuka Dashboard Admin lengkap tanpa perlu login ulang.
                             </p>
                           </div>
                         </div>
@@ -1131,24 +1382,6 @@ export default function RepositoriPage() {
                             />
                           ))}
 
-                        {/* Render Aplikasi Mobile */}
-                        {activeCategory === "mobile" &&
-                          (filteredItems as UserRepositoryData["mobile_apps"]).map((app) => (
-                            <RepoCardItem
-                              key={app.id_mobile}
-                              id={app.id_mobile}
-                              title={app.nama_aplikasi}
-                              url={app.url_aplikasi}
-                              desc={app.deskripsi}
-                              badge={app.platform || "Mobile"}
-                              icon={Smartphone}
-                              badgeColor="text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-950/50"
-                              onDelete={() => handleDeleteItem("mobile", app.id_mobile)}
-                              onCopy={() => handleCopy(app.url_aplikasi, `mobile-${app.id_mobile}`)}
-                              isCopied={copiedId === `mobile-${app.id_mobile}`}
-                            />
-                          ))}
-
                         {/* Render Galeri Foto */}
                         {activeCategory === "photos" &&
                           (filteredItems as UserRepositoryData["photo_links"]).map((photo) => (
@@ -1223,6 +1456,9 @@ export default function RepositoriPage() {
         }}
         initialData={editingPortalItem}
         kategoriList={kategoriList}
+        currentCount={userPortalServices.length}
+        userRole={user?.role}
+        onDeleteCurrent={handleDeletePortalService}
         onSuccess={loadPortalServices}
         onShowToast={showToast}
       />

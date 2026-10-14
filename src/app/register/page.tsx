@@ -101,7 +101,7 @@ function RegisterContent() {
         setErrorMessage(res.message || "Gagal melakukan pendaftaran. Silakan periksa kembali data Anda.");
       }
     } catch {
-      setErrorMessage("Terjadi gangguan koneksi ke server. Silakan coba kembali.");
+      setErrorMessage("Pendaftaran belum dapat diproses saat ini. Periksa koneksi internet Anda dan coba lagi.");
     } finally {
       setIsSubmitting(false);
       isProcessingRef.current = false;

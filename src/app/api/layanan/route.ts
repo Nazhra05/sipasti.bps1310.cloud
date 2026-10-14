@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
       if (!res.ok) {
         return NextResponse.json(
-          { status: false, message: `Server backend HTTP ${res.status}`, data: [] },
+          { status: false, message: "Gagal memuat daftar layanan", data: [] },
           { status: res.status }
         );
       }
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     if (!res.ok) {
       console.error(`[Proxy layanan] HTTP ${res.status}: ${res.statusText}`);
       return NextResponse.json(
-        { status: false, message: `Server backend HTTP ${res.status}`, data: [] },
+        { status: false, message: "Gagal memuat daftar layanan", data: [] },
         { status: res.status }
       );
     }
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
 
     if (!data) {
       return NextResponse.json(
-        { status: false, message: "Respon backend tidak dapat diproses (Bukan format JSON)", data: [] },
+        { status: false, message: "Layanan sedang tidak dapat diproses. Silakan coba beberapa saat lagi.", data: [] },
         { status: 502 }
       );
     }
@@ -100,6 +100,31 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json({ status: false, message: "Data JSON tidak valid." }, { status: 400 });
+    }
+
+    // Enforce 3-service quota for non-admin users
+    if (session.role?.toUpperCase() !== "ADMIN") {
+      try {
+        const countRes = await fetch(`${API_BASE}/layanan.php?created_by=${session.userId}`, {
+          headers,
+          cache: "no-store",
+        });
+        if (countRes.ok) {
+          const countData = await safeParseJsonResponse<{ status: boolean; data?: any[] }>(countRes);
+          if (countData && Array.isArray(countData.data) && countData.data.length >= 3) {
+            return NextResponse.json(
+              {
+                status: false,
+                message:
+                  "Batas maksimal penambahan layanan portal telah tercapai (maksimal 3 layanan). Silakan hapus salah satu layanan untuk menambahkan yang baru.",
+              },
+              { status: 400 }
+            );
+          }
+        }
+      } catch (countErr) {
+        console.warn("[Quota Check Warning]:", countErr);
+      }
     }
 
     const res = await fetch(`${API_BASE}/layanan.php`, {

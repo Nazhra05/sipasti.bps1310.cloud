@@ -102,6 +102,6 @@ describe("POST /api/login (App B Proxy Route Handler)", () => {
 
     expect(res.status).toBe(502);
     expect(data.status).toBe(false);
-    expect(data.message).toContain("Respon server backend tidak valid");
+    expect(data.message).toContain("Layanan sedang tidak dapat diakses");
   });
 });

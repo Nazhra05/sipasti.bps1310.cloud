@@ -5,7 +5,6 @@ import {
   Star,
   Globe,
   FileSpreadsheet,
-  Smartphone,
   HardDrive,
   Image as ImageIcon,
   Bookmark,
@@ -27,8 +26,6 @@ import {
   deleteDataLink,
   addDriveLink,
   deleteDriveLink,
-  addMobileApp,
-  deleteMobileApp,
   addPhotoLink,
   deletePhotoLink,
   addOtherLink,
@@ -36,7 +33,7 @@ import {
   toggleFavoriteService,
 } from "@/lib/userRepoApi";
 
-type RepoTab = "favorites" | "websites" | "data" | "mobile" | "drive" | "photos" | "others";
+type RepoTab = "favorites" | "websites" | "data" | "drive" | "photos" | "others";
 
 interface PersonalRepositoryProps {
   repoData: UserRepositoryData | null;
@@ -88,7 +85,6 @@ export default function PersonalRepository({
     if (category === "websites") ok = (await deleteWebsiteLink(id)).success;
     else if (category === "data") ok = (await deleteDataLink(id)).success;
     else if (category === "drive") ok = (await deleteDriveLink(id)).success;
-    else if (category === "mobile") ok = (await deleteMobileApp(id)).success;
     else if (category === "photos") ok = (await deletePhotoLink(id)).success;
     else if (category === "others") ok = (await deleteOtherLink(id)).success;
 
@@ -123,8 +119,6 @@ export default function PersonalRepository({
         ok = (await addDataLink(formName.trim(), url, formSubtype, formDesc.trim())).success;
       } else if (formCategory === "drive") {
         ok = (await addDriveLink(formName.trim(), url, formSubtype, formDesc.trim())).success;
-      } else if (formCategory === "mobile") {
-        ok = (await addMobileApp(formName.trim(), url, formSubtype, formDesc.trim())).success;
       } else if (formCategory === "photos") {
         ok = (await addPhotoLink(formName.trim(), url, formDesc.trim())).success;
       } else if (formCategory === "others") {
@@ -139,10 +133,10 @@ export default function PersonalRepository({
         setFormDesc("");
         onRefresh();
       } else {
-        setFormError("Gagal menyimpan data ke repositori.");
+        setFormError("Gagal menyimpan koleksi. Silakan periksa kembali data Anda.");
       }
     } catch {
-      setFormError("Terjadi kesalahan sistem saat menyimpan.");
+      setFormError("Tidak dapat menyimpan data saat ini. Silakan coba beberapa saat lagi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -162,7 +156,6 @@ export default function PersonalRepository({
     { id: "favorites", label: "Layanan Favorit", icon: Star, count: counts.favorite },
     { id: "websites", label: "Link Website", icon: Globe, count: counts.website },
     { id: "data", label: "Data & Dokumen", icon: FileSpreadsheet, count: counts.data },
-    { id: "mobile", label: "Aplikasi Mobile", icon: Smartphone, count: counts.mobile_app },
     { id: "drive", label: "Link Drive", icon: HardDrive, count: counts.drive },
     { id: "photos", label: "Galeri Foto", icon: ImageIcon, count: counts.photo },
     { id: "others", label: "Referensi", icon: Bookmark, count: counts.other },
@@ -377,28 +370,6 @@ export default function PersonalRepository({
             </div>
           )}
 
-          {/* 4. Aplikasi Mobile */}
-          {activeTab === "mobile" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {repoData?.mobile_apps.length === 0 ? (
-                <EmptyState label="Aplikasi Mobile" onAdd={() => setIsModalOpen(true)} />
-              ) : (
-                repoData?.mobile_apps.map((item) => (
-                  <RepoCard
-                    key={item.id_mobile}
-                    id={item.id_mobile}
-                    title={item.nama_aplikasi}
-                    url={item.url_aplikasi}
-                    desc={item.deskripsi}
-                    badge={item.platform || "Mobile"}
-                    onDelete={() => handleDelete("mobile", item.id_mobile)}
-                    onCopy={() => handleCopy(item.url_aplikasi, `mobile-${item.id_mobile}`)}
-                    isCopied={copiedId === `mobile-${item.id_mobile}`}
-                  />
-                ))
-              )}
-            </div>
-          )}
 
           {/* 5. Link Drive */}
           {activeTab === "drive" && (
@@ -507,7 +478,6 @@ export default function PersonalRepository({
                   <option value="websites">Link Website</option>
                   <option value="data">Data & Dokumen</option>
                   <option value="drive">Link Drive</option>
-                  <option value="mobile">Aplikasi Mobile</option>
                   <option value="photos">Galeri Foto</option>
                   <option value="others">Referensi Lainnya</option>
                 </select>
@@ -578,22 +548,6 @@ export default function PersonalRepository({
                 </div>
               )}
 
-              {formCategory === "mobile" && (
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Platform Aplikasi
-                  </label>
-                  <select
-                    value={formSubtype}
-                    onChange={(e) => setFormSubtype(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
-                  >
-                    <option value="Android (APK)">Android (APK)</option>
-                    <option value="Play Store">Play Store</option>
-                    <option value="Web App / iOS">Web App / iOS</option>
-                  </select>
-                </div>
-              )}
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">

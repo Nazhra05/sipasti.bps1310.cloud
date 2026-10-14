@@ -12,6 +12,7 @@ import CategoryCarousel from "@/components/CategoryCarousel";
 import BouncerIcons from "@/components/BouncerIcons";
 import WhyRancakSection from "@/components/WhyRancakSection";
 import SmoothScrollLayout from "@/components/SmoothScrollLayout";
+import Footer from "@/components/Footer";
 import { fetchKategori, fetchLayanan, KategoriItem, LayananItem } from "@/lib/api";
 import { savePortalCache, getPortalCache } from "@/lib/offlineFallback";
 
@@ -52,17 +53,16 @@ export default function Home() {
         setCategories(catData);
         setLayananList(layData);
         savePortalCache(catData, layData);
-      } else {
-        const cached = getPortalCache();
-        setCategories(cached.categories);
-        setLayananList(cached.layanan);
+        return;
       }
     } catch (err) {
       console.error("Gagal memuat data dari API:", err);
-      const cached = getPortalCache();
-      setCategories(cached.categories);
-      setLayananList(cached.layanan);
     }
+
+    // Fallback ke cache lokal jika API tidak merespons
+    const cached = getPortalCache();
+    setCategories(cached.categories);
+    setLayananList(cached.layanan);
   }, []);
 
   useEffect(() => {
@@ -103,6 +103,7 @@ export default function Home() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           totalCount={layananList.length}
+          layananList={layananList}
           onScrollToCatalog={(query) => handleNavigateToCatalog(query)}
         />
 
@@ -143,26 +144,10 @@ export default function Home() {
         />
 
         {/* Footer */}
-        <footer id="footer" className="w-full bg-white dark:bg-[#0c1424] py-10 sm:py-14 mt-20 sm:mt-28 transition-colors text-slate-500 dark:text-slate-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <p>© {new Date().getFullYear()} BPS Kabupaten Solok Selatan. Hak Cipta Dilindungi.</p>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsPrivacyModalOpen(true)}
-                className="hover:text-slate-900 dark:hover:text-white underline cursor-pointer transition-colors"
-              >
-                Kebijakan Privasi
-              </button>
-              <span className="text-slate-300 dark:text-slate-700">•</span>
-              <button
-                onClick={() => setIsVpnModalOpen(true)}
-                className="hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                Panduan VPN
-              </button>
-            </div>
-          </div>
-        </footer>
+        <Footer
+          onOpenPrivacyPolicy={() => setIsPrivacyModalOpen(true)}
+          onOpenVpnGuide={() => setIsVpnModalOpen(true)}
+        />
       </SmoothScrollLayout>
 
       {/* Modals & Notifications */}

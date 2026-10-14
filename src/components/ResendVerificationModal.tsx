@@ -31,7 +31,7 @@ export default function ResendVerificationModal({
   const handleOpenResendPage = (e: React.FormEvent) => {
     e.preventDefault();
     const query = email ? `?email=${encodeURIComponent(email)}` : "";
-    window.open(`http://localhost/Dashboard_Admin/public/resend_verification.php${query}`, "_blank");
+    window.open(`/api/auth/resend-verification${query}`, "_blank", "noopener,noreferrer");
     setSubmitted(true);
   };
 
@@ -42,7 +42,7 @@ export default function ResendVerificationModal({
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
             <MailCheck className="w-5 h-5 text-[#005AA9] dark:text-[#38a0f0]" />
-            <span>Panduan & Kirim Ulang Token</span>
+            <span>Panduan & Kirim Ulang Email Verifikasi</span>
           </div>
           <button
             onClick={onClose}
@@ -57,15 +57,15 @@ export default function ResendVerificationModal({
           <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
             <Clock className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
             <div>
-              <p className="font-bold">Masa Berlaku Token Verifikasi: 24 Jam</p>
+              <p className="font-bold">Masa Berlaku Tautan Verifikasi: 24 Jam</p>
               <p className="mt-0.5 text-amber-800/90 dark:text-amber-300/90">
-                Tautan verifikasi email yang dikirim saat pendaftaran kedinasan berlaku selama 24 jam. Jika kedaluwarsa, akun belum dapat digunakan hingga token diperbarui.
+                Tautan verifikasi email yang dikirim saat pendaftaran kedinasan berlaku selama 24 jam. Jika kedaluwarsa, akun belum dapat digunakan hingga tautan baru dikirimkan.
               </p>
             </div>
           </div>
 
           <p>
-            Jika Anda belum menerima email aktivasi atau masa berlaku token telah habis, gunakan formulir layanan verifikasi resmi untuk meminta token baru:
+            Jika Anda belum menerima email aktivasi atau masa berlaku tautan verifikasi telah habis, silakan gunakan formulir verifikasi resmi untuk meminta tautan baru:
           </p>
 
           <form onSubmit={handleOpenResendPage} className="space-y-3 pt-1">

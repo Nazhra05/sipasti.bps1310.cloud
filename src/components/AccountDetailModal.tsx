@@ -198,10 +198,10 @@ export default function AccountDetailModal({
             </button>
           </div>
 
-          {/* Informasi Kredensial & Identitas */}
+          {/* Informasi Akun */}
           <div className="space-y-2.5 pt-1">
             <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-              Informasi Kredensial & Identitas
+              Informasi Akun
             </h5>
             <div className="grid grid-cols-1 gap-2 text-xs">
               {/* Nama Lengkap */}
@@ -215,11 +215,11 @@ export default function AccountDetailModal({
                 </span>
               </div>
 
-              {/* Username */}
+              {/* Nama Pengguna */}
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60">
                 <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                   <AtSign className="w-4 h-4 text-slate-400" />
-                  <span>Username:</span>
+                  <span>Nama Pengguna:</span>
                 </div>
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {user.username || "-"}
@@ -278,7 +278,7 @@ export default function AccountDetailModal({
                   </div>
                   <div>
                     <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
-                      Buka Dashboard Admin (SSO)
+                      Buka Dashboard Admin
                     </span>
                     <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80">
                       Kelola konfigurasi sistem khusus Administrator
@@ -302,7 +302,7 @@ export default function AccountDetailModal({
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 border border-red-200 dark:border-red-900/50 transition cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
+            <span>Keluar Akun</span>
           </button>
 
           <button

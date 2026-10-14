@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     if (!finalData) {
       return NextResponse.json(
-        { status: false, message: "Respon server backend tidak valid (Bukan format JSON)", data: null },
+        { status: false, message: "Layanan sedang tidak dapat diakses. Silakan coba beberapa saat lagi.", data: null },
         { status: 502 }
       );
     }
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("[Proxy login error]:", err);
     return NextResponse.json(
-      { status: false, message: "Terjadi kesalahan sistem saat memproses login", data: null },
+      { status: false, message: "Gagal memproses masuk. Silakan coba beberapa saat lagi.", data: null },
       { status: 500 }
     );
   }

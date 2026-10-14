@@ -12,6 +12,7 @@
 
 /* Base surface tokens for Comfort UI with clear contrast */
 :root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --bg-app: #ffffff;       /* Pure white matching Hero background */
   --bg-card: #ffffff;      /* Pure white cards */
   --border-subtle: #cbd5e1; /* Slate 300 for visible borders */

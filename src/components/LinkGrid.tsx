@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Inbox, RefreshCw, SearchX, ChevronLeft, ChevronRight, Layers } from "lucide-react";
+import { RefreshCw, ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import LinkCard from "./LinkCard";
 import ErrorBoundary from "./ErrorBoundary";
 import { EnrichedLayanan } from "@/lib/accessibilityMapper";
@@ -100,7 +100,7 @@ export default function LinkGrid({
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6 leading-relaxed">
           {searchQuery
             ? "Coba periksa ejaan kata kunci, gunakan sinonim umum, atau reset filter pencarian untuk melihat semua layanan yang tersedia."
-            : "Katalog layanan saat ini kosong atau sedang dalam proses sinkronisasi dengan server pusat."}
+            : "Katalog layanan saat ini belum tersedia atau sedang dalam proses pembaruan data."}
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-2.5">

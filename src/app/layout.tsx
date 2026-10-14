@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-sans",
-});
 
 export const metadata: Metadata = {
   title: "Portal Tautan Internal - BPS Kabupaten Solok Selatan",
@@ -36,12 +29,18 @@ export default async function RootLayout({
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${plusJakarta.variable} h-full antialiased`}
+      className="h-full antialiased font-sans"
     >
       <head>
         <link rel="icon" href="/BPS Logo.png" type="image/png" />
         <link rel="shortcut icon" href="/BPS Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/BPS Logo.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{
