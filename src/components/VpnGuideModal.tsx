@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Shield, CheckCircle2, AlertTriangle } from "lucide-react";
+import { X, BookOpen, Search, ShieldCheck, FolderHeart, HelpCircle } from "lucide-react";
 
 interface VpnGuideModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-700 shadow-xl p-6 sm:p-7"
+        className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-[#151f32] border border-slate-200 dark:border-slate-700 shadow-xl p-6 sm:p-7"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -30,58 +30,81 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
 
         {/* Modal Header */}
         <div className="flex items-center gap-3.5 mb-5">
-          <div className="p-2.5 rounded-xl bg-[#FFA500]/15 dark:bg-[#FFA500]/20 text-[#8c5200] dark:text-[#ffbe4d] border border-[#FFA500]/30">
-            <Shield className="w-5 h-5 text-[#FFA500]" />
+          <div className="p-2.5 rounded-xl bg-[#005AA9]/10 dark:bg-sky-500/20 text-[#005AA9] dark:text-sky-300 border border-[#005AA9]/20">
+            <BookOpen className="w-5 h-5 text-[#005AA9] dark:text-sky-400" />
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-              Panduan Akses VPN & Jaringan BPS
+              Panduan Penggunaan Aplikasi
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Instruksi teknis untuk aplikasi bertanda "Butuh VPN"
+              Petunjuk pencarian layanan, pemahaman hak akses, dan pengelolaan repositori
             </p>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-          <div className="p-3.5 rounded-xl bg-[#FFA500]/10 dark:bg-[#FFA500]/15 border border-[#FFA500]/30">
+        <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          {/* Bagian 1: Pencarian Layanan */}
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60">
             <div className="flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-[#FFA500] shrink-0 mt-0.5" />
-              <p className="leading-relaxed text-[#804b00] dark:text-[#ffbe4d]">
-                Aplikasi internal seperti <strong>Backoffice Selindo (BOS)</strong> hanya dapat dibuka jika perangkat Anda terhubung ke <strong>VPN BPS</strong> atau jaringan kantor.
-              </p>
+              <Search className="w-4 h-4 text-[#005AA9] dark:text-sky-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">
+                  1. Mencari dan Menemukan Layanan
+                </h4>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                  Gunakan kolom pencarian di halaman utama untuk mencari nama aplikasi, singkatan, atau kata kunci bidang tugas. Anda juga dapat menyaring layanan berdasarkan 7 kelompok statistik resmi atau membuka menu Katalog Layanan untuk melihat seluruh daftar aplikasi.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <h4 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#6DBE45]" />
-              Langkah Menghubungkan VPN:
-            </h4>
-            <ol className="list-decimal list-inside space-y-1.5 pl-1 leading-relaxed text-slate-600 dark:text-slate-300 text-xs">
-              <li>
-                Buka aplikasi <strong>FortiClient VPN</strong> pada laptop/PC kerja Anda.
-              </li>
-              <li>
-                Pilih profil koneksi <strong>BPS-Pusat</strong> atau <strong>VPN-BPS</strong>.
-              </li>
-              <li>
-                Masukkan <strong>Username SSO BPS</strong> (tanpa <em>@bps.go.id</em>) dan kata sandi akun SSO Anda.
-              </li>
-              <li>
-                Klik <strong>Connect</strong> hingga indikator status <em>Connected (100%)</em>.
-              </li>
-            </ol>
+          {/* Bagian 2: Memahami Label Akses */}
+          <div className="p-3.5 rounded-xl bg-sky-50/70 dark:bg-sky-950/20 border border-sky-200/70 dark:border-sky-800/50">
+            <div className="flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">
+                  2. Memahami Label Akses Layanan
+                </h4>
+                <ul className="mt-1 space-y-1 text-xs text-slate-600 dark:text-slate-300 list-disc list-inside">
+                  <li>
+                    <strong>Akses Publik:</strong> Layanan terbuka yang dapat dibuka langsung tanpa perlu masuk ke akun portal.
+                  </li>
+                  <li>
+                    <strong>Akses Internal:</strong> Layanan kedinasan khusus yang memerlukan login akun pegawai dan koneksi jaringan kantor atau VPN BPS aktif.
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40">
+          {/* Bagian 3: Repositori Pribadi & Tambah Layanan */}
+          <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/50">
             <div className="flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <strong className="text-amber-900 dark:text-amber-300">Catatan Akses:</strong>
-                <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                  Aplikasi dengan label <em>Akses Intranet (Wajib VPN)</em> wajib menggunakan koneksi VPN BPS yang aktif untuk dapat diakses.
+              <FolderHeart className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">
+                  3. Repositori Pribadi dan Tambah Layanan
+                </h4>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                  Setelah masuk dengan akun dinas, buka menu <strong>Repositori</strong> untuk mengorganisasi tautan kerja Anda sendiri (Website, Dokumen, Spreadsheet, Google Drive, Folder, atau Foto). Anda juga dapat menambahkan layanan baru ke direktori portal agar dapat digunakan bersama.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bagian 4: Bantuan Tambahan */}
+          <div className="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-800/50">
+            <div className="flex items-start gap-2.5">
+              <HelpCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">
+                  4. Kendala Akses atau Tautan Berubah
+                </h4>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                  Jika menemukan tautan yang tidak dapat dibuka atau alamat sistem yang telah berganti, silakan hubungi tim pengelola melalui kontak WhatsApp PST atau WhatsApp Admin di bagian footer.
                 </p>
               </div>
             </div>
@@ -94,7 +117,7 @@ export default function VpnGuideModal({ isOpen, onClose }: VpnGuideModalProps) {
             onClick={onClose}
             className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-[#005AA9] hover:bg-[#004280] dark:bg-[#005AA9] dark:hover:bg-[#0070d1] text-white transition cursor-pointer shadow-xs"
           >
-            Saya Mengerti
+            Tutup Panduan
           </button>
         </div>
       </div>

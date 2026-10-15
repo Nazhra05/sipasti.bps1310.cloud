@@ -159,17 +159,24 @@ export default function LinkGrid({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap justify-center">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition font-medium"
+              aria-label="Halaman sebelumnya"
+              className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition font-medium"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
-              <span>Sebelumnya</span>
+              <span className="hidden sm:inline">Sebelumnya</span>
             </button>
 
-            <div className="flex items-center gap-1 px-1">
+            {/* Mobile compact page indicator */}
+            <span className="sm:hidden px-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              {currentPage} / {totalPages}
+            </span>
+
+            {/* Desktop page number buttons */}
+            <div className="hidden sm:flex items-center gap-1 px-1">
               {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
                 <button
                   key={pageNum}
@@ -188,9 +195,10 @@ export default function LinkGrid({
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition font-medium"
+              aria-label="Halaman selanjutnya"
+              className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition font-medium"
             >
-              <span>Selanjutnya</span>
+              <span className="hidden sm:inline">Selanjutnya</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>

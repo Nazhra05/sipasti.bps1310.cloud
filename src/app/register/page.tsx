@@ -429,7 +429,7 @@ function RegisterContent() {
               onClick={() => setIsVpnModalOpen(true)}
               className="hover:text-white transition-colors cursor-pointer"
             >
-              Panduan VPN
+              Panduan Aplikasi
             </button>
           </div>
         </div>

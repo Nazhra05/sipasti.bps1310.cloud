@@ -36,7 +36,7 @@ describe("Footer Component", () => {
     expect(waAdmin).toHaveAttribute("target", "_blank");
 
     const emailLink = screen.getByText("Email BPS Solok Selatan").closest("a");
-    expect(emailLink).toHaveAttribute("href", "mailto:bps1310@bps.go.id");
+    expect(emailLink).toHaveAttribute("href", "mailto:bps13100@gmail.com");
 
     // Column 3: Informasi
     expect(screen.getByText("Informasi")).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("Footer Component", () => {
     fireEvent.click(privacyBtn);
     expect(onOpenPrivacyPolicy).toHaveBeenCalledTimes(1);
 
-    const vpnBtn = screen.getByText("Panduan VPN");
+    const vpnBtn = screen.getByText("Panduan Aplikasi");
     fireEvent.click(vpnBtn);
     expect(onOpenVpnGuide).toHaveBeenCalledTimes(1);
 

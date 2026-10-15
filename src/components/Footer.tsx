@@ -73,7 +73,7 @@ export default function Footer({
               </li>
               <li>
                 <a
-                  href="mailto:bps1310@bps.go.id"
+                  href="mailto:bps13100@gmail.com"
                   className="text-slate-600 dark:text-slate-400 hover:text-[#005AA9] dark:hover:text-white transition-colors block"
                 >
                   Email BPS Solok Selatan
@@ -103,7 +103,7 @@ export default function Footer({
                   onClick={onOpenVpnGuide}
                   className="text-slate-600 dark:text-slate-400 hover:text-[#005AA9] dark:hover:text-white transition-colors cursor-pointer text-left block"
                 >
-                  Panduan VPN
+                  Panduan Aplikasi
                 </button>
               </li>
             </ul>

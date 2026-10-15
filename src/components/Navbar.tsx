@@ -367,7 +367,7 @@ export default function Navbar({
                     <div
                       id="kategori-menu"
                       role="menu"
-                      className="absolute left-0 mt-2.5 w-76 sm:w-84 rounded-2xl bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
+                      className="absolute left-0 mt-2.5 w-76 sm:w-84 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
                     >
                       <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800/80 mb-1 flex items-center justify-between">
                         <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -458,13 +458,13 @@ export default function Navbar({
                   <span>Katalog Layanan</span>
                 </button>
 
-                {/* 5. Panduan */}
+                {/* 5. Panduan Aplikasi */}
                 <button
                   type="button"
                   onClick={() => onOpenVpnGuide && onOpenVpnGuide()}
-                  aria-label="Panduan Info VPN"
+                  aria-label="Panduan Penggunaan Aplikasi"
                   className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-all duration-200 cursor-pointer"
-                  title="Panduan Akses VPN & Jaringan Kedinasan BPS"
+                  title="Panduan Penggunaan Aplikasi Portal Intranet BPS Solok Selatan"
                 >
                   <span>Panduan</span>
                 </button>
@@ -497,7 +497,7 @@ export default function Navbar({
 
                   {/* Popover Kontak */}
                   {isContactOpen && (
-                    <div className="absolute left-0 mt-2.5 w-68 rounded-2xl bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']">
+                    <div className="absolute left-0 mt-2.5 w-68 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']">
                       <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                         Pusat Bantuan & Layanan
                       </div>
@@ -516,13 +516,13 @@ export default function Navbar({
                         </a>
 
                         <a
-                          href="mailto:bps1310@bps.go.id"
+                          href="mailto:bps13100@gmail.com"
                           className="flex items-center gap-2.5 p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
                         >
                           <Mail className="w-4 h-4 text-sky-500 shrink-0" />
                           <div>
                             <p className="font-semibold">Email Resmi</p>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">bps1310@bps.go.id</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">bps13100@gmail.com</p>
                           </div>
                         </a>
 
@@ -610,12 +610,12 @@ export default function Navbar({
 
         {/* Mobile Navigation Drawer (Antigravity Mobile Journey) */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden w-full bg-white/90 dark:bg-[#0c1424]/90 backdrop-blur-md shadow-xl px-4 py-3 space-y-2 animate-in slide-in-from-top-2 duration-150">
+          <div className="sm:hidden w-full bg-white/95 dark:bg-[#0c1424]/95 backdrop-blur-md shadow-xl px-4 py-3 space-y-3 animate-in slide-in-from-top-2 duration-150 border-b border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto">
             <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
               <Link
                 href="/"
                 onClick={handleHomeClick}
-                className={`flex items-center gap-2 p-2 rounded-xl text-xs font-medium cursor-pointer ${
+                className={`flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-medium cursor-pointer ${
                   pathname === "/"
                     ? "bg-[#005AA9]/15 text-[#005AA9] dark:text-sky-300 font-semibold"
                     : "text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50"
@@ -628,7 +628,7 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={handleCatalogClick}
-                className={`flex items-center gap-2 p-2 rounded-xl text-xs font-medium cursor-pointer ${
+                className={`flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-medium cursor-pointer ${
                   pathname === "/katalog"
                     ? "bg-[#005AA9]/15 text-[#005AA9] dark:text-sky-300 font-semibold"
                     : "text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50"
@@ -645,7 +645,7 @@ export default function Navbar({
                     onOpenRepository();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
                 >
                   <FolderHeart className="w-4 h-4 text-rose-500" />
                   <span>Repositori</span>
@@ -654,7 +654,7 @@ export default function Navbar({
                 <Link
                   href="/repositori"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
                 >
                   <FolderHeart className="w-4 h-4 text-rose-500" />
                   <span>Repositori</span>
@@ -667,7 +667,7 @@ export default function Navbar({
                   if (onOpenVpnGuide) onOpenVpnGuide();
                   setIsMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50"
+                className="flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
               >
                 <HelpCircle className="w-4 h-4 text-amber-500" />
                 <span>Panduan</span>
@@ -677,11 +677,65 @@ export default function Navbar({
                 href="https://wa.me/628116661310"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="col-span-2 flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50"
+                className="col-span-2 flex items-center justify-center gap-2.5 p-2.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 cursor-pointer"
               >
                 <Phone className="w-4 h-4 text-sky-500" />
-                <span>Kontak PST</span>
+                <span>Kontak PST WhatsApp</span>
               </a>
+            </div>
+
+            {/* Kategori Quick Filter in Mobile Menu */}
+            <div>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Kategori Statistik
+                </span>
+                {selectedCategoryId !== null && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleSelectCategory(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="text-[11px] font-semibold text-[#005AA9] dark:text-sky-400 hover:underline cursor-pointer"
+                  >
+                    Reset Filter
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSelectCategory(null);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                    selectedCategoryId === null
+                      ? "bg-[#005AA9] text-white shadow-xs font-semibold"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                  }`}
+                >
+                  Semua
+                </button>
+                {displayCategories.map((cat, idx) => (
+                  <button
+                    key={cat.id || idx}
+                    type="button"
+                    onClick={() => {
+                      handleSelectCategory(cat.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                      selectedCategoryId === cat.id
+                        ? "bg-[#005AA9] text-white shadow-xs font-semibold"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

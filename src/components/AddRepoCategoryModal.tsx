@@ -48,8 +48,13 @@ export default function AddRepoCategoryModal({
       return;
     }
 
+    const randomSuffix =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID().slice(0, 8)
+        : Date.now().toString(36);
+
     const newCategory: CustomRepoCategory = {
-      id: `custom_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: `custom_${Date.now()}_${randomSuffix}`,
       name: trimmedName,
       iconName: selectedIconName,
       description: description.trim(),

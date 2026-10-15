@@ -61,10 +61,10 @@ export default function SearchAndFilter({
           </div>
 
           {/* 2. Filter internal/publik */}
-          <div className="inline-flex p-1 rounded-xl bg-slate-200/90 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-2xs shrink-0 self-start sm:self-auto h-10 items-center">
+          <div className="inline-flex p-1 rounded-xl bg-slate-200/90 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-2xs shrink-0 self-start sm:self-auto h-10 items-center overflow-x-auto max-w-full no-scrollbar">
             <button
               onClick={() => onSelectAccess("all")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer whitespace-nowrap ${
                 selectedAccess === "all"
                   ? "bg-[#005AA9] text-white shadow-xs"
                   : "text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-700/50"
@@ -83,7 +83,7 @@ export default function SearchAndFilter({
             </button>
             <button
               onClick={() => onSelectAccess("public")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer whitespace-nowrap ${
                 selectedAccess === "public"
                   ? "bg-[#6DBE45] text-white shadow-xs"
                   : "text-slate-700 dark:text-slate-300 hover:text-[#2f6318] dark:hover:text-[#8ee064] hover:bg-white/40 dark:hover:bg-slate-700/50"
@@ -105,7 +105,7 @@ export default function SearchAndFilter({
             </button>
             <button
               onClick={() => onSelectAccess("internal")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 active:scale-[0.97] cursor-pointer whitespace-nowrap ${
                 selectedAccess === "internal"
                   ? "bg-[#00A6B4] text-white shadow-xs"
                   : "text-slate-700 dark:text-slate-300 hover:text-[#006069] dark:hover:text-[#38d4e2] hover:bg-white/40 dark:hover:bg-slate-700/50"
@@ -129,12 +129,12 @@ export default function SearchAndFilter({
         </div>
 
         {/* 3. Tambah Layanan (Paling Kanan - ukuran sebesar filter, bg biru, icon putih) */}
-        <div className="shrink-0 self-start md:self-auto">
+        <div className="w-full sm:w-auto shrink-0">
           <a
             href="/api/auth/sso?target=layanan.php"
             target="_blank"
             rel="noopener noreferrer"
-            className="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-xl text-xs sm:text-sm font-semibold bg-[#005AA9] hover:bg-[#004280] text-white shadow-xs hover:shadow-md transition-all duration-150 active:scale-95 cursor-pointer shrink-0"
+            className="w-full sm:w-auto h-10 px-4 inline-flex items-center justify-center gap-2 rounded-xl text-xs sm:text-sm font-semibold bg-[#005AA9] hover:bg-[#004280] text-white shadow-xs hover:shadow-md transition-all duration-150 active:scale-95 cursor-pointer shrink-0"
             title="Tambah Layanan Baru di Dashboard Administrator"
           >
             <PlusCircle className="w-4 h-4 text-white shrink-0" />
