@@ -56,7 +56,6 @@ export default function PortalLayananModal({
   onShowToast,
 }: PortalLayananModalProps) {
   const isEditing = Boolean(initialData && initialData.id_layanan);
-  const isQuotaExceeded = !isEditing && userRole?.toUpperCase() !== "ADMIN" && currentCount >= 3;
 
   const [namaLayanan, setNamaLayanan] = useState("");
   const [idKategori, setIdKategori] = useState<number>(1);
@@ -207,14 +206,7 @@ export default function PortalLayananModal({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-          {isQuotaExceeded && (
-            <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-              <span>
-                <strong>Batas kuota tercapai:</strong> Akun Anda sudah memiliki {currentCount} dari maksimal 3 layanan mandiri. Silakan hapus salah satu layanan terlebih dahulu untuk menambah layanan baru.
-              </span>
-            </div>
-          )}
+
 
           {errorMsg && (
             <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs">
@@ -388,7 +380,7 @@ export default function PortalLayananModal({
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || isQuotaExceeded}
+                disabled={isSubmitting}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (

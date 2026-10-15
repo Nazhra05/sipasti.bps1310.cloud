@@ -682,32 +682,17 @@ export default function RepositoriPage() {
 
               {/* Button: Tambah Layanan Portal */}
               {isAuthenticated && activeCategory === "portal_services" && (
-                userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN" ? (
-                  <button
-                    type="button"
-                    disabled
-                    title="Batas kuota tercapai: Akun Anda telah mendaftarkan 3 layanan portal. Silakan hapus salah satu layanan terlebih dahulu untuk menambah layanan baru."
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-not-allowed opacity-80 shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Kuota Penuh (3/3)</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingPortalItem(null);
-                      setIsPortalModalOpen(true);
-                    }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm hover:shadow transition-all cursor-pointer shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Tambah Layanan Portal</span>
-                    <span className="text-[10px] font-semibold bg-white/20 px-1.5 py-0.5 rounded-full">
-                      {userPortalServices.length}/3
-                    </span>
-                  </button>
-                )
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingPortalItem(null);
+                    setIsPortalModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#005AA9] hover:bg-[#004280] shadow-sm hover:shadow transition-all cursor-pointer shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Tambah Layanan Portal</span>
+                </button>
               )}
 
               {/* Button: Tambah Koleksi (Repositori Pribadi) */}
@@ -763,7 +748,7 @@ export default function RepositoriPage() {
                 {/* VIEW 1: KELOLA REPOSITORI PORTAL */}
                 {activeCategory === "portal_services" && (
                   <div>
-                    {/* Status Kuota Layanan Mandiri (Maksimal 3) */}
+                    {/* Header Info Kelola Layanan Portal */}
                     <div className="mb-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-blue-50/50 to-indigo-50/40 dark:from-sky-950/40 dark:via-blue-950/30 dark:to-slate-900 border border-sky-200/70 dark:border-sky-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-[#005AA9] text-white shadow-xs shrink-0">
@@ -772,34 +757,20 @@ export default function RepositoriPage() {
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-xs font-bold text-slate-900 dark:text-white">
-                              Kuota Layanan Mandiri Pegawai
+                              {user?.role?.toUpperCase() === "ADMIN"
+                                ? "Katalog Seluruh Layanan Portal (Akses Administrator)"
+                                : "Kelola Layanan Portal Mandiri"}
                             </span>
-                            <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN"
-                                  ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
-                                  : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
-                              }`}
-                            >
-                              {userPortalServices.length} / 3 Terpakai
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300 border border-sky-300 dark:border-sky-700">
+                              {userPortalServices.length} Layanan
                             </span>
                           </div>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                            Setiap pegawai dapat menambahkan hingga maksimal 3 layanan mandiri ke direktori portal. Gunakan tombol <strong>Hapus</strong> pada kartu layanan jika ingin membebaskan kuota.
+                            {user?.role?.toUpperCase() === "ADMIN"
+                              ? "Sebagai Administrator, Anda memiliki akses penuh untuk melihat, menambah, mengubah, dan menghapus seluruh layanan portal BPS Solok Selatan."
+                              : "Daftar layanan yang Anda kontribusikan ke direktori portal intranet BPS Solok Selatan. Anda dapat menambahkan atau memperbarui layanan Anda kapan saja."}
                           </p>
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                        {userPortalServices.length >= 3 && user?.role?.toUpperCase() !== "ADMIN" ? (
-                          <div className="text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800">
-                            Kuota Maksimal Tercapai
-                          </div>
-                        ) : (
-                          <div className="text-[11px] font-bold text-sky-700 dark:text-sky-300 bg-sky-100/70 dark:bg-sky-950/60 px-3 py-1.5 rounded-xl border border-sky-200 dark:border-sky-800">
-                            Tersisa {Math.max(0, 3 - userPortalServices.length)} slot
-                          </div>
-                        )}
                       </div>
                     </div>
 

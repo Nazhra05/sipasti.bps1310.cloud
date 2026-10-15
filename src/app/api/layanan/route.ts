@@ -21,7 +21,14 @@ export async function GET(request: Request) {
         );
       }
 
-      const res = await fetch(`${API_BASE}/layanan.php?created_by=${session.userId}`, {
+      const isAdmin = (session.role || "").toUpperCase() === "ADMIN";
+      // Admin manapun berhak melihat seluruh katalog layanan portal
+      // Pengguna biasa (USER) dibatasi hanya melihat layanan yang mereka daftarkan sendiri
+      const fetchUrl = isAdmin
+        ? `${API_BASE}/layanan.php`
+        : `${API_BASE}/layanan.php?created_by=${encodeURIComponent(String(session.userId))}`;
+
+      const res = await fetch(fetchUrl, {
         headers,
         cache: "no-store",
       });
@@ -175,6 +182,8 @@ export async function PUT(request: Request) {
       return NextResponse.json({ status: false, message: "Data JSON tidak valid." }, { status: 400 });
     }
 
+    const isAdmin = (session.role || "").toUpperCase() === "ADMIN";
+
     const res = await fetch(`${API_BASE}/layanan.php?id=${encodeURIComponent(id)}`, {
       method: "PUT",
       headers: {
@@ -184,6 +193,7 @@ export async function PUT(request: Request) {
       body: JSON.stringify({
         ...body,
         user_id: session.userId,
+        user_role: isAdmin ? "ADMIN" : "USER",
       }),
       cache: "no-store",
     });
@@ -218,8 +228,10 @@ export async function DELETE(request: Request) {
       );
     }
 
+    const isAdmin = (session.role || "").toUpperCase() === "ADMIN";
+
     const res = await fetch(
-      `${API_BASE}/layanan.php?id=${encodeURIComponent(id)}&user_id=${encodeURIComponent(String(session.userId))}`,
+      `${API_BASE}/layanan.php?id=${encodeURIComponent(id)}&user_id=${encodeURIComponent(String(session.userId))}&user_role=${encodeURIComponent(isAdmin ? "ADMIN" : "USER")}`,
       {
         method: "DELETE",
         headers,
