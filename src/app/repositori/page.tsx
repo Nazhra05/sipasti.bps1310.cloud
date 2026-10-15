@@ -38,6 +38,7 @@ import AddRepoCategoryModal from "@/components/AddRepoCategoryModal";
 import AddRepoItemModal from "@/components/AddRepoItemModal";
 import AccountDetailModal from "@/components/AccountDetailModal";
 import PortalLayananModal from "@/components/PortalLayananModal";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import RepoCardItem from "@/components/RepoCardItem";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useAuth } from "@/context/AuthContext";
@@ -87,6 +88,19 @@ export default function RepositoriPage() {
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState<boolean>(false);
   const [isAddItemOpen, setIsAddItemOpen] = useState<boolean>(false);
   const [isVpnModalOpen, setIsVpnModalOpen] = useState<boolean>(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    confirmText?: string;
+    onConfirm: () => Promise<void> | void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    confirmText: "Hapus Sekarang",
+    onConfirm: () => {},
+  });
 
   // Theme State
   const [theme, setTheme] = useState<string>("light");
@@ -296,6 +310,10 @@ export default function RepositoriPage() {
 
   // Handle Add Category
   const handleAddCategory = (newCategory: CustomRepoCategory) => {
+    if (customCategories.length >= 3) {
+      showToast("Batas maksimal 3 jenis repositori kustom telah tercapai.");
+      return;
+    }
     const updated = [...customCategories, newCategory];
     saveCustomCategories(updated);
     setActiveCategory(newCategory.id);
@@ -305,12 +323,38 @@ export default function RepositoriPage() {
   // Handle Delete Custom Category
   const handleDeleteCustomCategory = (categoryId: string) => {
     const target = customCategories.find((c) => c.id === categoryId);
-    const updated = customCategories.filter((c) => c.id !== categoryId);
-    saveCustomCategories(updated);
-    if (activeCategory === categoryId) {
-      setActiveCategory("favorites");
-    }
-    showToast(`Jenis repositori "${target?.name || ""}" berhasil dihapus.`);
+    if (!target) return;
+
+    setConfirmModal({
+      isOpen: true,
+      title: "Hapus Jenis Repositori",
+      description: `Apakah Anda yakin ingin menghapus jenis repositori "${target.name}"? Seluruh tautan di dalam jenis repositori ini akan ikut dihapus secara permanen.`,
+      confirmText: "Hapus Repositori",
+      onConfirm: async () => {
+        // 1. Hapus semua tautan yang bertaut ke label kategori ini secara permanen
+        const itemsToDelete =
+          repoData?.other_links.filter(
+            (o) => o.label_kategori === target.name
+          ) || [];
+
+        if (itemsToDelete.length > 0) {
+          await Promise.all(itemsToDelete.map((it) => deleteOtherLink(it.id_other)));
+        }
+
+        // 2. Hapus kategori kustom dari daftar
+        const updated = customCategories.filter((c) => c.id !== categoryId);
+        saveCustomCategories(updated);
+
+        // 3. Jika sedang aktif di tab ini, alihkan ke Favorit
+        if (activeCategory === categoryId) {
+          setActiveCategory("favorites");
+        }
+
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        showToast(`Jenis repositori "${target.name}" dan seluruh tautannya berhasil dihapus.`);
+        await loadRepoData();
+      },
+    });
   };
 
   // Handle Copy Link
@@ -331,34 +375,49 @@ export default function RepositoriPage() {
   };
 
   // Handle Delete Items (Repository pribadi)
-  const handleDeleteItem = async (category: string, id: number) => {
-    let ok = false;
-    if (category === "websites") ok = (await deleteWebsiteLink(id)).success;
-    else if (category === "data") ok = (await deleteDataLink(id)).success;
-    else if (category === "drive") ok = (await deleteDriveLink(id)).success;
-    else if (category === "photos") ok = (await deletePhotoLink(id)).success;
-    else if (category === "others" || category.startsWith("custom_")) ok = (await deleteOtherLink(id)).success;
+  const handleDeleteItem = (category: string, id: number, itemTitle?: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Hapus Item Koleksi",
+      description: `Apakah Anda yakin ingin menghapus ${itemTitle ? `"${itemTitle}"` : "item ini"} dari repositori pribadi Anda? Tindakan ini tidak dapat dibatalkan.`,
+      confirmText: "Hapus Sekarang",
+      onConfirm: async () => {
+        let ok = false;
+        if (category === "websites") ok = (await deleteWebsiteLink(id)).success;
+        else if (category === "data") ok = (await deleteDataLink(id)).success;
+        else if (category === "drive") ok = (await deleteDriveLink(id)).success;
+        else if (category === "photos") ok = (await deletePhotoLink(id)).success;
+        else if (category === "others" || category.startsWith("custom_")) ok = (await deleteOtherLink(id)).success;
 
-    if (ok) {
-      showToast("Item repositori berhasil dihapus.");
-      loadRepoData();
-    } else {
-      showToast("Gagal menghapus item.");
-    }
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        if (ok) {
+          showToast("Item repositori berhasil dihapus.");
+          await loadRepoData();
+        } else {
+          showToast("Gagal menghapus item.");
+        }
+      },
+    });
   };
 
   // Handle Delete Portal Service
-  const handleDeletePortalService = async (service: LayananItem) => {
-    if (!window.confirm(`Hapus layanan "${service.nama_layanan}" dari katalog portal?`)) {
-      return;
-    }
-    const res = await deletePortalLayanan(service.id_layanan);
-    if (res.status) {
-      showToast(`Layanan "${service.nama_layanan}" berhasil dihapus.`);
-      loadPortalServices();
-    } else {
-      showToast(res.message || "Gagal menghapus layanan.");
-    }
+  const handleDeletePortalService = (service: LayananItem) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Hapus Layanan Portal",
+      description: `Apakah Anda yakin ingin menghapus layanan "${service.nama_layanan}" dari katalog portal? Tindakan ini akan mengosongkan 1 slot kuota layanan Anda.`,
+      confirmText: "Hapus Layanan",
+      onConfirm: async () => {
+        const res = await deletePortalLayanan(service.id_layanan);
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        if (res.status) {
+          showToast(`Layanan "${service.nama_layanan}" berhasil dihapus.`);
+          await loadPortalServices();
+        } else {
+          showToast(res.message || "Gagal menghapus layanan.");
+        }
+      },
+    });
   };
 
   // Compute counts for custom categories
@@ -1340,7 +1399,7 @@ export default function RepositoriPage() {
                               badge="Website"
                               icon={Globe}
                               badgeColor="text-sky-600 bg-sky-50 dark:text-sky-400 dark:bg-sky-950/50"
-                              onDelete={() => handleDeleteItem("websites", link.id_link)}
+                              onDelete={() => handleDeleteItem("websites", link.id_link, link.nama_website)}
                               onCopy={() => handleCopy(link.url_website, `link-${link.id_link}`)}
                               isCopied={copiedId === `link-${link.id_link}`}
                             />
@@ -1358,7 +1417,7 @@ export default function RepositoriPage() {
                               badge={data.jenis_dokumen || "Dokumen"}
                               icon={FileSpreadsheet}
                               badgeColor="text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/50"
-                              onDelete={() => handleDeleteItem("data", data.id_data_link)}
+                              onDelete={() => handleDeleteItem("data", data.id_data_link, data.nama_dokumen)}
                               onCopy={() => handleCopy(data.url_dokumen, `data-${data.id_data_link}`)}
                               isCopied={copiedId === `data-${data.id_data_link}`}
                             />
@@ -1376,7 +1435,7 @@ export default function RepositoriPage() {
                               badge={drive.jenis_drive || "Drive"}
                               icon={HardDrive}
                               badgeColor="text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/50"
-                              onDelete={() => handleDeleteItem("drive", drive.id_drive)}
+                              onDelete={() => handleDeleteItem("drive", drive.id_drive, drive.nama_drive)}
                               onCopy={() => handleCopy(drive.url_drive, `drive-${drive.id_drive}`)}
                               isCopied={copiedId === `drive-${drive.id_drive}`}
                             />
@@ -1394,7 +1453,7 @@ export default function RepositoriPage() {
                               badge="Galeri Foto"
                               icon={ImageIcon}
                               badgeColor="text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-950/50"
-                              onDelete={() => handleDeleteItem("photos", photo.id_photo)}
+                              onDelete={() => handleDeleteItem("photos", photo.id_photo, photo.judul_foto)}
                               onCopy={() => handleCopy(photo.url_foto, `photo-${photo.id_photo}`)}
                               isCopied={copiedId === `photo-${photo.id_photo}`}
                             />
@@ -1412,7 +1471,7 @@ export default function RepositoriPage() {
                               badge={other.label_kategori || "Referensi"}
                               icon={Bookmark}
                               badgeColor="text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/50"
-                              onDelete={() => handleDeleteItem("others", other.id_other)}
+                              onDelete={() => handleDeleteItem("others", other.id_other, other.nama_link)}
                               onCopy={() => handleCopy(other.url_link, `other-${other.id_other}`)}
                               isCopied={copiedId === `other-${other.id_other}`}
                             />
@@ -1430,7 +1489,7 @@ export default function RepositoriPage() {
                               badge={customItem.label_kategori || activeCategoryMeta.name}
                               icon={ActiveIcon}
                               badgeColor="text-[#005AA9] bg-sky-50 dark:text-sky-300 dark:bg-sky-950/50"
-                              onDelete={() => handleDeleteItem(activeCategory, customItem.id_other)}
+                              onDelete={() => handleDeleteItem(activeCategory, customItem.id_other, customItem.nama_link)}
                               onCopy={() =>
                                 handleCopy(customItem.url_link, `custom-${customItem.id_other}`)
                               }
@@ -1501,6 +1560,16 @@ export default function RepositoriPage() {
           setActiveCategory(tab);
           setSearchFilter("");
         }}
+      />
+
+      {/* Modal: Konfirmasi Hapus Modern */}
+      <ConfirmDeleteModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        confirmText={confirmModal.confirmText}
       />
     </div>
   );

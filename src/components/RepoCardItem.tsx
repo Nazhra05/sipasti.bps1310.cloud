@@ -59,10 +59,7 @@ export default function RepoCardItem({
   const showThumbnail = previewInfo.hasPreview && !imageError;
 
   const handleDeleteClick = () => {
-    if (window.confirm(`Hapus koleksi "${title}" dari repositori pribadi?`)) {
-      setIsDeleting(true);
-      if (onDelete) onDelete();
-    }
+    if (onDelete) onDelete();
   };
 
   return (

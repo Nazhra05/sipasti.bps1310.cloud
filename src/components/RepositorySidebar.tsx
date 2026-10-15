@@ -347,13 +347,7 @@ export default function RepositorySidebar({
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (
-                                    window.confirm(
-                                      `Hapus jenis repositori "${custom.name}"? Tautan di dalamnya akan dialihkan ke Referensi.`
-                                    )
-                                  ) {
-                                    onDeleteCustomCategory(custom.id);
-                                  }
+                                  onDeleteCustomCategory(custom.id);
                                 }}
                                 title="Hapus jenis kategori ini"
                                 className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:text-red-300 transition"
@@ -373,17 +367,31 @@ export default function RepositorySidebar({
 
           {/* Action: Tombol Tambah Jenis Repositori */}
           <div className="pt-2">
-            <button
-              type="button"
-              onClick={onOpenAddCategoryModal}
-              title="Tambah Jenis Repositori Baru"
-              className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer border border-dashed border-white/40 dark:border-slate-700 hover:border-white hover:bg-white/15 dark:hover:bg-slate-800 text-white shadow-xs ${
-                isCollapsed ? "px-0" : ""
-              }`}
-            >
-              <Plus className="w-4 h-4 text-white shrink-0" />
-              {!isCollapsed && <span>Tambah Jenis Repositori</span>}
-            </button>
+            {customCategories.length >= 3 ? (
+              <button
+                type="button"
+                disabled
+                title="Batas maksimal 3 jenis repositori khusus telah tercapai. Hapus salah satu kategori untuk menambah kategori baru."
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold border border-dashed border-white/20 dark:border-slate-800 text-white/50 cursor-not-allowed ${
+                  isCollapsed ? "px-0" : ""
+                }`}
+              >
+                <Plus className="w-4 h-4 text-white/50 shrink-0" />
+                {!isCollapsed && <span>Maksimal 3 Kategori (3/3)</span>}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenAddCategoryModal}
+                title="Tambah Jenis Repositori Baru"
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer border border-dashed border-white/40 dark:border-slate-700 hover:border-white hover:bg-white/15 dark:hover:bg-slate-800 text-white shadow-xs ${
+                  isCollapsed ? "px-0" : ""
+                }`}
+              >
+                <Plus className="w-4 h-4 text-white shrink-0" />
+                {!isCollapsed && <span>Tambah Jenis Repositori</span>}
+              </button>
+            )}
           </div>
 
         </div>
